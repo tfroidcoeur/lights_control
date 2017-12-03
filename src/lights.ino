@@ -40,23 +40,20 @@
 */
 
 struct Debounce {
-    unsigned long changetime;
-    int readval;
-    int stableval;
+	unsigned long changetime;
+	int readval;
+	int stableval;
 };
 
 struct InPin {
-    int id;
-    struct Debounce debounce;
-    void * handlerdata;
-    void (*handler)(struct InPin *, void * data);
+	int id;
+	struct Debounce debounce;
+	void * handlerdata;
+	void (*handler)(struct InPin *, void * data);
 };
 
 struct OutPin {
-    int id;
-    struct Debounce debounce;
-    void * handlerdata;
-    void (*handler)(struct InPin *, void * data);
+	int id;
 };
 
 struct Teleruptor {
@@ -66,64 +63,98 @@ struct Teleruptor {
 
 #define DEBOUNCETIME 50
 
+static int getInPinValue(struct InPin * pin) {
+	return pin->debounce.stableval;
+}
+
 static int debounce(struct InPin * pin) {
-    unsigned long now = millis();
-    // read the pin
-    int val = digitalRead(pin->id);
-    int previousval = pin->debounce.readval;
+	unsigned long now = millis();
+	// read the pin
+	int val = digitalRead(pin->id);
+	int previousval = pin->debounce.readval;
 
-    // transfer the value
-    pin->debounce.readval = val;
+	// transfer the value
+	pin->debounce.readval = val;
 
-    unsigned long elapsed = now - pin->debounce.changetime;
+	unsigned long elapsed = now - pin->debounce.changetime;
 
-    if (previousval != val){
-        // if changed from last read, reset the debounce timer
-        pin->debounce.changetime = now;
-    } else if (val != pin->debounce.stableval && elapsed > DEBOUNCETIME) {
-        // new stable value
-        pin->debounce.stableval = val;
-        return true;
-    }
-    return false;
+	if (previousval != val) {
+		// if changed from last read, reset the debounce timer
+		pin->debounce.changetime = now;
+	} else if (val != pin->debounce.stableval && elapsed > DEBOUNCETIME) {
+		// new stable value
+		Serial.print(F("debounced input pin:"));
+		Serial.print(pin->id);
+		Serial.print(F("to value "));
+		Serial.print(val);
+		pin->debounce.stableval = val;
+		return true;
+	}
+	return false;
 }
 
-static void initInputpin(struct InPin * pin, void (*handler)(struct InPin *, void * data), void * data) {
-  pinMode(pin->id, INPUT);
-  // if someone is pressing a button during boot, it
-  // will be debounced and then reported as a buttonpush
-  pin->debounce.readval = pin->debounce.stableval = 0;
-  pin->debounce.changetime = millis();
-  pin->handlerdata = data;
-  pin->handler = handler;
+static void initInputpin(struct InPin * pin,
+		void (*handler)(struct InPin *, void * data), void * data) {
+	pinMode(pin->id, INPUT);
+	// if someone is pressing a button during boot, it
+	// will be debounced and then reported as a buttonpush
+	pin->debounce.readval = pin->debounce.stableval = 0;
+	pin->debounce.changetime = millis();
+	pin->handlerdata = data;
+	pin->handler = handler;
+	Serial.print("initialized input pin ");
+	Serial.print(pin->id);
 }
+
+static void handleInputPin(struct InPin * pin) {
+	if (debounce(pin) && pin->handler) {
+		// state changed after debouncing
+		// call state change handler
+		pin->handler(pin, pin->handlerdata);
+	}
+}
+
 
 static void initOutputpin(struct OutPin * pin) {
-  pinMode(pin->id, OUTPUT);
+	pinMode(pin->id, OUTPUT);
+}
+
+static void teleruptorInpinHandler(struct InPin * pin, void * data) {
+	struct Teleruptor * t = (struct Teleruptor *) data;
+
+	if (getInPinValue(pin) == HIGH) {
+		// button pressed, toggle output
+		digitalWrite(t->out.id, !digitalRead(t->out.id));
+	}
+
 }
 
 static void initTeleruptor(struct Teleruptor * t) {
-	initInputpin(&t->in, NULL, NULL);
+	initInputpin(&t->in, teleruptorInpinHandler, t);
 	initOutputpin(&t->out);
 }
 
-struct Teleruptor teleruptors[]=
-{ {.in={.id=CONTROLLINO_A0}, .out={.id=CONTROLLINO_RELAY_00}},};
+static void handleTeleruptor(struct Teleruptor * t) {
+	// input pin handling will call callbacks on state change
+	handleInputPin(&t->in);
+}
+
+struct Teleruptor teleruptors[] = { { .in = { .id = CONTROLLINO_A0 }, .out = {
+		.id = CONTROLLINO_RELAY_00 } }, };
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
-  Serial.begin(9600);
+	Serial.begin(9600);
 
-  // configure input pins
-  for (int i = 0; i<sizeof(teleruptors)/sizeof(struct Teleruptor); i++){
-    initTeleruptor(&teleruptors[i]);
-  }
-
+	// configure input pins
+	for (int i = 0; i < sizeof(teleruptors) / sizeof(struct Teleruptor); i++) {
+		initTeleruptor(&teleruptors[i]);
+	}
 }
 
 // the loop function runs over and over again forever
 void loop() {
-  digitalWrite(CONTROLLINO_RELAY_00, HIGH);
-  delay(1000);
-
+	for (int i = 0; i < sizeof(teleruptors) / sizeof(struct Teleruptor); i++) {
+		handleTeleruptor(&teleruptors[i]);
+	}
 }
