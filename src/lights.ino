@@ -61,7 +61,21 @@ struct Teleruptor {
 	struct OutPin out;
 };
 
-#define DEBOUNCETIME 50
+
+enum MotionSpotState {
+    MS_Off,
+    MS_ForcedOn,
+    MS_Auto,
+};
+
+struct MotionSpot {
+	struct InPin in;
+	struct OutPin force;
+	struct OutPin ctrl;
+    int startTime;
+};
+
+#define DEBOUNCETIME 20
 
 static int getInPinValue(struct InPin * pin) {
 	return pin->debounce.stableval;
@@ -81,12 +95,15 @@ static int debounce(struct InPin * pin) {
 	if (previousval != val) {
 		// if changed from last read, reset the debounce timer
 		pin->debounce.changetime = now;
+      Serial.print(F("debouncing input pin:"));
+      Serial.print(pin->id);
 	} else if (val != pin->debounce.stableval && elapsed > DEBOUNCETIME) {
 		// new stable value
 		Serial.print(F("debounced input pin:"));
 		Serial.print(pin->id);
 		Serial.print(F("to value "));
 		Serial.print(val);
+    Serial.println();
 		pin->debounce.stableval = val;
 		return true;
 	}
@@ -139,8 +156,46 @@ static void handleTeleruptor(struct Teleruptor * t) {
 	handleInputPin(&t->in);
 }
 
-struct Teleruptor teleruptors[] = { { .in = { .id = CONTROLLINO_A0 }, .out = {
-		.id = CONTROLLINO_RELAY_00 } }, };
+struct Teleruptor teleruptors[] = { 
+  { .in = { .id = CONTROLLINO_A0 }, 
+    .out = { .id = CONTROLLINO_RELAY_00 } }, 
+  { .in = { .id = CONTROLLINO_A1 }, 
+    .out = { .id = CONTROLLINO_RELAY_01 } }, 
+  { .in = { .id = CONTROLLINO_A2 }, 
+    .out = { .id = CONTROLLINO_RELAY_02 } }, 
+  { .in = { .id = CONTROLLINO_A3 }, 
+    .out = { .id = CONTROLLINO_RELAY_03 } }, 
+  { .in = { .id = CONTROLLINO_A4 }, 
+    .out = { .id = CONTROLLINO_RELAY_04 } }, 
+  { .in = { .id = CONTROLLINO_A5 }, 
+    .out = { .id = CONTROLLINO_RELAY_05 } }, 
+  { .in = { .id = CONTROLLINO_A6 }, 
+    .out = { .id = CONTROLLINO_RELAY_06 } }, 
+  { .in = { .id = CONTROLLINO_A7 }, 
+    .out = { .id = CONTROLLINO_RELAY_07 } }, 
+  { .in = { .id = CONTROLLINO_A8 }, 
+    .out = { .id = CONTROLLINO_RELAY_08 } }, 
+  { .in = { .id = CONTROLLINO_A9 }, 
+    .out = { .id = CONTROLLINO_RELAY_09 } }, 
+};
+
+static void motionSpotInHandler(struct InPin * pin, void * data) {
+	struct MotionSpot * m = (struct MotionSpot *) data;
+
+	if (getInPinValue(pin) == HIGH) {
+		// button pressed, wait if long press or short
+        m->startTime = millis();
+	} else if (m->startTime) {
+        // button released but not expired yet, short press
+		digitalWrite(m->ctrl.id, !digitalRead(m->ctrl.id));
+    }
+}
+
+static void initMotionSpot(struct MotionSpot * m) {
+	initInputpin(&m->in, motionSpotInHandler, m);
+	initOutputpin(&m->ctrl);
+	initOutputpin(&m->force);
+}
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
@@ -150,6 +205,7 @@ void setup() {
 	for (int i = 0; i < sizeof(teleruptors) / sizeof(struct Teleruptor); i++) {
 		initTeleruptor(&teleruptors[i]);
 	}
+
 }
 
 // the loop function runs over and over again forever
