@@ -6,8 +6,8 @@
  */
 
 
-#include "inpin.h"
 #include "Arduino.h"
+#include "InPin.h"
 
 #define DEBOUNCETIME 20
 
@@ -46,27 +46,22 @@ int InPin::debounce() {
 
 InPin::InPin(int id){
 	this->id=id;
-	pinMode(this->id, INPUT);
 	// if someone is pressing a button during boot, it
 	// will be dd and then reported as a buttonpush
 	this->d.readval = this->d.stableval = 0;
 	this->d.changetime = millis();
-	this->handlerdata = NULL;
-	this->handler = NULL;
-	Serial.print("initialized input pin ");
-	Serial.print(this->id);
-
 }
 
-void InPin::setHandler( void (*handler)(class InPin *, void * data), void * data) {
-	this->handlerdata = data;
-	this->handler = handler;
+void InPin::setup() {
+	pinMode(this->id, INPUT);
+	Serial.print("initialized input pin ");
+	Serial.println(this->id);
 }
 
 void InPin::handle() {
-	if (this->debounce() && this->handler) {
+	if (this->debounce()) {
 		// state changed after debouncing
 		// call state change handler
-		this->handler(this, this->handlerdata);
+		notify();
 	}
 }

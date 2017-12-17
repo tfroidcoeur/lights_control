@@ -7,6 +7,8 @@
 
 #ifndef INPIN_H_
 #define INPIN_H_
+#include "Actor.h"
+#include "Observable.h"
 
 struct Debounce {
 	unsigned long changetime;
@@ -14,18 +16,16 @@ struct Debounce {
 	int stableval;
 };
 
-class InPin {
+class InPin : public Actor, public Observable {
 private:
 	int id;
 	struct Debounce d;
-	void * handlerdata;
-	void (*handler)(struct InPin *, void * data);
 public:
 	InPin(int id);
 	int getInPinValue();
 	int debounce();
-	void setHandler( void (*handler)(class InPin *, void * data), void * data);
-	void handle();
+	virtual void handle();
+	virtual void setup();
 };
 
 
