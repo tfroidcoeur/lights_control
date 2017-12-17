@@ -2,6 +2,7 @@
 #include <HardwareSerial.h>
 
 #include "Teleruptor.h"
+#include "BlinkingLed.h"
 
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
@@ -18,6 +19,15 @@ Teleruptor teleruptors[] = {
 	Teleruptor(CONTROLLINO_A9, CONTROLLINO_RELAY_09),
 };
 
+BlinkPattern pat[]=
+{
+		{ 0, 1},
+		{ 5000, 0},
+		{ 5000, -1},
+};
+OutPin blinkpin(CONTROLLINO_RELAY_00);
+BlinkingLed blink(blinkpin);
+
 void setup() {
 	Serial.begin(9600);
 
@@ -25,6 +35,9 @@ void setup() {
 	for (int i = 0; i < sizeof(teleruptors) / sizeof(class Teleruptor); i++) {
 		teleruptors[i].setup();
 	}
+
+	blink.setup();
+	blink.start(pat, true);
 }
 
 // the loop function runs over and over again forever
@@ -33,4 +46,5 @@ void loop() {
 		teleruptors[i].handle();
 	}
 
+	blink.handle();
 }
