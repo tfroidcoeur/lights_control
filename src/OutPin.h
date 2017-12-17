@@ -15,6 +15,8 @@ public:
 	void setup();
 	void handle(){};
 	void toggle();
+	void write(int val);
+	int read();
 
 private:
 	int id;
