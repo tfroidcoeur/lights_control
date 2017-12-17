@@ -8,7 +8,6 @@
 #include <Arduino.h>
 #include "OutPin.h"
 
-
 OutPin::OutPin(int id) {
 	this->id = id;
 }
@@ -24,5 +23,13 @@ OutPin::~OutPin() {
 }
 
 void OutPin::toggle() {
-		digitalWrite(this->id, !digitalRead(this->id));
+	write(!read());
+}
+
+void OutPin::write(int value) {
+	digitalWrite(this->id, value);
+}
+
+int OutPin::read() {
+	return digitalRead(this->id);
 }
