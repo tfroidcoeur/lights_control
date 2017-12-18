@@ -16,15 +16,15 @@ BlinkingLed::~BlinkingLed() {
 }
 
 void BlinkingLed::stop() {
-	Serial.print("stopping, back to value ");
-	Serial.println(origvalue);
+//	Serial.print("stopping, back to value ");
+//	Serial.println(origvalue);
 	pattern = nullptr;
 	out.write(origvalue);
 }
 
 void BlinkingLed::endPattern() {
 	if (repeat) {
-		Serial.println("repeat");
+//		Serial.println("repeat");
 		this->startTime = millis();
 		this->nextstep = 0;
 	} else {

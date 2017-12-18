@@ -9,7 +9,6 @@
 #include "Arduino.h"
 
 Teleruptor::Teleruptor(int inid, int outid):in(inid),out(outid) {
-//	t->in.setHandler(teleruptorInpinHandler, t);
 }
 
 Teleruptor::~Teleruptor() {

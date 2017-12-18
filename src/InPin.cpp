@@ -29,15 +29,14 @@ int InPin::debounce() {
 	if (previousval != val) {
 		// if changed from last read, reset the d timer
 		this->d.changetime = now;
-      Serial.print(F("debouncing input pin:"));
-      Serial.print(this->id);
+//      Serial.print(F("debouncing input pin:"));
+//      Serial.println(this->id);
 	} else if (val != this->d.stableval && elapsed > DEBOUNCETIME) {
 		// new stable value
 		Serial.print(F("dd input pin:"));
 		Serial.print(this->id);
 		Serial.print(F("to value "));
-		Serial.print(val);
-    Serial.println();
+		Serial.println(val);
 		this->d.stableval = val;
 		return true;
 	}
