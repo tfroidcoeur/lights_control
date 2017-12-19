@@ -7,29 +7,32 @@
 
 #include "MotionSpot.h"
 
+unsigned long MotionSpot::modes[] = { 20, 2000, 0 };
+
 MotionSpot::~MotionSpot() {
 	// TODO Auto-generated destructor stub
 }
 
-MotionSpot::MotionSpot(int inid, int ctrlid, int forceid):
-			in(inid),ctrl(ctrlid),force(forceid) {
-	// TODO Auto-generated constructor stub
-
+MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid):
+			in(* (new InPin(inid))),
+		ctrl(* (new OutPin(ctrlid))),
+		force(* (new OutPin(forceid))),
+		indicator(* (new OutPin(indicatorid))),
+		button(*(new Button(in, &modes[0]))) {
+	button.setListener(this);
 }
 
 void MotionSpot::handle()
 {
-	// input pin handling will notify on state change
-	this->in.handle();
+	// button and input pin handling will notify on state change
+	this->button.handle();
 }
 
 void MotionSpot::setup() {
-	this->in.setup();
-	this->in.setObserver(this);
+	this->button.setup();
 	this->ctrl.setup();
 	this->force.setup();
 }
-
 
 #ifdef FOO
 

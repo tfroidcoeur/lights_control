@@ -7,21 +7,26 @@
 
 #ifndef MOTIONSPOT_H_
 #define MOTIONSPOT_H_
-#include "Actor.h"
+
+#include "Button.h"
 #include "InPin.h"
 #include "OutPin.h"
 
-class MotionSpot : public Actor, public Observer {
+class MotionSpot: public Actor, public ButtonListener {
 public:
 	virtual ~MotionSpot();
-	MotionSpot(int inid, int ctrlid, int forceid);
+	MotionSpot(int inid, int ctrlid, int forceid, int indicatorid);
+	MotionSpot(InPin & in, OutPin & ctrl, OutPin & force, OutPin & indicator);
 	void setup();
 	void handle();
 
 private:
-	InPin in;
-	OutPin force;
-	OutPin ctrl;
+	InPin & in;
+	Button & button;
+	OutPin & force;
+	OutPin & ctrl;
+	OutPin & indicator;
+	static unsigned long modes[];
 };
 
 #endif /* MOTIONSPOT_H_ */
