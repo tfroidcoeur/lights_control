@@ -25,6 +25,7 @@ public:
 	;
 	void handle();
 	void start(struct BlinkPattern * pattern, bool repeat = false);
+	void start(struct BlinkPattern * pattern, int repeatcount );
 	void stop();
 private:
 	OutPin & out;
@@ -32,8 +33,8 @@ private:
 	unsigned long startTime;
 	int nextstep;
 	int origvalue;
-	bool repeat;
-	void endPattern();
+	int repeatcount;
+	void endPattern(int value);
 	void printStep(struct BlinkPattern & step);
 };
 

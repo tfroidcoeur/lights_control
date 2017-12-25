@@ -22,14 +22,18 @@ void BlinkingLed::stop() {
 	out.write(origvalue);
 }
 
-void BlinkingLed::endPattern() {
-	if (repeat) {
-//		Serial.println("repeat");
-		this->startTime = millis();
-		this->nextstep = 0;
-	} else {
+void BlinkingLed::endPattern(int value) {
+	if (repeatcount==0) {
 		stop();
+		return;
 	}
+
+	// decrement positive repeatcounts
+	if (repeatcount>0) repeatcount--;
+	// transfer repeatcount from last value (negated) to create loops if repeatcount at -1
+	else if (repeatcount == -1 && value !=-1) repeatcount=-value;
+	this->startTime = millis();
+	this->nextstep = 0;
 }
 
 void BlinkingLed::printStep(struct BlinkPattern & step) {
@@ -48,8 +52,8 @@ void BlinkingLed::handle() {
 	BlinkPattern & step = this->pattern[this->nextstep];
 
 	if ((unsigned long) millis() - this->startTime > step.delay) {
-		if (step.value == -1) {
-			endPattern();
+		if (step.value < 0) {
+			endPattern(step.value);
 			return;
 		}
 //		Serial.println(millis());
@@ -65,16 +69,20 @@ void BlinkingLed::handle() {
 	}
 
 	if (step.delay == 0 && step.value == -1) {
-		endPattern();
+		endPattern(step.value);
 		return;
 	}
 }
 
 void BlinkingLed::start(struct BlinkPattern * pattern, bool repeat) {
+	start(pattern,-1);
+}
+
+void BlinkingLed::start(struct BlinkPattern * pattern, int repeatcount) {
 	this->pattern = pattern;
 	this->startTime = millis();
 	this->nextstep = 0;
 	this->origvalue = out.read();
-	this->repeat = repeat;
+	this->repeatcount = repeatcount;
 	this->handle();
 }
