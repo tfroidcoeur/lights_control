@@ -11,31 +11,50 @@
 #include "Actor.h"
 #include "OutPin.h"
 
-struct BlinkPattern {
-	unsigned long delay;
+/**
+ * individual blink element
+ * duration: duration in ms
+ * value: value to set on the pin
+ */
+struct BlinkElement {
+	unsigned long duration;
 	int value;
 };
 
+/**
+ * a blink pattern is a series of blink elements plus some info
+ */
+struct BlinkPattern {
+	int repeatcount;
+	struct BlinkElement * elements;
+};
+
+/**
+ * Blinking led makes an Outpin blink capable.
+ * TODO: nicer to move functionality to BlinkPattern and provide an
+ * Outpin to the start function - maybe
+ */
 class BlinkingLed: public Actor {
 public:
 	BlinkingLed(OutPin & pin);
 	virtual ~BlinkingLed();
-	void setup() {
-	}
-	;
-	void handle();
-	void start(struct BlinkPattern * pattern, bool repeat = false);
-	void start(struct BlinkPattern * pattern, int repeatcount );
-	void stop();
+	/* functions for Actor */
+	virtual void setup() { } ;
+	virtual void handle();
+
+	/* API */
+	void start(struct BlinkPattern * pattern);
+	void stop(bool restore=true);
 private:
+	void activate();
 	OutPin & out;
 	struct BlinkPattern * pattern;
 	unsigned long startTime;
-	int nextstep;
+	int activeStep;
 	int origvalue;
 	int repeatcount;
 	void endPattern(int value);
-	void printStep(struct BlinkPattern & step);
+	void printStep(struct BlinkElement & step);
 };
 
 #endif /* BLINKINGLED_H_ */

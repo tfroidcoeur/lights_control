@@ -33,10 +33,10 @@ int InPin::debounce() {
 //      Serial.println(this->id);
 	} else if (val != this->d.stableval && elapsed > DEBOUNCETIME) {
 		// new stable value
-		Serial.print(F("dd input pin:"));
-		Serial.print(this->id);
-		Serial.print(F("to value "));
-		Serial.println(val);
+//		Serial.print(F("dd input pin:"));
+//		Serial.print(this->id);
+//		Serial.print(F("to value "));
+//		Serial.println(val);
 		this->d.stableval = val;
 		return true;
 	}

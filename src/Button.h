@@ -64,12 +64,12 @@ public:
 		if (pending && listener && (millis() - started > t[mode])) {
 			if (t[mode++] == 0) {
 				pending = false;
-				Serial.print("button notification ");
-				Serial.println(mode);
+//				Serial.print("button notification ");
+//				Serial.println(mode);
 				listener->notifyButton(*this, mode - 1);
 			}
-			Serial.print("mode is ");
-			Serial.println(mode);
+//			Serial.print("mode is ");
+//			Serial.println(mode);
 		}
 	}
 	virtual void setup() {

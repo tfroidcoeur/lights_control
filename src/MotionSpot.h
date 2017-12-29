@@ -16,7 +16,7 @@
 class MotionSpotState {
 public:
 	virtual ~MotionSpotState();
-	MotionSpotState(int force, int ctrl, BlinkPattern *pat, MotionSpotState * nextstate);
+	MotionSpotState(int force, int ctrl, BlinkPattern &pat, MotionSpotState * nextstate);
 
 	MotionSpotState & next(int mode) {
 		if (mode <1 || mode>2) return *this;
@@ -24,7 +24,7 @@ public:
 	}
 	int getForce() { return force;}
 	int getCtrl() {return ctrl;};
-	BlinkPattern (&getPattern())[];
+	BlinkPattern * getPattern(){return &pat;};
 
 	static MotionSpotState Off;
 	static MotionSpotState Auto;
@@ -33,8 +33,8 @@ public:
 private:
 	int force;
 	int ctrl;
-	BlinkPattern (& pat)[];
-	MotionSpotState (&nextstate)[2];
+	BlinkPattern (& pat);
+	MotionSpotState * nextstate;
 
 };
 

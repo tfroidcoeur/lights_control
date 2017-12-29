@@ -36,6 +36,7 @@ void MotionSpot::notifyButton(Button & button, int mode) {
 		// change state
 		state = &nextState;
 		// notify by blinking
+		blink.stop();
 		blink.start(nextState.getPattern());
 		// set outputs{ { 0, 1 }, { 5000, 0 }, { 5000, -1 }, }
 		ctrl.write(nextState.getCtrl());
@@ -43,9 +44,9 @@ void MotionSpot::notifyButton(Button & button, int mode) {
 	}
 }
 
-BlinkPattern offpattern[] = { { 0, 1 }, { 400, 0 }, { 400, -2 }, };
+BlinkPattern offpattern = {3, (BlinkElement[]){{ 400, 1 }, { 400, 0 }}};
 
-BlinkPattern autopattern[] = { { 0, 1 }, { 1000, 0 }, { 0, -1 }, };
+BlinkPattern autopattern = {1, (BlinkElement[]){{ 1000, 1 }, { 1000, 0 }}, };
 
 BlinkPattern onpattern[] = { {0, 1}, {0, -1 },};
 MotionSpotState offstates[] = {MotionSpotState::Auto, MotionSpotState::ForcedOn};
@@ -54,47 +55,16 @@ MotionSpotState onstates[] = {MotionSpotState::Off, MotionSpotState::Off};
 
 static MotionSpotState MotionSpotState::Off(
 		0,0, offpattern, offstates);
-static MotionSpotState::Auto(
+static MotionSpotState MotionSpotState::Auto(
 		0,0, offpattern, autostates);
 
-static MotionSpotState::ForcedOn;
+static MotionSpotState MotionSpotState::ForcedOn(
+		0,0, offpattern, autostates);
 
-MotionSpotState::MotionSpotState(int force, int ctrl, BlinkPattern * pat,
-		MotionSpotState (&nextstate)[]) :
-		force(force), ctrl(ctrl), pat(*pat), nextstate(nextstate) {
+MotionSpotState::MotionSpotState(int force, int ctrl, BlinkPattern & pat,
+		MotionSpotState * nextstate) :
+		force(force), ctrl(ctrl), pat(pat), nextstate(nextstate) {
 }
 
-#ifdef FOO
-
-enum MotionSpotState {
-	MS_Off,
-	MS_ForcedOn,
-	MS_Auto,
-};
-
-struct MotionSpot {
-	InPin in;
-	OutPin force;
-	OutPin ctrl;
-	int startTime;
-};
-
-static void motionSpotInHandler(struct InPin * pin, void * data) {
-	struct MotionSpot * m = (struct MotionSpot *) data;
-
-	if (pin->getInPinValue() == HIGH) {
-		// button pressed, wait if long press or short
-		m->startTime = millis();
-	} else if (m->startTime) {
-		// button released but not expired yet, short press
-		digitalWrite(m->ctrl.id, !digitalRead(m->ctrl.id));
-	}
+MotionSpotState::~MotionSpotState() {
 }
-
-static void initMotionSpot(struct MotionSpot * m) {
-	m->in.setHandler( motionSpotInHandler, m);
-	initOutputpin(&m->ctrl);
-	initOutputpin(&m->force);
-}
-#endif
-
