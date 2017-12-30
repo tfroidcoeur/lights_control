@@ -13,17 +13,25 @@
 #include "InPin.h"
 #include "OutPin.h"
 
+/* MotionSpot is a spotlight with motion detector control
+ *
+ * it includes a button, two controls and an indicator led
+ * short press will cycle through the states
+ * long press will switch between forced on and off
+ * led will blink different patterns depending on mode
+ */
 class MotionSpotState {
 public:
 	virtual ~MotionSpotState();
-	MotionSpotState(int force, int ctrl, BlinkPattern &pat, MotionSpotState * nextstate);
+	MotionSpotState(const char * name, int force, int ctrl, BlinkPattern &pat, MotionSpotState ** nextstate);
 
-	MotionSpotState & next(int mode) {
-		if (mode <1 || mode>2) return *this;
+	MotionSpotState * next(int mode) {
+		if (mode <1 || mode>2) return this;
 		return nextstate[mode-1];
 	}
 	int getForce() { return force;}
 	int getCtrl() {return ctrl;};
+	const char * getName() {return name;};
 	BlinkPattern * getPattern(){return &pat;};
 
 	static MotionSpotState Off;
@@ -34,7 +42,8 @@ private:
 	int force;
 	int ctrl;
 	BlinkPattern (& pat);
-	MotionSpotState * nextstate;
+	MotionSpotState ** nextstate;
+	const char * name;
 
 };
 

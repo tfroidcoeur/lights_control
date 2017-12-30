@@ -35,17 +35,17 @@ public:
 		this->listener = listener;
 	}
 	virtual void notify(Observable * o) {
-		Serial.print("button notify ");
-		Serial.println(pin.getInPinValue());
+//		Serial.print("button notify ");
+//		Serial.println(pin.getInPinValue());
 		if (pin.getInPinValue()) {
 			// went high
 			started = millis();
 			pending = true;
 			mode = 0;
-			Serial.println("button started pending");
+//			Serial.println("button started pending");
 		} else if (pending) {
 			pending = false;
-			Serial.println("button notification");
+//			Serial.println("button notification");
 			listener->notifyButton(*this, mode);
 		}
 	}

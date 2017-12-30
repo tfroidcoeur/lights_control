@@ -4,7 +4,7 @@
 #include "BlinkingLed.h"
 #include "Button.h"
 #include "InPin.h"
-#include "OutPin.h"
+#include "MotionSpot.h"
 #include "Teleruptor.h"
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
@@ -16,8 +16,8 @@ Teleruptor teleruptors[] = { /* Teleruptor(CONTROLLINO_A0, CONTROLLINO_RELAY_00)
 		CONTROLLINO_A5, CONTROLLINO_RELAY_05), Teleruptor(CONTROLLINO_A6,
 				CONTROLLINO_RELAY_06), Teleruptor(CONTROLLINO_A7,
 				CONTROLLINO_RELAY_07), Teleruptor(CONTROLLINO_A8,
-				CONTROLLINO_RELAY_08), Teleruptor(CONTROLLINO_A9,
-				CONTROLLINO_RELAY_09), };
+				CONTROLLINO_RELAY_08), /*Teleruptor(CONTROLLINO_A9,
+				CONTROLLINO_RELAY_09),*/ };
 
 BlinkPattern pat1[] = { 5, (BlinkElement[] ) { { 5000, 1 }, { 5000, 0 }, { 0, -1 } } };
 
@@ -25,10 +25,12 @@ BlinkPattern pat2[] = { 3, (BlinkElement[] ) { { 100, 1 }, { 200, 0 }, { 0, -1 }
 
 unsigned long modes[] = { 20, 1000, 0 };
 
-OutPin blinkpin(CONTROLLINO_RELAY_00);
+OutPin blinkpin(CONTROLLINO_D0);
 BlinkingLed blink(blinkpin);
 InPin pin = InPin(CONTROLLINO_A0);
 Button button = Button(pin, modes);
+MotionSpot spot = MotionSpot(CONTROLLINO_A9,CONTROLLINO_D1, CONTROLLINO_D2, CONTROLLINO_D3);
+
 class Hellokes: public ButtonListener {
 	void notifyButton(Button & button, int mode) {
 		if (mode == 1) {
@@ -58,11 +60,12 @@ void setup() {
 		teleruptors[i].setup();
 	}
 
-	blinkpin.setup();
-	blink.setup();
-	blink.start(pat1);
-	button.setup();
-	button.setListener(&hellokes);
+//	blinkpin.setup();
+//	blink.setup();
+//	blink.start(pat1);
+//	button.setup();
+//	button.setListener(&hellokes);
+	spot.setup();
 	Serial.println("setup done");
 }
 
@@ -72,6 +75,7 @@ void loop() {
 		teleruptors[i].handle();
 	}
 
-	blink.handle();
-	button.handle();
+//	blink.handle();
+//	button.handle();
+	spot.handle();
 }
