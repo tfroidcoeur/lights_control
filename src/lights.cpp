@@ -31,7 +31,7 @@ void setup() {
 	Serial.begin(9600);
 
 	// configure input pins
-	for (int i = 0; i < sizeof(teleruptors) / sizeof(class Teleruptor); i++) {
+	for (unsigned long i = 0; i < sizeof(teleruptors) / sizeof(class Teleruptor); i++) {
 		teleruptors[i].setup();
 	}
 
@@ -41,7 +41,7 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-	for (int i = 0; i < sizeof(teleruptors) / sizeof(struct Teleruptor); i++) {
+	for (unsigned int i = 0; i < sizeof(teleruptors) / sizeof(struct Teleruptor); i++) {
 		teleruptors[i].handle();
 	}
 

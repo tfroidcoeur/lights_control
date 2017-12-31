@@ -11,7 +11,6 @@
 unsigned long MotionSpot::modes[] = { 20, 2000, 0 };
 
 MotionSpot::~MotionSpot() {
-	// TODO Auto-generated destructor stub
 }
 
 MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid) :
@@ -64,7 +63,7 @@ BlinkPattern autopattern = { .repeatcount = 0, .elements = (BlinkElement[] ) { {
 // it is even very unlikely that the ULONG_MAX will be detected, as we need
 // to sample millis() exactly at the max before wrap around
 BlinkPattern onpattern = { .repeatcount = -1, .elements = (BlinkElement[] ) { {
-		ULONG_MAX, 1 }, { -1, 1 } } };
+		ULONG_MAX, 1 }, { 0, -1 } } };
 
 /* state changes on short or long button press*/
 
@@ -75,9 +74,9 @@ MotionSpotState* autostates[] = { &MotionSpotState::ForcedOn,
 MotionSpotState* onstates[] = { &MotionSpotState::Off, &MotionSpotState::Off };
 
 /* three states for the motionspot */
-static MotionSpotState MotionSpotState::Off("Off", 0, 0, offpattern, offstates);
-static MotionSpotState MotionSpotState::Auto("Auto",0, 1, autopattern, autostates);
-static MotionSpotState MotionSpotState::ForcedOn("ForcedOn",1, 0, onpattern, onstates);
+MotionSpotState MotionSpotState::Off("Off", 0, 0, offpattern, offstates);
+MotionSpotState MotionSpotState::Auto("Auto",0, 1, autopattern, autostates);
+MotionSpotState MotionSpotState::ForcedOn("ForcedOn",1, 0, onpattern, onstates);
 
 MotionSpotState::MotionSpotState(const char * name, int force, int ctrl, BlinkPattern & pat,
 		MotionSpotState ** nextstate) :

@@ -39,19 +39,24 @@ public:
 	BlinkingLed(OutPin & pin);
 	virtual ~BlinkingLed();
 	/* functions for Actor */
-	virtual void setup() { } ;
+	virtual void setup() {
+	}
+	;
 	virtual void handle();
 
 	/* API */
 	void start(struct BlinkPattern * pattern);
-	void stop(bool restore=true);
+	void stop(bool restore);
+	void stop() {
+		stop(true);
+	}
 private:
 	void activate();
 	OutPin & out;
+	int origvalue;
 	struct BlinkPattern * pattern;
 	unsigned long startTime;
 	int activeStep;
-	int origvalue;
 	int repeatcount;
 	void endPattern(int value);
 	void printStep(struct BlinkElement & step);

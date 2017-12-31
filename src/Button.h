@@ -18,7 +18,8 @@ class Button;
 
 class ButtonListener {
 public:
-	virtual void notifyButton(Button & button, int mode);
+	virtual void notifyButton(Button & button, int mode)=0;
+	virtual ~ButtonListener(){};
 
 };
 

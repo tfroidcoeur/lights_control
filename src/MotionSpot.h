@@ -57,13 +57,13 @@ public:
 
 private:
 	InPin in;
-	Button button;
-	OutPin force;
 	OutPin ctrl;
+	OutPin force;
 	OutPin indicator;
+	Button button;
+	MotionSpotState * state;
 	BlinkingLed blink;
 	static unsigned long modes[];
-	MotionSpotState * state;
 };
 
 #endif /* MOTIONSPOT_H_ */
