@@ -15,7 +15,7 @@ BlinkingLed::BlinkingLed(OutPin & out) :
 BlinkingLed::~BlinkingLed() {
 }
 
-void BlinkingLed::stop(bool restore=true) {
+void BlinkingLed::stop(bool restore) {
 	if (restore) {
 		Serial.print("stopping, back to value ");
 		Serial.println(origvalue);
