@@ -45,7 +45,7 @@ void MotionSpot::notifyButton(Button & button, int mode) {
 		// change state
 		state = nextState;
 		// notify by blinking
-		blink.stop();
+		blink.stop(false);
 		blink.start(nextState->getPattern());
 		// set outputs{ { 0, 1 }, { 5000, 0 }, { 5000, -1 }, }
 		ctrl.write(nextState->getCtrl());
@@ -55,10 +55,10 @@ void MotionSpot::notifyButton(Button & button, int mode) {
 
 /* blink patterns of the led */
 BlinkPattern offpattern = { .repeatcount = 3, .elements = (BlinkElement[] ) { {
-				400, 1 }, { 400, 0 } } };
+				300, 1 }, { 300, 0 }, { 0, -1 } } };
 
-BlinkPattern autopattern = { .repeatcount = 1, .elements = (BlinkElement[] ) { {
-				1000, 1 }, { 1000, 0 } } , };
+BlinkPattern autopattern = { .repeatcount = 0, .elements = (BlinkElement[] ) { {
+				1000, 1 }, { 1000, 0 },{ 0, -1 } } , };
 
 // infinite repeat of very very long ON time
 // it is even very unlikely that the ULONG_MAX will be detected, as we need

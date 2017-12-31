@@ -25,32 +25,7 @@ BlinkPattern pat2[] = { 3, (BlinkElement[] ) { { 100, 1 }, { 200, 0 }, { 0, -1 }
 
 unsigned long modes[] = { 20, 1000, 0 };
 
-OutPin blinkpin(CONTROLLINO_D0);
-BlinkingLed blink(blinkpin);
-InPin pin = InPin(CONTROLLINO_A0);
-Button button = Button(pin, modes);
 MotionSpot spot = MotionSpot(CONTROLLINO_A9,CONTROLLINO_D1, CONTROLLINO_D2, CONTROLLINO_D3);
-
-class Hellokes: public ButtonListener {
-	void notifyButton(Button & button, int mode) {
-		if (mode == 1) {
-			// short press
-			Serial.println("set pat1");
-			blink.start(pat1);
-		}
-
-		else if (mode == 2) {
-			// long press
-			Serial.println("set pat2");
-			blink.start(pat2);
-		} else {
-			Serial.print("wtf mode ");
-			Serial.println(mode);
-		}
-
-	}
-};
-Hellokes hellokes;
 
 void setup() {
 	Serial.begin(9600);
@@ -60,11 +35,6 @@ void setup() {
 		teleruptors[i].setup();
 	}
 
-//	blinkpin.setup();
-//	blink.setup();
-//	blink.start(pat1);
-//	button.setup();
-//	button.setListener(&hellokes);
 	spot.setup();
 	Serial.println("setup done");
 }
@@ -75,7 +45,5 @@ void loop() {
 		teleruptors[i].handle();
 	}
 
-//	blink.handle();
-//	button.handle();
 	spot.handle();
 }

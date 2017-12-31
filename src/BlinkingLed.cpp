@@ -20,20 +20,23 @@ void BlinkingLed::stop(bool restore=true) {
 		Serial.print("stopping, back to value ");
 		Serial.println(origvalue);
 		out.write(origvalue);
+	} else {
+		out.write(0);
 	}
 	pattern = nullptr;
 }
 
 void BlinkingLed::endPattern(int value) {
+
+	// decrement positive repeatcounts
+	if (repeatcount > 0)
+		repeatcount--;
+
 	if (repeatcount == 0) {
 		Serial.println("stop repeat");
 		stop();
 		return;
 	}
-
-	// decrement positive repeatcounts
-	if (repeatcount > 0)
-		repeatcount--;
 
 	Serial.print("remaining repeatcount ");
 	Serial.println(repeatcount);
