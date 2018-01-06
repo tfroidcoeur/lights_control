@@ -25,7 +25,10 @@ BlinkPattern pat2[] = { 3, (BlinkElement[] ) { { 100, 1 }, { 200, 0 }, { 0, -1 }
 
 unsigned long modes[] = { 20, 1000, 0 };
 
-MotionSpot spot = MotionSpot(CONTROLLINO_A9,CONTROLLINO_D1, CONTROLLINO_D2, CONTROLLINO_D3);
+MotionSpot spot[] =
+		{
+				MotionSpot(CONTROLLINO_A9,CONTROLLINO_D1, CONTROLLINO_D2, CONTROLLINO_RELAY_09),
+		};
 
 void setup() {
 	Serial.begin(9600);
@@ -35,7 +38,9 @@ void setup() {
 		teleruptors[i].setup();
 	}
 
-	spot.setup();
+	for (unsigned long i = 0; i < sizeof(spot) / sizeof(class MotionSpot); i++) {
+		spot[i].setup();
+	}
 	Serial.println("setup done");
 }
 
@@ -45,5 +50,7 @@ void loop() {
 		teleruptors[i].handle();
 	}
 
-	spot.handle();
+	for (unsigned long i = 0; i < sizeof(spot) / sizeof(class MotionSpot); i++) {
+		spot[i].handle();
+	}
 }
