@@ -8,26 +8,24 @@
 #include "Teleruptor.h"
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
-Teleruptor teleruptors[] = { /* Teleruptor(CONTROLLINO_A0, CONTROLLINO_RELAY_00) ,*/
-		Teleruptor(CONTROLLINO_A1, CONTROLLINO_RELAY_01), Teleruptor(
-		CONTROLLINO_A2, CONTROLLINO_RELAY_02), Teleruptor(
-		CONTROLLINO_A3, CONTROLLINO_RELAY_03), Teleruptor(
-		CONTROLLINO_A4, CONTROLLINO_RELAY_04), Teleruptor(
-		CONTROLLINO_A5, CONTROLLINO_RELAY_05), Teleruptor(CONTROLLINO_A6,
-				CONTROLLINO_RELAY_06), Teleruptor(CONTROLLINO_A7,
-				CONTROLLINO_RELAY_07), Teleruptor(CONTROLLINO_A8,
-				CONTROLLINO_RELAY_08), /*Teleruptor(CONTROLLINO_A9,
-				CONTROLLINO_RELAY_09),*/ };
-
-BlinkPattern pat1[] = { 5, (BlinkElement[] ) { { 5000, 1 }, { 5000, 0 }, { 0, -1 } } };
-
-BlinkPattern pat2[] = { 3, (BlinkElement[] ) { { 100, 1 }, { 200, 0 }, { 0, -1 } } };
-
-unsigned long modes[] = { 20, 1000, 0 };
+Teleruptor teleruptors[] = {  Teleruptor(CONTROLLINO_A0, CONTROLLINO_RELAY_00) ,
+		Teleruptor(CONTROLLINO_A1, CONTROLLINO_RELAY_01),
+		Teleruptor( CONTROLLINO_A2, CONTROLLINO_RELAY_02),
+		Teleruptor( CONTROLLINO_A3, CONTROLLINO_RELAY_03),
+		Teleruptor( CONTROLLINO_A4, CONTROLLINO_RELAY_04),
+		Teleruptor( CONTROLLINO_A5, CONTROLLINO_RELAY_05),
+		Teleruptor( CONTROLLINO_A6, CONTROLLINO_D6),
+		Teleruptor( CONTROLLINO_A7, CONTROLLINO_D7),
+		Teleruptor( CONTROLLINO_A8, CONTROLLINO_D8),
+		Teleruptor( CONTROLLINO_A9, CONTROLLINO_D9),
+		Teleruptor( CONTROLLINO_IN0, CONTROLLINO_D10),
+		Teleruptor( CONTROLLINO_IN1, CONTROLLINO_D11),
+};
 
 MotionSpot spot[] =
 		{
 				MotionSpot(CONTROLLINO_A9,CONTROLLINO_D1, CONTROLLINO_D2, CONTROLLINO_RELAY_09),
+				MotionSpot(CONTROLLINO_A8,CONTROLLINO_RELAY_06,CONTROLLINO_RELAY_07 , CONTROLLINO_RELAY_08),
 		};
 
 void setup() {

@@ -29,16 +29,17 @@ void MotionSpot::setup() {
 	this->button.setup();
 	this->ctrl.setup();
 	this->force.setup();
+	this->indicator.setup();
 	this->blink.setup();
 }
 
 void MotionSpot::notifyButton(Button & button, int mode) {
 	Serial.print("motionspot button mode ");
 	Serial.print(mode);
-	Serial.print(" state ");
+	Serial.print(" received in state ");
 	Serial.println(state->getName());
 	MotionSpotState * nextState = state->next(mode);
-	Serial.print("next state ");
+	Serial.print("new state ");
 	Serial.println(nextState->getName());
 	if (state != nextState) {
 		// change state
