@@ -43,6 +43,7 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <List.h>
 
 #ifdef _MSC_VER
 	#pragma warning (disable: 4290)
@@ -52,8 +53,7 @@
 
 using namespace std;
 
-// Tests unconditional fail asserts
-//
+// Test InPin behaviour
 class InPinTest : public Test::Suite, Observer
 {
 public:
@@ -63,37 +63,58 @@ public:
 
 	}
 protected:
+	// just count number of notifications
 	virtual void notify(Observable * o){
 		notified++;
 	}
 
 private:
 	int notified=0;
+	// Test debounce behaviour
 	void debounceTest() {
+		// use our own time, we can play with
 		Time t;
 		Time * orig=getTheTime();
 		setTheTime(&t);
 
+		// pin under test
 		InPin p(CONTROLLINO_A1);
 		p.setObserver(this);
 		p.setup();
+
+		// run the pin a first time
 		p.handle();
+
+		// and again 500 ms later
 		t+=500;
 		p.handle();
+
 		TEST_ASSERT(notified==0);
+
+
+		// now activate the input pin
 		digitalWrite(CONTROLLINO_A1,1);
+
+
+		// the pin should not be notfied before it has been stable for 20 ms
 		p.handle();
 		t+=18;
 		p.handle();
 		TEST_ASSERT(notified==0);
+
 		t++;
 		p.handle();
 		TEST_ASSERT(notified==0);
+
+		// bring it down before it actually triggers
+		// this whole episode should not be a trigger
 		digitalWrite(CONTROLLINO_A1,0);
 		p.handle();
 		t++;
 		p.handle();
 		TEST_ASSERT(notified==0);
+
+		// pin active again
 		digitalWrite(CONTROLLINO_A1,1);
 		p.handle();
 		t+=18;
@@ -101,7 +122,10 @@ private:
 		TEST_ASSERT(notified==0);
 		t+=3;
 		p.handle();
+		// after 21 ms, finally, the pin should have notified
 		TEST_ASSERT(notified==1);
+
+		// and check if it notifies off also
 		digitalWrite(CONTROLLINO_A1,0);
 		p.handle();
 		t+=22;
@@ -111,6 +135,31 @@ private:
 
 		setTheTime(orig);
 
+	}
+};
+class Dummy{
+
+};
+
+class ListTest : public Test::Suite
+{
+public:
+	ListTest()
+	{
+		TEST_ADD(ListTest::add)
+
+	}
+
+private:
+	void add() {
+		List<Dummy> l;
+		Dummy one;
+		Dummy two;
+		l.add(one);
+		l.add(two);
+
+		TEST_ASSERT(l.remove(one));
+		TEST_ASSERT(l.remove(two));
 	}
 };
 
@@ -258,6 +307,7 @@ main(int argc, char* argv[])
 		//
 		Test::Suite ts;
 		ts.add(auto_ptr<Test::Suite>(new InPinTest));
+		ts.add(auto_ptr<Test::Suite>(new ListTest));
 //		ts.add(auto_ptr<Test::Suite>(new CompareTestSuite));
 //		ts.add(auto_ptr<Test::Suite>(new ThrowTestSuite));
 
