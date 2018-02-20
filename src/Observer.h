@@ -10,6 +10,7 @@
 class Observable;
 
 class Observer {
+	friend class Observable;
 public:
 	virtual void notify(Observable * o)=0;
 	virtual ~Observer();

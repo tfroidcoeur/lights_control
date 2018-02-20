@@ -16,7 +16,7 @@ MotionSpot::~MotionSpot() {
 MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid) :
 		in(inid), ctrl(ctrlid), force(forceid), indicator(indicatorid), button(
 				in, &modes[0]), state(&MotionSpotState::Auto), blink(indicator) {
-	button.setListener(this);
+	button.addListener(this);
 }
 
 void MotionSpot::handle() {
@@ -33,7 +33,7 @@ void MotionSpot::setup() {
 	this->blink.setup();
 }
 
-void MotionSpot::notifyButton(Button & button, int mode) {
+void MotionSpot::notifyButton(Button * button, int mode) {
 	Serial.print("motionspot button mode ");
 	Serial.print(mode);
 	Serial.print(" received in state ");

@@ -1,11 +1,10 @@
-CXXFLAGS =	-g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations
+CXXFLAGS =	-O0 -g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations
 
 SRCS = lights_test.cpp
 
 MAIN_DIR = ../lights
 MAIN_SRC += $(wildcard $(MAIN_DIR)/*.cpp)
 MAIN_SRC :=$(filter-out ../lights/lights.cpp,$(MAIN_SRC))
-$(info $(MAIN_SRC))
 SRCS += $(MAIN_SRC)
 CXXFLAGS += -I $(MAIN_DIR)
 
@@ -22,8 +21,6 @@ CXXFLAGS += `pkg-config libcpptest --libs --cflags`
 
 OBJS := $(SRCS:.cpp=.o)
 
-$(info $(OBJS))
-
 LIBS =
 
 TARGET =	lights_test
@@ -36,9 +33,12 @@ depend: .depend
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -MM $^ -MF  ./.depend;
 
 
-$(TARGET):	depend $(OBJS)
+$(TARGET): $(OBJS)
 	$(CXX) -o $(TARGET) $(OBJS) $(LIBS) $(CXXFLAGS)
 
 
 clean:
 	rm -f $(OBJS) $(TARGET)
+
+test: all
+	./$(TARGET)
