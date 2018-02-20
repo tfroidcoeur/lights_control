@@ -1,4 +1,4 @@
-CXXFLAGS =	-g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations
+CXXFLAGS =	-O0 -g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations
 
 SRCS = lights_test.cpp
 
@@ -36,7 +36,7 @@ depend: .depend
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -MM $^ -MF  ./.depend;
 
 
-$(TARGET):	depend $(OBJS)
+$(TARGET): $(OBJS)
 	$(CXX) -o $(TARGET) $(OBJS) $(LIBS) $(CXXFLAGS)
 
 
