@@ -44,6 +44,7 @@
 #include <iostream>
 #include <memory>
 #include <List.h>
+#include "ListTest.h"
 
 #ifdef _MSC_VER
 	#pragma warning (disable: 4290)
@@ -137,32 +138,6 @@ private:
 
 	}
 };
-class Dummy{
-
-};
-
-class ListTest : public Test::Suite
-{
-public:
-	ListTest()
-	{
-		TEST_ADD(ListTest::add)
-
-	}
-
-private:
-	void add() {
-		List<Dummy> l;
-		Dummy one;
-		Dummy two;
-		l.add(one);
-		l.add(two);
-
-		TEST_ASSERT(l.remove(one));
-		TEST_ASSERT(l.remove(two));
-	}
-};
-
 // Tests compare asserts
 //
 class CompareTestSuite : public Test::Suite
