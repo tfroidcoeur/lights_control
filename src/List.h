@@ -12,68 +12,66 @@
 template<class T>
 class List;
 
+/* doubly linked list implementation */
+
+/* separate node object */
 template<class T>
-class ListItem {
+class ListNode {
 	friend List<T> ;
 public:
-	ListItem(T & item) :
-			next(NULL), prev(NULL), item(item) {
+	ListNode(): next(this), prev(this), item(NULL) {};
+	ListNode(T & item) :
+			next(NULL), prev(NULL), item(&item) {
 	}
 	T & get() {
-		return item;
+		return *item;
 	}
 	;
 private:
-	ListItem * next;
-	ListItem * prev;
-	T & item;
+	ListNode * next;
+	ListNode * prev;
+	T * item;
 };
 
+/* list class */
 template<class T>
 class List {
 public:
-	List() :
-			e(NULL) {
-	}
+	class ListIterator;
+	typedef ListIterator iterator;
+	List(){}
 	virtual ~List() {
 	}
-	;
+
+	/* add object into the list */
 	void add(T& something) {
-		ListItem<T> * t = new ListItem<T>(something);
-		if (!e) {
-			e = t;
-			e->next = e;
-			e->prev = e;
-		} else {
-			insertBefore(*t, *e);
-		}
+		ListNode<T> * t = new ListNode<T>(something);
+		insertBefore(*t, sentinel);
 
 	}
-	ListItem<T> * find(T& something) {
-		if (!e)
-			return NULL;
 
-		ListItem<T> * cur = e->next;
-		for (; &cur->item != &something && cur != e; cur = cur->next)
+	/* find object */
+	ListNode<T> * find(T& something) {
+		ListNode<T> * cur = sentinel.next;
+		for (; cur->item != &something && cur != &sentinel; cur = cur->next)
 			;
 
-		if (&cur->item == &something)
+		if (cur->item == &something)
 			return cur;
 		return NULL;
 	}
-	void remove(ListItem<T> * it) {
-		if (e==it) e=it->next;
-		if (e==it) e=NULL;
-		else {
-			it->next->prev = it->prev;
-			it->prev->next = it->next;
-		}
+
+	/* remove node */
+	void remove(ListNode<T> * it) {
+		it->next->prev = it->prev;
+		it->prev->next = it->next;
 
 		delete it;
 	}
 
+	/* find and remove object*/
 	bool remove(T& something) {
-		ListItem<T> * it = find(something);
+		ListNode<T> * it = find(something);
 		if (!it)
 			return false;
 		remove(it);
@@ -81,24 +79,44 @@ public:
 
 	}
 
-	class Iterator {
+	iterator begin() {
+		return iterator(this, sentinel.next);
+	}
+	iterator end() {
+		return iterator(this, &sentinel);
+	}
+
+	class ListIterator {
 	public:
-		Iterator() {
-			nextitem = List::e;
+		ListIterator(List<T> * l, ListNode<T> * cur) :
+				cur(cur), parent(l) {
 		}
-		ListItem<T> * next() {
-			if (!nextitem)
-				return NULL;
-			nextitem = nextitem->next;
-			return nextitem;
+		bool operator ==(const ListIterator & other) {
+			return other.parent == this->parent
+					&& other.cur == this->cur;
+		}
+		bool operator !=(const ListIterator & other) {
+			return !(*this == other);
+		}
+		T& operator *() { return *cur->item;}
+		T* operator ->() { return cur->item;}
+		iterator operator++() {
+			cur=cur->next;
+			return *this;
+		};
+		iterator operator++(int n) {
+			iterator t(*this);
+			++(*this);
+			return t;
 		}
 	private:
-		ListItem<T> * nextitem;
+		ListNode<T> * cur;
+		List<T> * parent;
 	};
 
 private:
-	ListItem<T> * e;
-	void insertBefore(ListItem<T> & n, ListItem<T> & where) {
+	ListNode<T> sentinel;
+	void insertBefore(ListNode<T> & n, ListNode<T> & where) {
 		n.next = &where;
 		n.prev = where.prev;
 		where.prev = &n;
