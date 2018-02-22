@@ -19,7 +19,13 @@ template<class T>
 class ListNode {
 	friend List<T> ;
 public:
-	ListNode(): next(this), prev(this), item(NULL) {};
+	ListNode() :
+			next(this), prev(this), item(NULL) {
+	}
+	;
+	ListNode(T * item) :
+			next(NULL), prev(NULL), item(item) {
+	}
 	ListNode(T & item) :
 			next(NULL), prev(NULL), item(&item) {
 	}
@@ -39,17 +45,20 @@ class List {
 public:
 	class ListIterator;
 	typedef ListIterator iterator;
-	List(){}
+	List() {
+	}
 	virtual ~List() {
 	}
 
 	/* add object into the list */
-	void add(T& something) {
+	void add(T* something) {
 		ListNode<T> * t = new ListNode<T>(something);
 		insertBefore(*t, sentinel);
-
 	}
 
+	void add(T&something) {
+		add(&something);
+	}
 	/* find object */
 	ListNode<T> * find(T& something) {
 		ListNode<T> * cur = sentinel.next;
@@ -79,6 +88,10 @@ public:
 
 	}
 
+	bool empty() {
+		return sentinel.next == &sentinel;
+	}
+
 	iterator begin() {
 		return iterator(this, sentinel.next);
 	}
@@ -86,24 +99,29 @@ public:
 		return iterator(this, &sentinel);
 	}
 
+	/* iterator for this list */
 	class ListIterator {
 	public:
 		ListIterator(List<T> * l, ListNode<T> * cur) :
 				cur(cur), parent(l) {
 		}
 		bool operator ==(const ListIterator & other) {
-			return other.parent == this->parent
-					&& other.cur == this->cur;
+			return other.parent == this->parent && other.cur == this->cur;
 		}
 		bool operator !=(const ListIterator & other) {
 			return !(*this == other);
 		}
-		T& operator *() { return *cur->item;}
-		T* operator ->() { return cur->item;}
+		T& operator *() {
+			return *cur->item;
+		}
+		T* operator ->() {
+			return cur->item;
+		}
 		iterator operator++() {
-			cur=cur->next;
+			cur = cur->next;
 			return *this;
-		};
+		}
+		;
 		iterator operator++(int n) {
 			iterator t(*this);
 			++(*this);
@@ -122,7 +140,6 @@ private:
 		where.prev = &n;
 		n.prev->next = &n;
 	}
-
 };
 
 #endif /* LIST_H_ */
