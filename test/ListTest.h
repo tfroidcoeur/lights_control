@@ -16,11 +16,13 @@ public:
 	{
 		TEST_ADD(ListTest::add);
 		TEST_ADD(ListTest::iterate);
+		TEST_ADD(ListTest::iterate2);
 	}
 
 private:
 	void add();
 	void iterate();
+	void iterate2();
 };
 
 #endif /* LISTTEST_H_ */
