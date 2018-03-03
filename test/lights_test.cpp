@@ -43,8 +43,6 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
-#include <List.h>
-#include "ListTest.h"
 
 #ifdef _MSC_VER
 	#pragma warning (disable: 4290)
@@ -282,7 +280,7 @@ main(int argc, char* argv[])
 		//
 		Test::Suite ts;
 		ts.add(auto_ptr<Test::Suite>(new InPinTest));
-		ts.add(auto_ptr<Test::Suite>(new ListTest));
+//		ts.add(auto_ptr<Test::Suite>(new ListTest));
 //		ts.add(auto_ptr<Test::Suite>(new CompareTestSuite));
 //		ts.add(auto_ptr<Test::Suite>(new ThrowTestSuite));
 
