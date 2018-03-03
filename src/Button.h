@@ -14,12 +14,14 @@
 #include "InPin.h"
 #include "Observable.h"
 #include "Observer.h"
+#include <list>
 
 class Button;
+using namespace std;
 
 class ButtonListener {
 public:
-	virtual void notifyButton(Button & button, int mode)=0;
+	virtual void notifyButton(Button * button, int mode)=0;
 	virtual ~ButtonListener(){};
 };
 
@@ -32,10 +34,10 @@ public:
 	virtual ~Button() {
 		pin.removeObserver(this);
 	}
-	void addListener(const ButtonListener * listener) {
-		listeners.add(listener);
+	void addListener(ButtonListener * listener) {
+		listeners.push_back(listener);
 	}
-	void removeListener(const ButtonListener * listener) {
+	void removeListener(ButtonListener * listener) {
 		listeners.remove(listener);
 	}
 	virtual void notify(Observable * o) {
@@ -96,7 +98,7 @@ public:
 		Button & button;
 		const int mode;
 	};
-	List<ButtonListener> listeners;
+	list<ButtonListener *> listeners;
 
 private:
 	InPin & pin;
@@ -107,9 +109,9 @@ private:
 	int mode;
 
 	void notifyAll(int mode) {
-		for (List<ButtonListener>::iterator it = listeners.begin();
+		for (list<ButtonListener *>::iterator it = listeners.begin();
 				it != listeners.end(); it++) {
-			(*it).notifyButton(*this, mode);
+			(*it)->notifyButton(this, mode);
 		}
 	}
 };

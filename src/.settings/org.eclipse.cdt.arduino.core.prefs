@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-libraries=[{"package"\:"CONTROLLINO_Boards","platform"\:"avr","library"\:"Ethernet"},{"package"\:"CONTROLLINO_Boards","platform"\:"avr","library"\:"SoftwareSerial"},"Controllino library",{"package"\:"CONTROLLINO_Boards","platform"\:"avr","library"\:"SPI"}]
+libraries=[{"package"\:"CONTROLLINO_Boards","platform"\:"avr","library"\:"Ethernet"},{"package"\:"CONTROLLINO_Boards","platform"\:"avr","library"\:"SoftwareSerial"},"Controllino library",{"package"\:"CONTROLLINO_Boards","platform"\:"avr","library"\:"SPI"},"ArduinoSTL"]
