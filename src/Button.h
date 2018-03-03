@@ -22,7 +22,6 @@ using namespace std;
 class ButtonListener {
 public:
 	virtual void notifyButton(Button * button, int mode)=0;
-	virtual ~ButtonListener(){};
 };
 
 class Button: public Observer, public Actor, public Observable {

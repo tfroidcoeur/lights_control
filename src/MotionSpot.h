@@ -53,7 +53,7 @@ public:
 	MotionSpot(int inid, int ctrlid, int forceid, int indicatorid);
 	void setup();
 	void handle();
-	virtual void notifyButton(Button & button, int mode);
+	virtual void notifyButton(Button * button, int mode);
 
 private:
 	InPin in;

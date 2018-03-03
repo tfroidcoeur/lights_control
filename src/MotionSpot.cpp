@@ -33,7 +33,7 @@ void MotionSpot::setup() {
 	this->blink.setup();
 }
 
-void MotionSpot::notifyButton(Button & button, int mode) {
+void MotionSpot::notifyButton(Button * button, int mode) {
 	Serial.print("motionspot button mode ");
 	Serial.print(mode);
 	Serial.print(" received in state ");
