@@ -16,7 +16,7 @@ MotionSpot::~MotionSpot() {
 MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid) :
 		in(inid), ctrl(ctrlid), force(forceid), indicator(indicatorid), button(
 				in, &modes[0]), state(&MotionSpotState::Auto), blink(indicator) {
-	button.setListener(this);
+	button.addListener(this);
 }
 
 void MotionSpot::handle() {

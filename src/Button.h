@@ -10,6 +10,7 @@
 
 #include <Arduino.h>
 
+#include "Event.h"
 #include "InPin.h"
 #include "Observable.h"
 #include "Observer.h"
@@ -20,20 +21,22 @@ class ButtonListener {
 public:
 	virtual void notifyButton(Button & button, int mode)=0;
 	virtual ~ButtonListener(){};
-
 };
 
-class Button: public Observer, public Actor {
+class Button: public Observer, public Actor, public Observable {
 public:
 	Button(InPin & pin, unsigned long * t) :
-			pin(pin), t(t), pending(false) {
+			pin(pin), t(t), pending(false), mode(0) {
 		pin.setObserver(this);
 	}
 	virtual ~Button() {
-		pin.setObserver(nullptr);
+		pin.removeObserver(this);
 	}
-	void setListener(ButtonListener * listener) {
-		this->listener = listener;
+	void addListener(const ButtonListener * listener) {
+		listeners.add(listener);
+	}
+	void removeListener(const ButtonListener * listener) {
+		listeners.remove(listener);
 	}
 	virtual void notify(Observable * o) {
 //		Serial.print("button notify ");
@@ -47,7 +50,7 @@ public:
 		} else if (pending) {
 			pending = false;
 //			Serial.println("button notification");
-			listener->notifyButton(*this, mode);
+			notifyAll(mode);
 		}
 	}
 
@@ -67,7 +70,7 @@ public:
 				pending = false;
 //				Serial.print("button notification ");
 //				Serial.println(mode);
-				listener->notifyButton(*this, mode - 1);
+				notifyAll( mode - 1);
 			}
 //			Serial.print("mode is ");
 //			Serial.println(mode);
@@ -77,12 +80,38 @@ public:
 		pin.setup();
 	}
 
+	class ButtonEvent: public Event, public ButtonListener {
+	public:
+		ButtonEvent(Button & button, int mode):
+			button(button), mode(mode) {
+
+			button.addListener(this);
+
+		}
+		virtual ~ButtonEvent() {
+			button.removeListener(this);
+
+		}
+
+		Button & button;
+		const int mode;
+	};
+	List<ButtonListener> listeners;
+
 private:
 	InPin & pin;
 	unsigned long * t;
 	ButtonListener * listener;
-	unsigned long started;bool pending = true;
+	unsigned long started;
+	bool pending = true;
 	int mode;
+
+	void notifyAll(int mode) {
+		for (List<ButtonListener>::iterator it = listeners.begin();
+				it != listeners.end(); it++) {
+			(*it).notifyButton(*this, mode);
+		}
+	}
 };
 
 #endif /* BUTTON_H_ */

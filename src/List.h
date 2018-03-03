@@ -23,10 +23,10 @@ public:
 			next(this), prev(this), item(NULL) {
 	}
 	;
-	ListNode(T * item) :
+	ListNode(const T * item) :
 			next(NULL), prev(NULL), item(item) {
 	}
-	ListNode(T & item) :
+	ListNode(const T & item) :
 			next(NULL), prev(NULL), item(&item) {
 	}
 	T & get() {
@@ -36,7 +36,7 @@ public:
 private:
 	ListNode * next;
 	ListNode * prev;
-	T * item;
+	const T * item;
 };
 
 /* list class */
@@ -51,23 +51,27 @@ public:
 	}
 
 	/* add object into the list */
-	void add(T* something) {
+	void add(const T* something) {
 		ListNode<T> * t = new ListNode<T>(something);
 		insertBefore(*t, sentinel);
 	}
 
-	void add(T&something) {
+	void add(const T&something) {
 		add(&something);
 	}
 	/* find object */
-	ListNode<T> * find(T& something) {
+	ListNode<T> * find(const T* something) {
 		ListNode<T> * cur = sentinel.next;
-		for (; cur->item != &something && cur != &sentinel; cur = cur->next)
+		for (; cur->item != something && cur != &sentinel; cur = cur->next)
 			;
 
-		if (cur->item == &something)
+		if (cur->item == something)
 			return cur;
 		return NULL;
+	}
+
+	ListNode<T> * find(const T& something) {
+		return find(&something);
 	}
 
 	/* remove node */
@@ -79,13 +83,16 @@ public:
 	}
 
 	/* find and remove object*/
-	bool remove(T& something) {
+	bool remove(const T* something) {
 		ListNode<T> * it = find(something);
 		if (!it)
 			return false;
 		remove(it);
 		return true;
 
+	}
+	bool remove(const T& something) {
+		remove(&something);
 	}
 
 	bool empty() {
@@ -112,7 +119,7 @@ public:
 			return !(*this == other);
 		}
 		T& operator *() {
-			return *cur->item;
+			return (T&)*cur->item;
 		}
 		T* operator ->() {
 			return cur->item;
