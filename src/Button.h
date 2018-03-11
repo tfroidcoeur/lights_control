@@ -15,18 +15,25 @@
 #include "Observable.h"
 #include "Observer.h"
 #include <list>
+#include "sigslot.h"
 
 class Button;
 using namespace std;
 
+struct ButtonMode{
+	unsigned long delay;
+	sigslot::signal0<> * pressed;
+};
+
 class ButtonListener {
 public:
 	virtual void notifyButton(Button * button, int mode)=0;
+	virtual ~ButtonListener(){};
 };
 
 class Button: public Observer, public Actor, public Observable {
 public:
-	Button(InPin & pin, unsigned long * t) :
+	Button(InPin & pin, ButtonMode * t) :
 			pin(pin), t(t), pending(false), mode(0) {
 		pin.setObserver(this);
 	}
@@ -66,11 +73,12 @@ public:
 //		Serial.print(started);
 //		Serial.print(" ");
 //		Serial.println(t);
-		if (pending && listener && (millis() - started > t[mode])) {
-			if (t[mode++] == 0) {
+		if (pending && listener && (millis() - started > t[mode].delay)) {
+			if (t[mode++].delay == 0) {
 				pending = false;
 //				Serial.print("button notification ");
 //				Serial.println(mode);
+				if (t[mode].pressed) t[mode].pressed->emit();
 				notifyAll( mode - 1);
 			}
 //			Serial.print("mode is ");
@@ -101,7 +109,7 @@ public:
 
 private:
 	InPin & pin;
-	unsigned long * t;
+	ButtonMode * t;
 	ButtonListener * listener;
 	unsigned long started;
 	bool pending = true;
