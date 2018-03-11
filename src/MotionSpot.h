@@ -63,7 +63,7 @@ private:
 	Button button;
 	MotionSpotState * state;
 	BlinkingLed blink;
-	static unsigned long modes[];
+	static ButtonMode modes[];
 };
 
 #endif /* MOTIONSPOT_H_ */

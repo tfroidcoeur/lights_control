@@ -7,8 +7,9 @@
 
 #include "MotionSpot.h"
 #include <limits.h>
+#include "sigslot.h"
 
-unsigned long MotionSpot::modes[] = { 20, 2000, 0 };
+ButtonMode MotionSpot::modes[] = { {20,NULL}, {2000,NULL}, {0,NULL} };
 
 MotionSpot::~MotionSpot() {
 }
