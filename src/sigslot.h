@@ -78,6 +78,7 @@
 #ifndef SIGSLOT_H__
 #define SIGSLOT_H__
 
+#include <cstddef>
 #include <set>
 #include <list>
 #define SIGSLOT_PURE_ISO

@@ -12,17 +12,13 @@
 #include "Observer.h"
 
 
-class Teleruptor: public Observer {
+class Teleruptor: public Actor, public sigslot::has_slots<> {
 public:
 	Teleruptor(int inid, int outid);
 	virtual ~Teleruptor();
 	virtual void handle(void);
 	virtual void setup(void);
-	void notify(InPin * pin);
-	void notify(Observable * pin) {
-		// this can't really be good
-		notify((InPin*) pin);
-	}
+	void notifyInPin(int value);
 private:
 	InPin in;
 	OutPin out;

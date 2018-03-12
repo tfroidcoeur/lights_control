@@ -61,6 +61,6 @@ void InPin::handle() {
 	if (this->debounce()) {
 		// state changed after debouncing
 		// call state change handler
-		notify();
+		this->changed.emit(this->d.stableval);
 	}
 }

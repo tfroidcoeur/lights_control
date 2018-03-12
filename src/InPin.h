@@ -7,8 +7,10 @@
 
 #ifndef INPIN_H_
 #define INPIN_H_
+
 #include "Actor.h"
 #include "Observable.h"
+#include "sigslot.h"
 
 struct Debounce {
 	unsigned long changetime;
@@ -16,7 +18,7 @@ struct Debounce {
 	int stableval;
 };
 
-class InPin : public Actor, public Observable {
+class InPin : public Actor {
 private:
 	int id;
 	struct Debounce d;
@@ -26,6 +28,7 @@ public:
 	int debounce();
 	virtual void handle();
 	virtual void setup();
+	sigslot::signal1<int> changed;
 };
 
 

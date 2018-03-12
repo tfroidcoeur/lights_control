@@ -47,13 +47,15 @@ private:
 
 };
 
-class MotionSpot: public Actor, public ButtonListener {
+class MotionSpot: public Actor {
 public:
 	virtual ~MotionSpot();
 	MotionSpot(int inid, int ctrlid, int forceid, int indicatorid);
 	void setup();
 	void handle();
-	virtual void notifyButton(Button * button, int mode);
+	void shortpressed();
+	void longpressed();
+
 
 private:
 	InPin in;
@@ -63,7 +65,10 @@ private:
 	Button button;
 	MotionSpotState * state;
 	BlinkingLed blink;
-	static ButtonMode modes[];
+	ButtonMode * modes;
+	sigslot::signal0<> shortpress;
+	sigslot::signal0<> longpress;
+	void notifyButton(int mode);
 };
 
 #endif /* MOTIONSPOT_H_ */

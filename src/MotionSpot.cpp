@@ -9,15 +9,21 @@
 #include <limits.h>
 #include "sigslot.h"
 
-ButtonMode MotionSpot::modes[] = { {20,NULL}, {2000,NULL}, {0,NULL} };
-
 MotionSpot::~MotionSpot() {
+	delete modes;
 }
 
 MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid) :
 		in(inid), ctrl(ctrlid), force(forceid), indicator(indicatorid), button(
-				in, &modes[0]), state(&MotionSpotState::Auto), blink(indicator) {
-	button.addListener(this);
+				&modes[0]), state(&MotionSpotState::Auto), blink(indicator) {
+			in.changed.connect(&button, &Button::pinChanged);
+			modes = new ButtonMode[3];
+			modes[0].delay=20;
+			modes[0].pressed=&shortpress;
+			modes[1].delay=2000;
+			modes[1].pressed=&longpress;
+			modes[2].delay=0;
+			modes[2].pressed=NULL;
 }
 
 void MotionSpot::handle() {
@@ -34,7 +40,15 @@ void MotionSpot::setup() {
 	this->blink.setup();
 }
 
-void MotionSpot::notifyButton(Button * button, int mode) {
+void MotionSpot::shortpressed(){
+	notifyButton(0);
+}
+
+void MotionSpot::longpressed(){
+	notifyButton(1);
+}
+
+void MotionSpot::notifyButton(int mode) {
 	Serial.print("motionspot button mode ");
 	Serial.print(mode);
 	Serial.print(" received in state ");
