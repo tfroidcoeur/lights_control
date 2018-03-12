@@ -9,12 +9,10 @@
 #define BUTTON_H_
 
 #include <Arduino.h>
-
-#include "Event.h"
-#include "InPin.h"
-#include "Observable.h"
-#include "Observer.h"
 #include <list>
+
+#include "Actor.h"
+#include "Event.h"
 #include "sigslot.h"
 
 class Button;
@@ -25,31 +23,18 @@ struct ButtonMode{
 	sigslot::signal0<> * pressed;
 };
 
-class ButtonListener {
+class Button: public sigslot::has_slots<>, public Actor {
 public:
-	virtual void notifyButton(Button * button, int mode)=0;
-	virtual ~ButtonListener(){};
-};
-
-class Button: public Observer, public Actor, public Observable {
-public:
-	Button(InPin & pin, ButtonMode * t) :
-			pin(pin), t(t), pending(false), mode(0) {
-		pin.setObserver(this);
+	Button( ButtonMode * t) :
+			t(t), pending(false), mode(0) {
 	}
 	virtual ~Button() {
-		pin.removeObserver(this);
 	}
-	void addListener(ButtonListener * listener) {
-		listeners.push_back(listener);
-	}
-	void removeListener(ButtonListener * listener) {
-		listeners.remove(listener);
-	}
-	virtual void notify(Observable * o) {
+
+	void pinChanged(int value) {
 //		Serial.print("button notify ");
-//		Serial.println(pin.getInPinValue());
-		if (pin.getInPinValue()) {
+//		Serial.println(value);
+		if (value) {
 			// went high
 			started = millis();
 			pending = true;
@@ -58,13 +43,15 @@ public:
 		} else if (pending) {
 			pending = false;
 //			Serial.println("button notification");
-			notifyAll(mode);
+			emit(mode);
 		}
 	}
 
+	virtual void setup() {
+
+	}
 	virtual void handle() {
 		// handle pin, could call callbacks
-		pin.handle();
 //		Serial.print("button handler ");
 //		Serial.print(pending);
 //		Serial.print(" ");
@@ -73,53 +60,25 @@ public:
 //		Serial.print(started);
 //		Serial.print(" ");
 //		Serial.println(t);
-		if (pending && listener && (millis() - started > t[mode].delay)) {
+		if (pending && (millis() - started > t[mode].delay)) {
 			if (t[mode++].delay == 0) {
 				pending = false;
 //				Serial.print("button notification ");
 //				Serial.println(mode);
-				if (t[mode].pressed) t[mode].pressed->emit();
-				notifyAll( mode - 1);
+				emit(mode);
 			}
 //			Serial.print("mode is ");
 //			Serial.println(mode);
 		}
 	}
-	virtual void setup() {
-		pin.setup();
-	}
-
-	class ButtonEvent: public Event, public ButtonListener {
-	public:
-		ButtonEvent(Button & button, int mode):
-			button(button), mode(mode) {
-
-			button.addListener(this);
-
-		}
-		virtual ~ButtonEvent() {
-			button.removeListener(this);
-
-		}
-
-		Button & button;
-		const int mode;
-	};
-	list<ButtonListener *> listeners;
 
 private:
-	InPin & pin;
 	ButtonMode * t;
-	ButtonListener * listener;
 	unsigned long started;
 	bool pending = true;
 	int mode;
-
-	void notifyAll(int mode) {
-		for (list<ButtonListener *>::iterator it = listeners.begin();
-				it != listeners.end(); it++) {
-			(*it)->notifyButton(this, mode);
-		}
+	void emit(int mode){
+		if (t[mode].pressed) t[mode].pressed->emit();
 	}
 };
 

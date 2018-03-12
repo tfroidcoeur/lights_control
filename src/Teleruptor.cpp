@@ -9,6 +9,7 @@
 #include "Arduino.h"
 
 Teleruptor::Teleruptor(int inid, int outid):in(inid),out(outid) {
+	in.changed.connect(this, &Teleruptor::notifyInPin);
 }
 
 Teleruptor::~Teleruptor() {
@@ -22,12 +23,11 @@ void Teleruptor::handle() {
 
 void Teleruptor::setup() {
 	this->in.setup();
-	this->in.setObserver(this);
 	this->out.setup();
 }
 
-void Teleruptor::notify(InPin * pin) {
-	if (pin->getInPinValue() == HIGH) {
+void Teleruptor::notifyInPin(int value) {
+	if (value == HIGH) {
 		// button pressed, toggle output
 		this->out.toggle();
 	}
