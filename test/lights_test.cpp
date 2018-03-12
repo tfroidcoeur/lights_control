@@ -53,7 +53,7 @@
 using namespace std;
 
 // Test InPin behaviour
-class InPinTest : public Test::Suite, Observer
+class InPinTest : public Test::Suite, public sigslot::has_slots<>
 {
 public:
 	InPinTest()
@@ -63,7 +63,7 @@ public:
 	}
 protected:
 	// just count number of notifications
-	virtual void notify(Observable * o){
+	virtual void notify(int value){
 		notified++;
 	}
 
@@ -78,7 +78,7 @@ private:
 
 		// pin under test
 		InPin p(CONTROLLINO_A1);
-		p.setObserver(this);
+		p.changed.connect(this, &InPinTest::notify);
 		p.setup();
 
 		// run the pin a first time
