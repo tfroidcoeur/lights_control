@@ -7,98 +7,64 @@
 
 #include "ButtonTest.h"
 
+#include <Button.h>
+#include <cpptest-suite.h>
+#include <sigslot.h>
+#include <Time.h>
 
-ButtonTest::ButtonTest() {
-	TEST_ADD(ButtonTest::)
-
+ButtonTest::ButtonTest()  {
+	testbutton = new Button();
+	TEST_ADD(ButtonTest::pressTest)
 }
 
 ButtonTest::~ButtonTest() {
 	// TODO Auto-generated destructor stub
 }
 
-void ButtonTest::setup(){
-	testbutton = new Button()
+void ButtonTest::setup() {
+	ButtonMode m;
+	m.delay = 100;
+	m.pressed = &press1;
+	testbutton->addMode(m);
+	m.delay = 200;
+	m.pressed = &press2;
+	testbutton->addMode(m);
+	press1.connect(this, &ButtonTest::notifyPress1);
+	press2.connect(this, &ButtonTest::notifyPress2);
+	testbutton->setup();
 }
 
-void ButtonTest::tear_down(){
-
+void ButtonTest::tear_down() {
+	delete testbutton;
 }
 
-class InPinTest : public Test::Suite, public sigslot::has_slots<>
-{
-protected:
-	// just count number of notifications
-	virtual void notify(int value){
-		notified++;
-	}
+void ButtonTest::pressTest() {
+	Time t;
+	Time * orig = getTheTime();
+	setTheTime(&t);
 
-private:
-	int notified=0;
-	// Test debounce behaviour
-	void debounceTest() {
-		// use our own time, we can play with
-		Time t;
-		Time * orig=getTheTime();
-		setTheTime(&t);
+	testbutton->handle();
+	t+=100;
+	// notify pin high
+	testbutton->pinChanged(1);
+	TEST_ASSERT(press1count==0);
+	TEST_ASSERT(press2count==0);
+	testbutton->handle();
 
-		// pin under test
-		InPin p(CONTROLLINO_A1);
-		p.changed.connect(this, &InPinTest::notify);
-		p.setup();
+	TEST_ASSERT(press1count==0);
+	TEST_ASSERT(press2count==0);
 
-		// run the pin a first time
-		p.handle();
+	// elapse a little bit of time
+	t+=20;
+	TEST_ASSERT(press1count==0);
+	TEST_ASSERT(press2count==0);
+	testbutton->handle();
+	TEST_ASSERT(press1count==0);
+	TEST_ASSERT(press2count==0);
+	t+=1;
+	testbutton->pinChanged(0);
+	testbutton->handle();
+	TEST_ASSERT(press1count==1);
+	TEST_ASSERT(press2count==0);
+}
 
-		// and again 500 ms later
-		t+=500;
-		p.handle();
-
-		TEST_ASSERT(notified==0);
-
-
-		// now activate the input pin
-		digitalWrite(CONTROLLINO_A1,1);
-
-
-		// the pin should not be notfied before it has been stable for 20 ms
-		p.handle();
-		t+=18;
-		p.handle();
-		TEST_ASSERT(notified==0);
-
-		t++;
-		p.handle();
-		TEST_ASSERT(notified==0);
-
-		// bring it down before it actually triggers
-		// this whole episode should not be a trigger
-		digitalWrite(CONTROLLINO_A1,0);
-		p.handle();
-		t++;
-		p.handle();
-		TEST_ASSERT(notified==0);
-
-		// pin active again
-		digitalWrite(CONTROLLINO_A1,1);
-		p.handle();
-		t+=18;
-		p.handle();
-		TEST_ASSERT(notified==0);
-		t+=3;
-		p.handle();
-		// after 21 ms, finally, the pin should have notified
-		TEST_ASSERT(notified==1);
-
-		// and check if it notifies off also
-		digitalWrite(CONTROLLINO_A1,0);
-		p.handle();
-		t+=22;
-		p.handle();
-		TEST_ASSERT(notified==2);
-
-
-		setTheTime(orig);
-
-	}
-};
