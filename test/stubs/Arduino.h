@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <iostream>
 
 #ifndef STUBS_ARDUINO_H_
 #define STUBS_ARDUINO_H_
@@ -24,15 +25,16 @@ void digitalWrite(uint8_t, uint8_t);
 int digitalRead(uint8_t);
 
 unsigned long millis(void);
+using namespace std;
 
 /* adapted from Arduino SDK */
 
 #define DEC 10
 
-class HardwareSerial
-{
-  public:
-    HardwareSerial(){}
+class HardwareSerial {
+public:
+	HardwareSerial() {
+	}
 
 //    void clearWriteError() { setWriteError(0); }
 //
@@ -52,31 +54,57 @@ class HardwareSerial
 //
 //    size_t print(const __FlashStringHelper *);
 //    size_t print(const String &);
-    size_t print(const char[]){};
+	size_t print(const char a[]) {
+		cout << a;
+		return 1;
+	}
 //    size_t print(char);
 //    size_t print(unsigned char, int = DEC);
-    size_t print(int, int = DEC){};
+	size_t print(int val, int base = DEC) {
+		cout << val;
+		return 1;
+	}
 //    size_t print(unsigned int, int = DEC);
 //    size_t print(long, int = DEC);
-    size_t print(unsigned long, int = DEC){};
+	size_t print(unsigned long val, int base = DEC) {
+		cout << val;
+		return 1;
+	}
 //    size_t print(double, int = 2);
 //    size_t print(const Printable&);
 //
 //    size_t println(const __FlashStringHelper *);
 //    size_t println(const String &s);
-    size_t println(const char[]){};
+	size_t println(const char a[]) {
+		cout << a << endl;
+		return 1;
+	}
 //    size_t println(char);
 //    size_t println(unsigned char, int = DEC);
-    size_t println(int, int = DEC){};
-    size_t println(unsigned int, int = DEC){};
+	size_t println(int val, int base = DEC) {
+		cout << val << endl;
+		return 1;
+	}
+	size_t println(unsigned int val, int base = DEC) {
+		cout << val << endl;
+		return 1;
+	}
 //    size_t println(long, int = DEC);
-    size_t println(unsigned long, int = DEC){};
+	size_t println(unsigned long val, int base = DEC) {
+		cout << val << endl;
+		return 1;
+	}
 //    size_t println(double, int = 2);
 //    size_t println(const Printable&);
-//    size_t println(void);
+    size_t println(void){
+		cout << endl;
+		return 1;
+	}
 //
 //    virtual void flush() { /* Empty implementation for backward compatibility */ }
-    void begin(int baud){};
+	void begin(int baud) {
+	}
+	;
 };
 
 #define F(a) a
