@@ -9,6 +9,7 @@
 #define BUTTON_H_
 
 #include <Arduino.h>
+#include <HardwareSerial.h>
 #include <set>
 #include <utility>
 
@@ -44,18 +45,16 @@ public:
 	}
 
 	void pinChanged(int value) {
-//		Serial.print("button notify ");
-//		Serial.println(value);
+		Serial.print("button notify ");
+		Serial.println(value);
 		if (value) {
 			// went high
 			started = millis();
 			pending = true;
-			mode = 0;
-//			Serial.println("button started pending");
+			Serial.println("button started pending");
 		} else if (pending) {
 			pending = false;
-//			Serial.println("button notification");
-			emit(mode);
+			Serial.println("button notification");
 			emit(*curmode);
 		}
 	}
@@ -64,24 +63,20 @@ public:
 
 	virtual void handle() {
 		// handle pin, could call callbacks
-//		Serial.print("button handler ");
-//		Serial.print(pending);
-//		Serial.print(" ");
-//		Serial.print(millis());
-//		Serial.print(" ");
-//		Serial.print(started);
-//		Serial.print(" ");
-//		Serial.println(t);
+		Serial.print("button handler ");
+		Serial.print(pending);
+		Serial.print(" ");
+		Serial.print(millis());
+		Serial.print(" ");
+		Serial.print(started);
+		Serial.println();
 		if (pending && (millis() - started > curmode->delay)) {
 			const ButtonMode & prevmode=*curmode;
 			if (curmode++==modes.end()) {
 				pending = false;
-//				Serial.print("button notification ");
-//				Serial.println(mode);
+				Serial.print("button notification ");
 				emit(prevmode);
 			}
-//			Serial.print("mode is ");
-//			Serial.println(mode);
 		}
 	}
 
