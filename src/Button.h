@@ -18,17 +18,30 @@
 class Button;
 using namespace std;
 
-struct ButtonMode{
+class ButtonMode{
+public:
 	unsigned long delay;
 	sigslot::signal0<> * pressed;
+	bool operator <(const ButtonMode & other) const
+	{
+		return this->delay < other.delay;
+	}
 };
 
 class Button: public sigslot::has_slots<>, public Actor {
 public:
-	Button( ButtonMode * t) :
-			t(t), pending(false), mode(0) {
+	Button() :
+			pending(false){
+		curmode = modes.begin();
 	}
+
+	void addMode(const ButtonMode & mode){
+		modes.insert(mode);
+		curmode=modes.begin();
+	}
+
 	virtual ~Button() {
+		modes.clear();
 	}
 
 	void pinChanged(int value) {
@@ -47,9 +60,8 @@ public:
 		}
 	}
 
-	virtual void setup() {
+	virtual void setup() { }
 
-	}
 	virtual void handle() {
 		// handle pin, could call callbacks
 //		Serial.print("button handler ");
@@ -60,8 +72,8 @@ public:
 //		Serial.print(started);
 //		Serial.print(" ");
 //		Serial.println(t);
-		if (pending && (millis() - started > t[mode].delay)) {
-			if (t[mode++].delay == 0) {
+		if (pending && (millis() - started > curmode->delay)) {
+			if (curmode->delay == 0) {
 				pending = false;
 //				Serial.print("button notification ");
 //				Serial.println(mode);
@@ -73,12 +85,13 @@ public:
 	}
 
 private:
-	ButtonMode * t;
+	std::set<ButtonMode> modes;
+	std::set<ButtonMode>::iterator curmode;
 	unsigned long started;
 	bool pending = true;
 	int mode;
 	void emit(int mode){
-		if (t[mode].pressed) t[mode].pressed->emit();
+		if (curmode->pressed) curmode->pressed->emit();
 	}
 };
 

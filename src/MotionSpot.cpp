@@ -14,16 +14,16 @@ MotionSpot::~MotionSpot() {
 }
 
 MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid) :
-		in(inid), ctrl(ctrlid), force(forceid), indicator(indicatorid), button(
-				&modes[0]), state(&MotionSpotState::Auto), blink(indicator) {
-			in.changed.connect(&button, &Button::pinChanged);
-			modes = new ButtonMode[3];
-			modes[0].delay=20;
-			modes[0].pressed=&shortpress;
-			modes[1].delay=2000;
-			modes[1].pressed=&longpress;
-			modes[2].delay=0;
-			modes[2].pressed=NULL;
+		in(inid), ctrl(ctrlid), force(forceid), indicator(indicatorid), button(), state(
+				&MotionSpotState::Auto), blink(indicator) {
+	in.changed.connect(&button, &Button::pinChanged);
+	modes = new ButtonMode[3];
+	modes[0].delay = 20;
+	modes[0].pressed = &shortpress;
+	modes[1].delay = 2000;
+	modes[1].pressed = &longpress;
+	modes[2].delay = 0;
+	modes[2].pressed = NULL;
 }
 
 void MotionSpot::handle() {
@@ -40,11 +40,11 @@ void MotionSpot::setup() {
 	this->blink.setup();
 }
 
-void MotionSpot::shortpressed(){
+void MotionSpot::shortpressed() {
 	notifyButton(0);
 }
 
-void MotionSpot::longpressed(){
+void MotionSpot::longpressed() {
 	notifyButton(1);
 }
 
@@ -73,7 +73,7 @@ BlinkPattern offpattern = { .repeatcount = 3, .elements = (BlinkElement[] ) { {
 				300, 1 }, { 300, 0 }, { 0, -1 } } };
 
 BlinkPattern autopattern = { .repeatcount = 0, .elements = (BlinkElement[] ) { {
-				1000, 1 }, { 1000, 0 },{ 0, -1 } } , };
+				1000, 1 }, { 1000, 0 }, { 0, -1 } } , };
 
 // infinite repeat of very very long ON time
 // it is even very unlikely that the ULONG_MAX will be detected, as we need
@@ -83,19 +83,20 @@ BlinkPattern onpattern = { .repeatcount = -1, .elements = (BlinkElement[] ) { {
 
 /* state changes on short or long button press*/
 
-MotionSpotState* offstates[] =
-		{ &MotionSpotState::Auto, &MotionSpotState::ForcedOn };
+MotionSpotState* offstates[] = { &MotionSpotState::Auto,
+		&MotionSpotState::ForcedOn };
 MotionSpotState* autostates[] = { &MotionSpotState::ForcedOn,
 		&MotionSpotState::ForcedOn };
 MotionSpotState* onstates[] = { &MotionSpotState::Off, &MotionSpotState::Off };
 
 /* three states for the motionspot */
 MotionSpotState MotionSpotState::Off("Off", 0, 0, offpattern, offstates);
-MotionSpotState MotionSpotState::Auto("Auto",0, 1, autopattern, autostates);
-MotionSpotState MotionSpotState::ForcedOn("ForcedOn",1, 0, onpattern, onstates);
+MotionSpotState MotionSpotState::Auto("Auto", 0, 1, autopattern, autostates);
+MotionSpotState MotionSpotState::ForcedOn("ForcedOn", 1, 0, onpattern,
+		onstates);
 
-MotionSpotState::MotionSpotState(const char * name, int force, int ctrl, BlinkPattern & pat,
-		MotionSpotState ** nextstate) :
+MotionSpotState::MotionSpotState(const char * name, int force, int ctrl,
+		BlinkPattern & pat, MotionSpotState ** nextstate) :
 		force(force), ctrl(ctrl), pat(pat), nextstate(nextstate), name(name) {
 }
 
