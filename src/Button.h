@@ -9,10 +9,10 @@
 #define BUTTON_H_
 
 #include <Arduino.h>
-#include <list>
+#include <set>
+#include <utility>
 
 #include "Actor.h"
-#include "Event.h"
 #include "sigslot.h"
 
 class Button;
@@ -22,8 +22,7 @@ class ButtonMode{
 public:
 	unsigned long delay;
 	sigslot::signal0<> * pressed;
-	bool operator <(const ButtonMode & other) const
-	{
+	bool operator <(const ButtonMode & other) const {
 		return this->delay < other.delay;
 	}
 };
@@ -31,7 +30,7 @@ public:
 class Button: public sigslot::has_slots<>, public Actor {
 public:
 	Button() :
-			pending(false){
+			started(0), pending(false){
 		curmode = modes.begin();
 	}
 
@@ -57,6 +56,7 @@ public:
 			pending = false;
 //			Serial.println("button notification");
 			emit(mode);
+			emit(*curmode);
 		}
 	}
 
@@ -73,11 +73,12 @@ public:
 //		Serial.print(" ");
 //		Serial.println(t);
 		if (pending && (millis() - started > curmode->delay)) {
-			if (curmode->delay == 0) {
+			const ButtonMode & prevmode=*curmode;
+			if (curmode++==modes.end()) {
 				pending = false;
 //				Serial.print("button notification ");
 //				Serial.println(mode);
-				emit(mode);
+				emit(prevmode);
 			}
 //			Serial.print("mode is ");
 //			Serial.println(mode);
@@ -89,9 +90,8 @@ private:
 	std::set<ButtonMode>::iterator curmode;
 	unsigned long started;
 	bool pending = true;
-	int mode;
-	void emit(int mode){
-		if (curmode->pressed) curmode->pressed->emit();
+	void emit(const ButtonMode & mode) const{
+		if (mode.pressed) mode.pressed->emit();
 	}
 };
 
