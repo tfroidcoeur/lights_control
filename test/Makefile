@@ -25,15 +25,14 @@ LIBS =
 
 TARGET =	lights_test
 
-all: depend $(TARGET)
-depend: .depend
+all: $(TARGET)
+depends:= $(patsubst %.o,%.d,$(OBJS))
 
-.depend: $(SRCS)
-	rm -f ./.depend
-	$(CXX) $(CFLAGS) $(CXXFLAGS) -MM $^ -MF  ./.depend;
+%.d: %.cpp 
+	$(CXX) $(CFLAGS) $(CXXFLAGS) -MM $^ -MF  $@;
 
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) $(depends)
 	$(CXX) -o $(TARGET) $(OBJS) $(LIBS) $(CXXFLAGS)
 
 
@@ -42,3 +41,5 @@ clean:
 
 test: all
 	./$(TARGET)
+
+-include $(depends)
