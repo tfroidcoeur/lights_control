@@ -9,16 +9,19 @@
 
 #include <Button.h>
 #include <cpptest-suite.h>
+#include <cpptest-assert.h>
 #include <sigslot.h>
 #include <Time.h>
 
 ButtonTest::ButtonTest()  {
 	testbutton = new Button();
-	TEST_ADD(ButtonTest::pressTest)
+	TEST_ADD(ButtonTest::pressLongTest)
+	TEST_ADD(ButtonTest::pressShortTest)
 }
 
 ButtonTest::~ButtonTest() {
-	// TODO Auto-generated destructor stub
+	delete testbutton;
+	testbutton=NULL;
 }
 
 void ButtonTest::setup() {
@@ -32,19 +35,27 @@ void ButtonTest::setup() {
 	press1.connect(this, &ButtonTest::notifyPress1);
 	press2.connect(this, &ButtonTest::notifyPress2);
 	testbutton->setup();
+	press1count=0;
+	press2count=0;
+
+	orig = getTheTime();
+	time = new Time();
+	setTheTime(time);
 }
 
 void ButtonTest::tear_down() {
-	delete testbutton;
+	press1.disconnect(this);
+	setTheTime(orig);
+	delete time;
+	time=NULL;
 }
 
-void ButtonTest::pressTest() {
-	Time t;
-	Time * orig = getTheTime();
-	setTheTime(&t);
+void ButtonTest::pressLongTest() {
+	Time &t=*time;
 
 	testbutton->handle();
 	t+=100;
+
 	// notify pin high
 	testbutton->pinChanged(1);
 	TEST_ASSERT(press1count==0);
@@ -55,13 +66,40 @@ void ButtonTest::pressTest() {
 	TEST_ASSERT(press2count==0);
 
 	// elapse a little bit of time
-	t+=20;
+	for (;t<300; t+=10){
+		testbutton->handle();
+		TEST_ASSERT(press1count==0);
+		TEST_ASSERT(press2count==0);
+	}
+	t++;
+	testbutton->pinChanged(0);
+	testbutton->handle();
+	TEST_ASSERT(press1count==0);
+	TEST_ASSERT(press2count==1);
+}
+
+void ButtonTest::pressShortTest() {
+	Time &t=*time;
+
+	testbutton->handle();
+	t+=100;
+
+	// notify pin high
+	testbutton->pinChanged(1);
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==0);
 	testbutton->handle();
+
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==0);
-	t+=1;
+
+	// elapse a little bit of time
+	for (;t<200; t+=10){
+		testbutton->handle();
+		TEST_ASSERT(press1count==0);
+		TEST_ASSERT(press2count==0);
+	}
+	t++;
 	testbutton->pinChanged(0);
 	testbutton->handle();
 	TEST_ASSERT(press1count==1);
