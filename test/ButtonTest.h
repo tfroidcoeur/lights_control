@@ -10,8 +10,10 @@
 
 #include <Button.h>
 #include <cpptest-suite.h>
-#include <cpptest-assert.h>
 #include <sigslot.h>
+#include <iostream>
+
+#include "stubs/Time.h"
 
 class Button;
 
@@ -30,7 +32,10 @@ private:
 	sigslot::signal0<> press2;
 	void notifyPress2(){press2count++; cout << "pressed 2 (" << press2count <<")" << endl;};
 	int press2count=0;
-	void pressTest();
+	void pressShortTest();
+	void pressLongTest();
+	Time *time;
+	Time * orig;
 
 };
 

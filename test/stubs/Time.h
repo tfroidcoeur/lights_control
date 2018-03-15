@@ -15,6 +15,12 @@ public:
 	unsigned long millis();
 	Time operator++(int);     // Postfix increment operator.
 	Time& operator+=(int rhs);
+	bool operator<(unsigned long rhs) {return ms < rhs;};
+	bool operator>(unsigned long rhs){return ms > rhs;};
+	bool operator==(unsigned long rhs){return ms == rhs;};
+	bool operator<(int rhs) { return rhs >0 && ms<(unsigned long)rhs;};
+	bool operator>(int rhs){ return rhs >=0 && ms>(unsigned long)rhs;};
+	bool operator==(int rhs) { return rhs >=0 && ms==(unsigned long)rhs;};
 private:
 	unsigned long ms;
 };
