@@ -17,13 +17,11 @@ MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid) :
 		in(inid), ctrl(ctrlid), force(forceid), indicator(indicatorid), button(), state(
 				&MotionSpotState::Auto), blink(indicator) {
 	in.changed.connect(&button, &Button::pinChanged);
-	modes = new ButtonMode[3];
+	modes = new ButtonMode[2];
 	modes[0].delay = 20;
 	modes[0].pressed = &shortpress;
 	modes[1].delay = 2000;
 	modes[1].pressed = &longpress;
-	modes[2].delay = 0;
-	modes[2].pressed = NULL;
 }
 
 void MotionSpot::handle() {

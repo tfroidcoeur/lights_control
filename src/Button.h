@@ -12,6 +12,7 @@
 #include <HardwareSerial.h>
 #include <set>
 #include <utility>
+#include <iostream>
 
 #include "Actor.h"
 #include "sigslot.h"
@@ -19,25 +20,33 @@
 class Button;
 using namespace std;
 
-class ButtonMode{
+class ButtonMode {
 public:
+	ButtonMode(int delay=0, const char * name = "<anon>",
+			sigslot::signal0<> * pressed = NULL) :
+			name(name), delay(delay), pressed(pressed) {
+	}
+	;
+	const char * name;
 	unsigned long delay;
-	sigslot::signal0<> * pressed;
-	bool operator <(const ButtonMode & other) const {
+	sigslot::signal0<> * pressed;bool operator <(
+			const ButtonMode & other) const {
 		return this->delay < other.delay;
 	}
+
 };
+std::ostream &operator<<(std::ostream &os, const ButtonMode & m);
 
 class Button: public sigslot::has_slots<>, public Actor {
 public:
 	Button() :
-			started(0), pending(false){
+			started(0), pending(false) {
 		curmode = modes.begin();
 	}
 
-	void addMode(const ButtonMode & mode){
+	void addMode(const ButtonMode & mode) {
 		modes.insert(mode);
-		curmode=modes.begin();
+		curmode = modes.begin();
 	}
 
 	virtual ~Button() {
@@ -54,39 +63,36 @@ public:
 			Serial.println("button started pending");
 		} else if (pending) {
 			pending = false;
-			Serial.println("button notification");
-			emit(*curmode);
+			if (curmode != modes.end()) emit(*curmode);
 		}
 	}
 
-	virtual void setup() { }
+	virtual void setup() {
+	}
 
 	virtual void handle() {
 		// handle pin, could call callbacks
-		Serial.print("button handler ");
-		Serial.print(pending);
-		Serial.print(" ");
-		Serial.print(millis());
-		Serial.print(" ");
-		Serial.print(started);
-		Serial.println();
-		if (pending && (millis() - started > curmode->delay)) {
-			const ButtonMode & prevmode=*curmode;
-			if (curmode++==modes.end()) {
+		cout << "button handler " << (pending?"":"not ") << "pending ms: " << millis() << " started " <<started <<endl;
+		cout << "curmode: " << *curmode << endl;
+		while (pending && (millis() - started > curmode->delay)) {
+			const ButtonMode & prevmode = *curmode;
+			if (++curmode == modes.end()) {
 				pending = false;
-				Serial.print("button notification ");
 				emit(prevmode);
+				break;
 			}
+			cout << "next " << *curmode << endl;
 		}
 	}
 
 private:
 	std::set<ButtonMode> modes;
 	std::set<ButtonMode>::iterator curmode;
-	unsigned long started;
-	bool pending = true;
-	void emit(const ButtonMode & mode) const{
-		if (mode.pressed) mode.pressed->emit();
+	unsigned long started;bool pending = true;
+	void emit(const ButtonMode & mode) const {
+		cout << "button notify: " << mode <<endl;
+		if (mode.pressed)
+			mode.pressed->emit();
 	}
 };
 
