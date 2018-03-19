@@ -9,12 +9,14 @@
 #define BUTTON_H_
 
 #include <Arduino.h>
+#include <ArduinoSTL.h>
 #include <HardwareSerial.h>
+#include <stddef.h>
+#include <iostream>
 #include <set>
 #include <utility>
-#include <iostream>
 
-#include "Actor.h"
+#include "InPin.h"
 #include "sigslot.h"
 #include "logging.h"
 
@@ -45,6 +47,12 @@ public:
 		curmode = modes.begin();
 	}
 
+	Button(InPin & p)  :
+			started(0), pending(false) {
+		curmode = modes.begin();
+		p.changed.connect(this, &Button::pinChanged);
+	}
+
 	void addMode(const ButtonMode & mode) {
 		modes.insert(mode);
 		curmode = modes.begin();
@@ -72,6 +80,10 @@ public:
 	}
 
 	virtual void handle() {
+		if (!pending || curmode == modes.end()) {
+			COUT_DEBUG(cout << "not pending, no handle");
+			return;
+		}
 		// handle pin, could call callbacks
 		COUT_DEBUG(cout << "button handler " << (pending?"":"not ") << "pending ms: " << millis() << " started " <<started <<endl);
 		COUT_DEBUG(cout << "curmode: " << *curmode << endl);

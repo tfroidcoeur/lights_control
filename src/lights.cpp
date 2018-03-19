@@ -22,13 +22,37 @@ Teleruptor teleruptors[] = {
 // TODO define pins
 // TODO define buttons
 
+InPin in0(CONTROLLINO_IN0);
+InPin in1(CONTROLLINO_IN1);
+Button spotButton0(in0);
+Button spotButton1(in1);
+sigslot::signal0<> button0Short;
+sigslot::signal0<> button0Long;
+sigslot::signal0<> button1Short;
+sigslot::signal0<> button1Long;
+// TODO setup modes and connect to motionspot
 MotionSpot spot[] =
 		{
-				MotionSpot(CONTROLLINO_IN0,CONTROLLINO_D0, CONTROLLINO_D1, CONTROLLINO_D2),
-				MotionSpot(CONTROLLINO_IN1,CONTROLLINO_D3, CONTROLLINO_D4, CONTROLLINO_D5),
+				MotionSpot(CONTROLLINO_D0, CONTROLLINO_D1, CONTROLLINO_D2),
+				MotionSpot(CONTROLLINO_D3, CONTROLLINO_D4, CONTROLLINO_D5),
 		};
-OutPin global_onoff(CONTROLLINO_RELAY_09);
 Runner r;
+
+void connectMotionSpot(MotionSpot & spot, Button & but, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong) {
+	but.addMode(ButtonMode(20, "short", &butshort));
+	but.addMode(ButtonMode(2000, "long", &butlong));
+	butshort.connect(&spot,&MotionSpot::shortpressed);
+	butlong.connect(&spot,&MotionSpot::longpressed);
+}
+
+void setupMotionSpots() {
+	connectMotionSpot(spot[0],spotButton0, button0Short, button0Long);
+	connectMotionSpot(spot[1],spotButton1, button1Short, button1Long);
+
+	for (unsigned long i = 0; i < sizeof(spot) / sizeof(class MotionSpot); i++) {
+		r.addActor(&spot[i]);
+	}
+}
 
 void setup() {
 	Serial.begin(9600);
@@ -37,16 +61,8 @@ void setup() {
 		r.addActor(&teleruptors[i]);
 	}
 
-	for (unsigned long i = 0; i < sizeof(spot) / sizeof(class MotionSpot); i++) {
-		r.addActor(&spot[i]);
-	}
-
 	// TODO add pins and buttons
-
-	/* global on off control for LED dimmers */
-	/* always on for now */
-	global_onoff.setup();
-	global_onoff.write(1);
+	setupMotionSpots();
 
 	r.setup();
 

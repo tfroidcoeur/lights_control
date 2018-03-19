@@ -10,40 +10,44 @@
 #include "sigslot.h"
 
 MotionSpot::~MotionSpot() {
-	delete modes;
 }
 
-MotionSpot::MotionSpot(int inid, int ctrlid, int forceid, int indicatorid) :
-		in(inid), ctrl(ctrlid), force(forceid), indicator(indicatorid), button(), state(
+MotionSpot::MotionSpot(int ctrlid, int forceid, int indicatorid) :
+		ctrl(ctrlid), force(forceid), indicator(indicatorid), state(
 				&MotionSpotState::Auto), blink(indicator) {
-	in.changed.connect(&button, &Button::pinChanged);
-	modes = new ButtonMode[2];
-	modes[0].delay = 20;
-	modes[0].pressed = &shortpress;
-	modes[1].delay = 2000;
-	modes[1].pressed = &longpress;
 }
 
 void MotionSpot::handle() {
 	// button and input pin handling will notify on state change
-	this->button.handle();
-	this->blink.handle();
+	blink.handle();
 }
 
 void MotionSpot::setup() {
-	this->button.setup();
-	this->ctrl.setup();
-	this->force.setup();
-	this->indicator.setup();
-	this->blink.setup();
+	ctrl.setup();
+	force.setup();
+	indicator.setup();
+	blink.setup();
+
+	// reset all pins according to state
+	activateState();
 }
 
 void MotionSpot::shortpressed() {
-	notifyButton(0);
+	notifyButton(1);
 }
 
 void MotionSpot::longpressed() {
-	notifyButton(1);
+	notifyButton(2);
+}
+
+void MotionSpot::activateState() {
+		// notify by blinking
+		blink.stop(false);
+		blink.start(state->getPattern());
+
+		// set outputs according to state
+		ctrl.write(state->getCtrl());
+		force.write(state->getForce());
 }
 
 void MotionSpot::notifyButton(int mode) {
@@ -57,12 +61,7 @@ void MotionSpot::notifyButton(int mode) {
 	if (state != nextState) {
 		// change state
 		state = nextState;
-		// notify by blinking
-		blink.stop(false);
-		blink.start(nextState->getPattern());
-		// set outputs{ { 0, 1 }, { 5000, 0 }, { 5000, -1 }, }
-		ctrl.write(nextState->getCtrl());
-		force.write(nextState->getForce());
+		activateState();
 	}
 }
 
