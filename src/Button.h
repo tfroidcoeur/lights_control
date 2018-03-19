@@ -16,6 +16,7 @@
 
 #include "Actor.h"
 #include "sigslot.h"
+#include "logging.h"
 
 class Button;
 using namespace std;
@@ -54,13 +55,13 @@ public:
 	}
 
 	void pinChanged(int value) {
-		Serial.print("button notify ");
-		Serial.println(value);
+		COUT_DEBUG(Serial.print("button notify "));
+		COUT_DEBUG(Serial.println(value));
 		if (value) {
 			// went high
 			started = millis();
 			pending = true;
-			Serial.println("button started pending");
+			COUT_DEBUG(Serial.println("button started pending"));
 		} else if (pending) {
 			pending = false;
 			if (curmode != modes.end()) emit(*curmode);
@@ -72,8 +73,8 @@ public:
 
 	virtual void handle() {
 		// handle pin, could call callbacks
-		cout << "button handler " << (pending?"":"not ") << "pending ms: " << millis() << " started " <<started <<endl;
-		cout << "curmode: " << *curmode << endl;
+		COUT_DEBUG(cout << "button handler " << (pending?"":"not ") << "pending ms: " << millis() << " started " <<started <<endl);
+		COUT_DEBUG(cout << "curmode: " << *curmode << endl);
 		while (pending && (millis() - started > curmode->delay)) {
 			const ButtonMode & prevmode = *curmode;
 			if (++curmode == modes.end()) {
@@ -90,7 +91,7 @@ private:
 	std::set<ButtonMode>::iterator curmode;
 	unsigned long started;bool pending = true;
 	void emit(const ButtonMode & mode) const {
-		cout << "button notify: " << mode <<endl;
+		COUT_DEBUG(cout << "button notify: " << mode <<endl);
 		if (mode.pressed)
 			mode.pressed->emit();
 	}
