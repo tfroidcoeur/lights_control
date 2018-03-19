@@ -12,8 +12,13 @@
 MotionSpot::~MotionSpot() {
 }
 
-MotionSpot::MotionSpot(int ctrlid, int forceid, int indicatorid) :
-		ctrl(ctrlid), force(forceid), indicator(indicatorid), state(
+//MotionSpot::MotionSpot(int ctrlid, int forceid, int indicatorid) :
+//		ctrl(ctrlid), force(forceid), indicator(indicatorid), state(
+//				&MotionSpotState::Auto), blink(indicator) {
+//}
+
+MotionSpot::MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator) :
+		ctrl(ctrl), force(force), indicator(indicator), state(
 				&MotionSpotState::Auto), blink(indicator) {
 }
 
