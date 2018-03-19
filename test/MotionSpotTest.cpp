@@ -22,37 +22,37 @@ void MotionSpotTest::testBasic(){
 	// starts in mode auto
 
 	ms->handle();
-	TEST_ASSERT(digitalRead(ctrlpin));
-	TEST_ASSERT(!digitalRead(forcepin));
+	TEST_ASSERT(ctrlpin.read());
+	TEST_ASSERT(!forcepin.read());
 
 	// short push to mode forced
 	shortsig.emit();
 	(*time)++;
 	ms->handle();
 
-	TEST_ASSERT(digitalRead(forcepin));
+	TEST_ASSERT(forcepin.read());
 
 	// short push to off
 	shortsig.emit();
 	(*time)++;
 	ms->handle();
-	TEST_ASSERT(!digitalRead(ctrlpin));
-	TEST_ASSERT(!digitalRead(forcepin));
+	TEST_ASSERT(!ctrlpin.read());
+	TEST_ASSERT(!forcepin.read());
 
 	// back to auto
 	shortsig.emit();
 	(*time)++;
 	ms->handle();
 
-	TEST_ASSERT(digitalRead(ctrlpin));
+	TEST_ASSERT(ctrlpin.read());
 }
 
 void MotionSpotTest::testLong(){
 
 	// start in Auto
 	ms->handle();
-	TEST_ASSERT(digitalRead(ctrlpin));
-	TEST_ASSERT(!digitalRead(forcepin));
+	TEST_ASSERT(ctrlpin.read());
+	TEST_ASSERT(!forcepin.read());
 
 	longsig.emit();
 	(*time)++;
@@ -60,34 +60,34 @@ void MotionSpotTest::testLong(){
 
 	// goes to forced
 
-	TEST_ASSERT(digitalRead(forcepin));
+	TEST_ASSERT(forcepin.read());
 
 	shortsig.emit();
 	(*time)++;
 	ms->handle();
 
 	// goes to off
-	TEST_ASSERT(!digitalRead(ctrlpin));
-	TEST_ASSERT(!digitalRead(forcepin));
+	TEST_ASSERT(!ctrlpin.read());
+	TEST_ASSERT(!forcepin.read());
 
 	// goes to forced
 	longsig.emit();
 	(*time)++;
 	ms->handle();
 
-	TEST_ASSERT(digitalRead(forcepin));
+	TEST_ASSERT(forcepin.read());
 
 	longsig.emit();
 	(*time)++;
 	ms->handle();
 
 	// off again
-	TEST_ASSERT(!digitalRead(ctrlpin));
-	TEST_ASSERT(!digitalRead(forcepin));
+	TEST_ASSERT(!ctrlpin.read());
+	TEST_ASSERT(!forcepin.read());
 	ms->handle();
 	(*time)+=100000;
-	TEST_ASSERT(!digitalRead(ctrlpin));
-	TEST_ASSERT(!digitalRead(forcepin));
+	TEST_ASSERT(!ctrlpin.read());
+	TEST_ASSERT(!forcepin.read());
 
 }
 
