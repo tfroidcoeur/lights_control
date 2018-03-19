@@ -36,14 +36,16 @@
 #include <cpptest-textoutput.h>
 #include <Controllino.h>
 #include <InPin.h>
-#include <Observable.h>
-#include <Observer.h>
+#include <sigslot.h>
+#include <string.h>
 #include <Time.h>
 #include <cstdlib>
-#include <cstring>
 #include <iostream>
-#include <memory>
+
 #include "ButtonTest.h"
+#include "MotionSpotTest.h"
+
+class MotionSpotTest;
 
 #ifdef _MSC_VER
 	#pragma warning (disable: 4290)
@@ -54,11 +56,12 @@
 using namespace std;
 
 // Test InPin behaviour
-class InPinTest : public Test::Suite, public sigslot::has_slots<>
+class InPinTest : public Test::Suite, public sigslot::has_slots<>, public TestWithTime
 {
 public:
 	InPinTest()
 	{
+		cout << "Inpintest" << endl;
 		TEST_ADD(InPinTest::debounceTest)
 
 	}
@@ -68,14 +71,21 @@ protected:
 		notified++;
 	}
 
+	void setup(){
+		TestWithTime::setup();
+		pinReset();
+	}
+
+	void tear_down(){
+		TestWithTime::tear_down();
+	}
+
 private:
 	int notified=0;
 	// Test debounce behaviour
 	void debounceTest() {
 		// use our own time, we can play with
-		Time t;
-		Time * orig=getTheTime();
-		setTheTime(&t);
+		Time &t=*time;
 
 		// pin under test
 		InPin p(CONTROLLINO_A1);
@@ -131,10 +141,6 @@ private:
 		t+=22;
 		p.handle();
 		TEST_ASSERT(notified==2);
-
-
-		setTheTime(orig);
-
 	}
 };
 // Tests compare asserts
@@ -282,6 +288,7 @@ main(int argc, char* argv[])
 		Test::Suite ts;
 		ts.add(auto_ptr<Test::Suite>(new InPinTest));
 		ts.add(auto_ptr<Test::Suite>(new ButtonTest));
+		ts.add(auto_ptr<Test::Suite>(new MotionSpotTest));
 //		ts.add(auto_ptr<Test::Suite>(new ListTest));
 //		ts.add(auto_ptr<Test::Suite>(new CompareTestSuite));
 //		ts.add(auto_ptr<Test::Suite>(new ThrowTestSuite));

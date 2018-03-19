@@ -11,13 +11,12 @@
 #include <cpptest-suite.h>
 #include <cpptest-assert.h>
 #include <sigslot.h>
-#include <Time.h>
 
 ButtonTest::ButtonTest()  {
 	testbutton = new Button();
+	TEST_ADD(ButtonTest::pressLongTest)
+	TEST_ADD(ButtonTest::pressShortTest)
 	TEST_ADD(ButtonTest::pressTimeoutTest)
-//	TEST_ADD(ButtonTest::pressLongTest)
-//	TEST_ADD(ButtonTest::pressShortTest)
 }
 
 ButtonTest::~ButtonTest() {
@@ -26,6 +25,8 @@ ButtonTest::~ButtonTest() {
 }
 
 void ButtonTest::setup() {
+	TestWithTime::setup();
+
 	ButtonMode m1(100, "short", &press1);
 	ButtonMode m2(200, "long", &press2);
 	testbutton->addMode(m1);
@@ -35,17 +36,12 @@ void ButtonTest::setup() {
 	testbutton->setup();
 	press1count=0;
 	press2count=0;
-
-	orig = getTheTime();
-	time = new Time();
-	setTheTime(time);
 }
 
 void ButtonTest::tear_down() {
+	TestWithTime::tear_down();
 	press1.disconnect(this);
-	setTheTime(orig);
-	delete time;
-	time=NULL;
+	press2.disconnect(this);
 }
 
 void ButtonTest::pressLongTest() {
@@ -97,10 +93,15 @@ void ButtonTest::pressTimeoutTest() {
 		TEST_ASSERT(press1count==0);
 		TEST_ASSERT(press2count==0);
 	}
-	t+=200;
+	t+=201;
 	testbutton->handle();
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==1);
+
+	// bring the pin down now
+	t+=1;
+	testbutton->pinChanged(0);
+	testbutton->handle();
 }
 
 void ButtonTest::pressShortTest() {

@@ -13,11 +13,13 @@
 #include <sigslot.h>
 #include <iostream>
 
-#include "stubs/Time.h"
+#include "TestWithTime.h"
+
+class Time;
 
 class Button;
 
-class ButtonTest : public Test::Suite, public sigslot::has_slots<> {
+class ButtonTest : public Test::Suite, public sigslot::has_slots<>, public TestWithTime {
 public:
 	ButtonTest();
 	virtual ~ButtonTest();
@@ -35,8 +37,6 @@ private:
 	void pressShortTest();
 	void pressTimeoutTest();
 	void pressLongTest();
-	Time *time;
-	Time * orig;
 
 };
 
