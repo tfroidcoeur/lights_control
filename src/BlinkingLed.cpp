@@ -7,6 +7,7 @@
 
 #include "Controllino.h"
 #include "BlinkingLed.h"
+#include "logging.h"
 
 BlinkingLed::BlinkingLed(OutPin & out) :
 		out(out), origvalue(0), pattern(nullptr), startTime(0), activeStep(0) {
@@ -17,9 +18,7 @@ BlinkingLed::~BlinkingLed() {
 
 void BlinkingLed::stop(bool restore) {
 	if (restore) {
-		Serial.print("stopping, back to value ");
-		Serial.println(origvalue);
-		out.write(origvalue);
+		COUT_DEBUG(cout <<"stopping, back to value " << origvalue << endl);
 	} else {
 		out.write(0);
 	}
@@ -33,13 +32,13 @@ void BlinkingLed::endPattern(int value) {
 		repeatcount--;
 
 	if (repeatcount == 0) {
-		Serial.println("stop repeat");
+		COUT_DEBUG(Serial.println("stop repeat"));
 		stop();
 		return;
 	}
 
-	Serial.print("remaining repeatcount ");
-	Serial.println(repeatcount);
+	COUT_DEBUG(Serial.print("remaining repeatcount "));
+	COUT_DEBUG(Serial.println(repeatcount));
 
 	this->startTime = millis();
 	this->activeStep = 0;
@@ -47,17 +46,12 @@ void BlinkingLed::endPattern(int value) {
 }
 
 void BlinkingLed::printStep(struct BlinkElement & step) {
-	Serial.print(activeStep);
-	Serial.print("[");
-	Serial.print(step.duration);
-	Serial.print(" ; ");
-	Serial.print(step.value);
-	Serial.println("]");
+	COUT_DEBUG(cout << activeStep << "[" << step.duration << " ; " << step.value << "]" << endl);
 }
 
 void BlinkingLed::activate() {
 	BlinkElement & el = pattern->elements[activeStep];
-	Serial.print("next step ");
+	COUT_DEBUG(cout << "next step ");
 	printStep(el);
 	if (el.value == -1) {
 		endPattern(el.value);
@@ -73,11 +67,9 @@ void BlinkingLed::handle() {
 	BlinkElement & step = pattern->elements[activeStep];
 
 	if ((unsigned long) millis() - this->startTime > step.duration) {
-		Serial.println(millis());
-		Serial.println(this->startTime);
-		Serial.println((unsigned long) millis() - this->startTime);
+		COUT_DEBUG(cout << "" << millis()<< this->startTime<< ((unsigned long) millis() - this->startTime) <<endl);
 		BlinkElement & elold = pattern->elements[activeStep];
-		Serial.print("executed step ");
+		COUT_DEBUG(cout << "executed step " );
 		printStep(elold);
 		startTime += elold.duration;
 		activeStep++;
