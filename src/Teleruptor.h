@@ -9,7 +9,6 @@
 
 #include "InPin.h"
 #include "OutPin.h"
-#include "Observer.h"
 
 
 class Teleruptor: public Actor, public sigslot::has_slots<> {
