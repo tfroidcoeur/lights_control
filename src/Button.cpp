@@ -8,7 +8,7 @@
 #include "Button.h"
 
 std::ostream &operator<<(std::ostream &os, const ButtonMode & m) {
-	return os << "mode " << m.name << "(" << m.delay << ","
+	return os << "mode " << (m.name ? m.name:"NULL") << "(" << m.delay << ","
 			<< static_cast<void*>(m.pressed) << ")";
 }
 
