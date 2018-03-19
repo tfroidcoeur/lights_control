@@ -1,6 +1,6 @@
 CXXFLAGS =	-O0 -g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations
 
-SRCS = lights_test.cpp ButtonTest.cpp
+SRCS = $(wildcard *.cpp)
 
 MAIN_DIR = ../lights
 MAIN_SRC += $(wildcard $(MAIN_DIR)/*.cpp)

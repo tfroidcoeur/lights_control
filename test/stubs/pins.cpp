@@ -5,12 +5,18 @@
  *      Author: fraco
  */
 
-#include <cstdint>
+#include <stdint.h>
+#include <string.h>
+
 #define MAX_PINS 128
 
 static int pins[MAX_PINS] = {
 
 };
+
+void pinReset(){
+	memset(pins, 0, sizeof(int)*MAX_PINS);
+}
 
 void pinMode(uint8_t id, uint8_t mode) {
 

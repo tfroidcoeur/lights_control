@@ -20,6 +20,7 @@
 #define OUTPUT 0x1
 #define INPUT_PULLUP 0x2
 
+void pinReset();
 void pinMode(uint8_t, uint8_t);
 void digitalWrite(uint8_t, uint8_t);
 int digitalRead(uint8_t);
