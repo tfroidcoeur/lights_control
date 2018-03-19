@@ -27,9 +27,9 @@ void OutPin::toggle() {
 }
 
 void OutPin::write(int value) {
-	Serial.print("writing value ");
+	Serial.print("write ");
 	Serial.print(value);
-	Serial.print("to pin ");
+	Serial.print(" to p ");
 	Serial.println(this->id);
 	digitalWrite(this->id, value);
 }
