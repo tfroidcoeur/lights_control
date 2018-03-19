@@ -9,16 +9,18 @@
 #define MOTIONSPOTTEST_H_
 
 #include <cpptest-suite.h>
+#include <OutPin.h>
 #include <sigslot.h>
-
 #include "TestWithTime.h"
 #include "Controllino.h"
 
 class MotionSpot;
 
-class MotionSpotTest: public Test::Suite, public sigslot::has_slots<>, public TestWithTime {
+class MotionSpotTest: public Test::Suite,
+		public sigslot::has_slots<>,
+		public TestWithTime {
 public:
-	MotionSpotTest(): ctrlpin( CONTROLLINO_D0), forcepin(CONTROLLINO_D1), indicatorpin(CONTROLLINO_D2) {
+	MotionSpotTest()  : ctrlpin(CONTROLLINO_D0), forcepin(CONTROLLINO_D1), indicatorpin(CONTROLLINO_D2) {
 		TEST_ADD(MotionSpotTest::testBasic)
 		TEST_ADD(MotionSpotTest::testLong)
 	}
@@ -29,7 +31,9 @@ private:
 	MotionSpot * ms;
 	sigslot::signal0<> shortsig;
 	sigslot::signal0<> longsig;
-	int ctrlpin, forcepin, indicatorpin;
+	OutPin ctrlpin;
+	OutPin forcepin;
+	OutPin indicatorpin;
 protected:
 	void setup();
 	void tear_down();
