@@ -28,7 +28,7 @@ TARGET =	lights_test
 all: $(TARGET)
 depends:= $(patsubst %.o,%.d,$(OBJS))
 
-%.d: %.cpp 
+%.d: %.cpp
 	$(CXX) $(CFLAGS) $(CXXFLAGS) -MM $^ -MF  $@;
 
 
@@ -37,7 +37,7 @@ $(TARGET): $(OBJS) $(depends)
 
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(depends) $(TARGET)
 
 test: all
 	./$(TARGET)
