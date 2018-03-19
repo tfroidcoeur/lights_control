@@ -50,7 +50,7 @@ private:
 class MotionSpot: public Actor, public sigslot::has_slots<> {
 public:
 	virtual ~MotionSpot();
-	MotionSpot(int ctrlid, int forceid, int indicatorid);
+	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator);
 	void setup();
 	void handle();
 	void shortpressed();
@@ -58,9 +58,9 @@ public:
 
 private:
 	void activateState();
-	OutPin ctrl;
-	OutPin force;
-	OutPin indicator;
+	OutPin &ctrl;
+	OutPin &force;
+	OutPin &indicator;
 	MotionSpotState * state;
 	BlinkingLed blink;
 	void notifyButton(int mode);
