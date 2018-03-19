@@ -9,7 +9,6 @@
 #define INPIN_H_
 
 #include "Actor.h"
-#include "Observable.h"
 #include "sigslot.h"
 
 struct Debounce {
