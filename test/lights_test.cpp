@@ -44,6 +44,7 @@
 
 #include "ButtonTest.h"
 #include "MotionSpotTest.h"
+#include "ControllerTest.h"
 
 class MotionSpotTest;
 
@@ -289,6 +290,7 @@ main(int argc, char* argv[])
 		ts.add(auto_ptr<Test::Suite>(new InPinTest));
 		ts.add(auto_ptr<Test::Suite>(new ButtonTest));
 		ts.add(auto_ptr<Test::Suite>(new MotionSpotTest));
+		ts.add(auto_ptr<Test::Suite>(new ControllerTest));
 //		ts.add(auto_ptr<Test::Suite>(new ListTest));
 //		ts.add(auto_ptr<Test::Suite>(new CompareTestSuite));
 //		ts.add(auto_ptr<Test::Suite>(new ThrowTestSuite));
