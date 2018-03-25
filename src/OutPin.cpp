@@ -7,6 +7,8 @@
 
 #include <Arduino.h>
 #include "OutPin.h"
+//#define DEBUG
+#include "logging.h"
 
 OutPin::OutPin(int id) {
 	this->id = id;
@@ -14,8 +16,7 @@ OutPin::OutPin(int id) {
 
 void OutPin::setup() {
 	pinMode(this->id, OUTPUT);
-	Serial.print(F("initialized output pin "));
-	Serial.println(this->id);
+	COUT_DEBUG( cout << F("initialized output pin ") <<  this->id << endl);
 }
 
 OutPin::~OutPin() {
@@ -27,10 +28,7 @@ void OutPin::toggle() {
 }
 
 void OutPin::write(int value) {
-	Serial.print("write ");
-	Serial.print(value);
-	Serial.print(" to p ");
-	Serial.println(this->id);
+	COUT_DEBUG( cout << F("write ") << value << " to pin " << id << endl);
 	digitalWrite(this->id, value);
 }
 

@@ -18,6 +18,7 @@
 
 #include "InPin.h"
 #include "sigslot.h"
+//#define DEBUG
 #include "logging.h"
 
 class Button;
@@ -29,11 +30,11 @@ public:
 			sigslot::signal0<> * pressed = NULL) :
 			name(name), delay(delay), pressed(pressed) {
 	}
-	;
 	const char * name;
 	unsigned long delay;
-	sigslot::signal0<> * pressed;bool operator <(
-			const ButtonMode & other) const {
+	sigslot::signal0<> * pressed;
+
+	bool operator <( const ButtonMode & other) const {
 		return this->delay < other.delay;
 	}
 
@@ -45,20 +46,38 @@ public:
 	Button() :
 			started(0), pending(false) {
 		curmode = modes.begin();
+//		cout << "create but " << hex << this << endl;
+	}
+
+	Button(const Button & orig) : Button() {
+		// copy the modes
+		modes = orig.modes;
+
+		// reset the curmode
+		curmode=modes.begin();
+//		cout << "copy but " << hex << &orig << endl;
 	}
 
 	Button(InPin & p)  :
 			started(0), pending(false) {
+		COUT_DEBUG(cout << " attach but " << hex << this << " to " << hex << &p << endl);
 		curmode = modes.begin();
 		p.changed.connect(this, &Button::pinChanged);
+		cout << "create but " << hex << this << endl;
 	}
 
-	void addMode(const ButtonMode & mode) {
+	void attach(sigslot::signal1<int> & sig) {
+		sig.connect(this, &Button::pinChanged);
+		COUT_DEBUG(cout << " attach but " << hex << this << " to " << hex << &sig << endl);
+	}
+
+	void addMode(const ButtonMode mode) {
 		modes.insert(mode);
 		curmode = modes.begin();
 	}
 
 	virtual ~Button() {
+//		cout << "delete but " << hex << this << endl;
 		modes.clear();
 	}
 
@@ -81,7 +100,7 @@ public:
 
 	virtual void handle() {
 		if (!pending || curmode == modes.end()) {
-			COUT_DEBUG(cout << "not pending, no handle");
+			COUT_DEBUG(cout << "not pending, no handle" << endl);
 			return;
 		}
 		// handle pin, could call callbacks
@@ -94,7 +113,7 @@ public:
 				emit(prevmode);
 				break;
 			}
-			cout << "next " << *curmode << endl;
+			COUT_DEBUG(cout << "next " << *curmode << endl);
 		}
 	}
 
@@ -103,7 +122,7 @@ private:
 	std::set<ButtonMode>::iterator curmode;
 	unsigned long started;bool pending = true;
 	void emit(const ButtonMode & mode) const {
-		COUT_DEBUG(cout << "button notify: " << mode <<endl);
+		COUT_DEBUG(cout << "button " << hex << this << " notify: " << mode <<endl);
 		if (mode.pressed)
 			mode.pressed->emit();
 	}

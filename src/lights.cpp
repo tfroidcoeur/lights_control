@@ -2,7 +2,6 @@
 #include <HardwareSerial.h>
 #include "Controller.h"
 
-
 static Controller controller;
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC

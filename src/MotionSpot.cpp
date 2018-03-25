@@ -8,8 +8,11 @@
 #include "MotionSpot.h"
 #include <limits.h>
 #include "sigslot.h"
+//#define DEBUG
+#include "logging.h"
 
 MotionSpot::~MotionSpot() {
+//	cout << "~mspto " << hex << this <<endl;
 }
 
 //MotionSpot::MotionSpot(int ctrlid, int forceid, int indicatorid) :
@@ -20,6 +23,7 @@ MotionSpot::~MotionSpot() {
 MotionSpot::MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator) :
 		ctrl(ctrl), force(force), indicator(indicator), state(
 				&MotionSpotState::Auto), blink(indicator) {
+//	cout << "mspto " << hex << this <<endl;
 }
 
 void MotionSpot::handle() {
@@ -46,23 +50,18 @@ void MotionSpot::longpressed() {
 }
 
 void MotionSpot::activateState() {
-		// notify by blinking
-		blink.stop(false);
-		blink.start(state->getPattern());
+	// notify by blinking
+	blink.stop(false);
+	blink.start(state->getPattern());
 
-		// set outputs according to state
-		ctrl.write(state->getCtrl());
-		force.write(state->getForce());
+	// set outputs according to state
+	ctrl.write(state->getCtrl());
+	force.write(state->getForce());
 }
 
 void MotionSpot::notifyButton(int mode) {
-	Serial.print("motionspot button mode ");
-	Serial.print(mode);
-	Serial.print(" received in state ");
-	Serial.println(state->getName());
 	MotionSpotState * nextState = state->next(mode);
-	Serial.print("new state ");
-	Serial.println(nextState->getName());
+	COUT_DEBUG(cout << "motionspot button mode " << mode << " received in state " << state->getName() << " new state " << nextState->getName() <<endl);
 	if (state != nextState) {
 		// change state
 		state = nextState;
