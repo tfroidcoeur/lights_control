@@ -8,6 +8,8 @@
 
 #include "Arduino.h"
 #include "InPin.h"
+//#define DEBUG
+#include "logging.h"
 
 #define DEBOUNCETIME 20
 
@@ -25,18 +27,15 @@ int InPin::debounce() {
 	this->d.readval = val;
 
 	unsigned long elapsed = now - this->d.changetime;
+	COUT_DEBUG(cout << "pin: " << id << " elapsed " << elapsed << endl);
 
 	if (previousval != val) {
 		// if changed from last read, reset the d timer
 		this->d.changetime = now;
-//      Serial.print(F("debouncing input pin:"));
-//      Serial.println(this->id);
+		COUT_DEBUG(cout << F("debouncing input pin:") << this->id << endl);
 	} else if (val != this->d.stableval && elapsed > DEBOUNCETIME) {
 		// new stable value
-//		Serial.print(F("dd input pin:"));
-//		Serial.print(this->id);
-//		Serial.print(F("to value "));
-//		Serial.println(val);
+		COUT_DEBUG(cout << F("dd input pin:") << this->id << " to value " << val << endl);
 		this->d.stableval = val;
 		return true;
 	}
