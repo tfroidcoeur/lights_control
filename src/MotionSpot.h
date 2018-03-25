@@ -50,6 +50,9 @@ private:
 class MotionSpot: public Actor, public sigslot::has_slots<> {
 public:
 	virtual ~MotionSpot();
+	MotionSpot(const MotionSpot & orig): ctrl(orig.ctrl), force(orig.force), indicator(orig.indicator), state(orig.state), blink(orig.blink) {
+//		cout << "mspto() " << hex << this << " from " << &orig << endl;
+	}
 	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator);
 	void setup();
 	void handle();

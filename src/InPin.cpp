@@ -27,7 +27,7 @@ int InPin::debounce() {
 	this->d.readval = val;
 
 	unsigned long elapsed = now - this->d.changetime;
-	COUT_DEBUG(cout << "pin: " << id << " elapsed " << elapsed << endl);
+//	COUT_DEBUG(cout << "pin: " << id << " elapsed " << elapsed << endl);
 
 	if (previousval != val) {
 		// if changed from last read, reset the d timer
@@ -46,20 +46,20 @@ InPin::InPin(int id){
 	this->id=id;
 	// if someone is pressing a button during boot, it
 	// will be dd and then reported as a buttonpush
-	this->d.readval = this->d.stableval = 0;
-	this->d.changetime = millis();
+	d.readval = d.stableval = 0;
+	d.changetime = millis();
 }
 
 void InPin::setup() {
 	pinMode(this->id, INPUT);
-	Serial.print("initialized input pin ");
-	Serial.println(this->id);
+	COUT_DEBUG(cout << "initialized input pin " << id);
 }
 
 void InPin::handle() {
-	if (this->debounce()) {
+	if (debounce()) {
 		// state changed after debouncing
 		// call state change handler
-		this->changed.emit(this->d.stableval);
+		COUT_DEBUG(cout << F("dd input pin:") << id << " emit " << hex << &changed << endl);
+		changed.emit(this->d.stableval);
 	}
 }

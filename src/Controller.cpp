@@ -74,31 +74,41 @@ Controller::Controller(){
 					Controller::outpinD[5]));
 
 	// create spot buttons
-	spotButtons.push_back(SimpleButton(Controller::inpinInt[0]));
-	spotButtons.push_back(SimpleButton(Controller::inpinInt[0]));
+	spotButtons.push_back(SimpleButton());
+	spotButtons.push_back(SimpleButton());
+	spotButtons[0].attach(inpinInt[0].changed);
+	spotButtons[0].attach(inpinInt[1].changed);
 
+//	cout << "constrcuted"<<endl;
 }
 
 Controller::~Controller(){
 	spot.clear();
-
 }
 
-void Controller::connectMotionSpot(MotionSpot & spot, Button & but, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong) {
+void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong) {
 	butshort.connect(&spot,&MotionSpot::shortpressed);
 	butlong.connect(&spot,&MotionSpot::longpressed);
 }
 
 void Controller::setupMotionSpots() {
-	connectMotionSpot(spot[0],spotButtons[0], spotButtons[0].shortpress, spotButtons[0].longpress);
-	connectMotionSpot(spot[1],spotButtons[1], spotButtons[1].shortpress, spotButtons[0].longpress);
+//	cout << "setup spots"<<endl;
+//	cout << " connect " << hex << &spot[0] << " to " << hex << &spotButtons[0]<< endl;
+	connectMotionSpot(spot[0], spotButtons[0].shortpress, spotButtons[0].longpress);
+//	cout << " connect " << hex << &spot[1] << " to " << hex << &spotButtons[1]<< endl;
+	connectMotionSpot(spot[1], spotButtons[1].shortpress, spotButtons[0].longpress);
+
+	spot[0].setup();
+	spot[1].setup();
 
 	for (unsigned long i = 0; i < sizeof(spot) / sizeof(class MotionSpot); i++) {
 		r.addActor(&spot[i]);
 	}
+//	cout << "setup spots done"<<endl;
 }
 
 void Controller::setup() {
+//	cout << "setup"<<endl;
 	vector<InPin>::iterator it;
 	for (it = inpinA.begin(); it != inpinA.end(); it++) {
 		r.addActor(&(*it));
@@ -116,8 +126,6 @@ void Controller::setup() {
 	for (butit = spotButtons.begin(); butit!=spotButtons.end() ; butit++) {
 		r.addActor(&(*butit));
 	}
-
-
 
 	// TODO add pins and buttons
 	setupMotionSpots();
