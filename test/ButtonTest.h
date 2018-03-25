@@ -30,9 +30,9 @@ private:
 	Button * testbutton;
 	sigslot::signal0<> press1;
 	int press1count=0;
-	void notifyPress1(){press1count++; cout << "pressed 1 (" << press1count <<")" << endl;};
+	void notifyPress1(){press1count++; /* cout << "pressed 1 (" << press1count <<")" << endl; */};
 	sigslot::signal0<> press2;
-	void notifyPress2(){press2count++; cout << "pressed 2 (" << press2count <<")" << endl;};
+	void notifyPress2(){press2count++; /* cout << "pressed 2 (" << press2count <<")" << endl; */};
 	int press2count=0;
 	void pressShortTest();
 	void pressTimeoutTest();
