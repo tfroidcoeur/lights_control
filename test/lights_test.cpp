@@ -62,7 +62,6 @@ class InPinTest : public Test::Suite, public sigslot::has_slots<>, public TestWi
 public:
 	InPinTest()
 	{
-		cout << "Inpintest" << endl;
 		TEST_ADD(InPinTest::debounceTest)
 
 	}
@@ -144,87 +143,6 @@ private:
 		TEST_ASSERT(notified==2);
 	}
 };
-// Tests compare asserts
-//
-class CompareTestSuite : public Test::Suite
-{
-public:
-	CompareTestSuite()
-	{
-		TEST_ADD(CompareTestSuite::success)
-		TEST_ADD(CompareTestSuite::compare)
-		TEST_ADD(CompareTestSuite::delta_compare)
-	}
-
-private:
-	void success() {}
-
-	void compare()
-	{
-		// Will succeed since the expression evaluates to true
-		//
-		TEST_ASSERT(1 + 1 == 2)
-
-		// Will fail since the expression evaluates to false
-		//
-		TEST_ASSERT(0 == 1);
-	}
-
-	void delta_compare()
-	{
-		// Will succeed since the expression evaluates to true
-		//
-		TEST_ASSERT_DELTA(0.5, 0.7, 0.3);
-
-		// Will fail since the expression evaluates to false
-		//
-		TEST_ASSERT_DELTA(0.5, 0.7, 0.1);
-	}
-};
-
-// Tests throw asserts
-//
-class ThrowTestSuite : public Test::Suite
-{
-public:
-	ThrowTestSuite()
-	{
-		TEST_ADD(ThrowTestSuite::success)
-		TEST_ADD(ThrowTestSuite::test_throw)
-	}
-
-private:
-	void success() {}
-
-	void test_throw()
-	{
-		// Will fail since the none of the functions throws anything
-		//
-		TEST_THROWS_MSG(func(), int, "func() does not throw, expected int exception")
-		TEST_THROWS_MSG(func_no_throw(), int, "func_no_throw() does not throw, expected int exception")
-		TEST_THROWS_ANYTHING_MSG(func(), "func() does not throw, expected any exception")
-		TEST_THROWS_ANYTHING_MSG(func_no_throw(), "func_no_throw() does not throw, expected any exception")
-
-		// Will succeed since none of the functions throws anything
-		//
-		TEST_THROWS_NOTHING(func())
-		TEST_THROWS_NOTHING(func_no_throw())
-
-		// Will succeed since func_throw_int() throws an int
-		//
-		TEST_THROWS(func_throw_int(), int)
-		TEST_THROWS_ANYTHING(func_throw_int())
-
-		// Will fail since func_throw_int() throws an int (not a float)
-		//
-		TEST_THROWS_MSG(func_throw_int(), float, "func_throw_int() throws an int, expected a float exception")
-		TEST_THROWS_NOTHING_MSG(func_throw_int(), "func_throw_int() throws an int, expected no exception at all")
-	}
-
-	void func() {}
-	void func_no_throw() throw() {}
-	void func_throw_int() throw(int) { throw 13; }
-};
 
 enum OutputType
 {
@@ -291,9 +209,6 @@ main(int argc, char* argv[])
 		ts.add(auto_ptr<Test::Suite>(new ButtonTest));
 		ts.add(auto_ptr<Test::Suite>(new MotionSpotTest));
 		ts.add(auto_ptr<Test::Suite>(new ControllerTest));
-//		ts.add(auto_ptr<Test::Suite>(new ListTest));
-//		ts.add(auto_ptr<Test::Suite>(new CompareTestSuite));
-//		ts.add(auto_ptr<Test::Suite>(new ThrowTestSuite));
 
 		// Run the tests
 		//
