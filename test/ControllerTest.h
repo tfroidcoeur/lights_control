@@ -21,10 +21,11 @@ public:
 	void setup();
 	void tear_down();
 	void advanceTimeAbit(int delay=100, int inc=10);
-	void testTeleruptors();
 
 private:
 	auto_ptr<Controller> controller;
+	void testTeleruptors();
+	void testMotionSpot();
 };
 
 #endif /* CONTROLLERTEST_H_ */

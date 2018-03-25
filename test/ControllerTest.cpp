@@ -11,6 +11,7 @@
 #include <cpptest-assert.h>
 
 ControllerTest::ControllerTest(): controller(new Controller()) {
+		TEST_ADD(ControllerTest::testMotionSpot);
 		TEST_ADD(ControllerTest::testTeleruptors);
 }
 
@@ -21,11 +22,12 @@ ControllerTest::~ControllerTest() {
 void ControllerTest::setup(){
 	TestWithTime::setup();
 	controller=auto_ptr<Controller>(new Controller());
+	pinReset();
 	controller->setup();
 }
 
 void ControllerTest::tear_down(){
-	controller.release();
+	controller.reset();
 	TestWithTime::tear_down();
 }
 
@@ -86,6 +88,49 @@ void ControllerTest::testTeleruptors() {
 
 	// outputs should be high
 	for (it=outpins.begin(); it!=outpins.end(); it++) {
+		TEST_ASSERT(digitalRead(*it));
+	}
+}
+
+void ControllerTest::testMotionSpot(){
+	vector<int>::iterator it;
+	vector<int> inpins({
+			CONTROLLINO_IN0,
+			CONTROLLINO_IN1,
+	});
+
+	vector<int> ctrlpins({
+		CONTROLLINO_D0,
+		CONTROLLINO_D3,
+	});
+
+	vector<int> forcepins({
+		CONTROLLINO_D1,
+		CONTROLLINO_D4,
+	});
+
+	advanceTimeAbit(100);
+	// start in auto
+	for (it=ctrlpins.begin(); it!=ctrlpins.end(); it++) {
+		TEST_ASSERT(digitalRead(*it));
+	}
+
+	for (it=forcepins.begin(); it!=forcepins.end(); it++) {
+		TEST_ASSERT(!digitalRead(*it));
+	}
+
+	// push the button short
+	for (it=inpins.begin(); it!=inpins.end(); it++) {
+		digitalWrite(*it,1);
+	}
+
+	advanceTimeAbit(100);
+	for (it=inpins.begin(); it!=inpins.end(); it++) {
+		digitalWrite(*it,0);
+	}
+	advanceTimeAbit(100);
+	// we now should be in forced
+	for (it=forcepins.begin(); it!=forcepins.end(); it++) {
 		TEST_ASSERT(digitalRead(*it));
 	}
 }
