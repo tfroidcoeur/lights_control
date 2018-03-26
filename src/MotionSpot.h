@@ -8,10 +8,10 @@
 #ifndef MOTIONSPOT_H_
 #define MOTIONSPOT_H_
 
-#include "BlinkingLed.h"
 #include "Button.h"
 #include "InPin.h"
 #include "OutPin.h"
+#include "Sequencer.h"
 
 /* MotionSpot is a spotlight with motion detector control
  *
@@ -23,7 +23,7 @@
 class MotionSpotState {
 public:
 	virtual ~MotionSpotState();
-	MotionSpotState(const char * name, int force, int ctrl, BlinkPattern &pat, MotionSpotState ** nextstate);
+	MotionSpotState(const char * name, int force, int ctrl, SeqPattern &pat, MotionSpotState ** nextstate);
 
 	MotionSpotState * next(int mode) {
 		if (mode <1 || mode>2) return this;
@@ -32,7 +32,7 @@ public:
 	int getForce() { return force;}
 	int getCtrl() {return ctrl;};
 	const char * getName() {return name;};
-	BlinkPattern * getPattern(){return &pat;};
+	SeqPattern * getPattern(){return &pat;};
 
 	static MotionSpotState Off;
 	static MotionSpotState Auto;
@@ -41,7 +41,7 @@ public:
 private:
 	int force;
 	int ctrl;
-	BlinkPattern (& pat);
+	SeqPattern (& pat);
 	MotionSpotState ** nextstate;
 	const char * name;
 
@@ -65,7 +65,7 @@ private:
 	OutPin &force;
 	OutPin &indicator;
 	MotionSpotState * state;
-	BlinkingLed blink;
+	Sequencer blink;
 	void notifyButton(int mode);
 };
 

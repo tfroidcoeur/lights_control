@@ -70,16 +70,16 @@ void MotionSpot::notifyButton(int mode) {
 }
 
 /* blink patterns of the led */
-BlinkPattern offpattern = { .repeatcount = 3, .elements = (BlinkElement[] ) { {
+SeqPattern offpattern = { .repeatcount = 3, .elements = (SeqElement[] ) { {
 				300, 1 }, { 300, 0 }, { 0, -1 } } };
 
-BlinkPattern autopattern = { .repeatcount = 0, .elements = (BlinkElement[] ) { {
+SeqPattern autopattern = { .repeatcount = 0, .elements = (SeqElement[] ) { {
 				1000, 1 }, { 1000, 0 }, { 0, -1 } } , };
 
 // infinite repeat of very very long ON time
 // it is even very unlikely that the ULONG_MAX will be detected, as we need
 // to sample millis() exactly at the max before wrap around
-BlinkPattern onpattern = { .repeatcount = -1, .elements = (BlinkElement[] ) { {
+SeqPattern onpattern = { .repeatcount = -1, .elements = (SeqElement[] ) { {
 		ULONG_MAX, 1 }, { 0, -1 } } };
 
 /* state changes on short or long button press*/
@@ -97,7 +97,7 @@ MotionSpotState MotionSpotState::ForcedOn("ForcedOn", 1, 0, onpattern,
 		onstates);
 
 MotionSpotState::MotionSpotState(const char * name, int force, int ctrl,
-		BlinkPattern & pat, MotionSpotState ** nextstate) :
+		SeqPattern & pat, MotionSpotState ** nextstate) :
 		force(force), ctrl(ctrl), pat(pat), nextstate(nextstate), name(name) {
 }
 
