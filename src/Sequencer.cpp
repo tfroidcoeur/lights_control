@@ -5,18 +5,19 @@
  *      Author: fraco
  */
 
+#include "Sequencer.h"
+
 #include "Controllino.h"
-#include "BlinkingLed.h"
 #include "logging.h"
 
-BlinkingLed::BlinkingLed(OutPin & out) :
+Sequencer::Sequencer(OutPin & out) :
 		out(out), origvalue(0), pattern(nullptr), startTime(0), activeStep(0) {
 }
 
-BlinkingLed::~BlinkingLed() {
+Sequencer::~Sequencer() {
 }
 
-void BlinkingLed::stop(bool restore) {
+void Sequencer::stop(bool restore) {
 	if (restore) {
 		COUT_DEBUG(cout <<"stopping, back to value " << origvalue << endl);
 	} else {
@@ -25,7 +26,7 @@ void BlinkingLed::stop(bool restore) {
 	pattern = nullptr;
 }
 
-void BlinkingLed::endPattern(int value) {
+void Sequencer::endPattern(int value) {
 
 	// decrement positive repeatcounts
 	if (repeatcount > 0)
@@ -45,12 +46,12 @@ void BlinkingLed::endPattern(int value) {
 	activate();
 }
 
-void BlinkingLed::printStep(struct BlinkElement & step) {
+void Sequencer::printStep(struct SeqElement & step) {
 	COUT_DEBUG(cout << activeStep << "[" << step.duration << " ; " << step.value << "]" << endl);
 }
 
-void BlinkingLed::activate() {
-	BlinkElement & el = pattern->elements[activeStep];
+void Sequencer::activate() {
+	SeqElement & el = pattern->elements[activeStep];
 	COUT_DEBUG(cout << "next step ");
 	printStep(el);
 	if (el.value == -1) {
@@ -60,15 +61,15 @@ void BlinkingLed::activate() {
 	}
 }
 
-void BlinkingLed::handle() {
+void Sequencer::handle() {
 	if (!this->pattern)
 		return;
 
-	BlinkElement & step = pattern->elements[activeStep];
+	SeqElement & step = pattern->elements[activeStep];
 
 	if ((unsigned long) millis() - this->startTime > step.duration) {
 		COUT_DEBUG(cout << "" << millis()<< this->startTime<< ((unsigned long) millis() - this->startTime) <<endl);
-		BlinkElement & elold = pattern->elements[activeStep];
+		SeqElement & elold = pattern->elements[activeStep];
 		COUT_DEBUG(cout << "executed step " );
 		printStep(elold);
 		startTime += elold.duration;
@@ -77,7 +78,7 @@ void BlinkingLed::handle() {
 	}
 }
 
-void BlinkingLed::start(struct BlinkPattern * pattern) {
+void Sequencer::start(struct SeqPattern * pattern) {
 	this->pattern = pattern;
 	this->startTime = millis();
 	this->activeStep = 0;
