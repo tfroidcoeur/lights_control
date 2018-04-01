@@ -9,8 +9,9 @@
 #include "Controllino.h"
 #include <cpptest-suite.h>
 #include <cpptest-assert.h>
+#include "Controller.h"
 
-ControllerTest::ControllerTest(): controller(new Controller()) {
+ControllerTest::ControllerTest(){
 		TEST_ADD(ControllerTest::testMotionSpot);
 		TEST_ADD(ControllerTest::testTeleruptors);
 }
@@ -21,23 +22,14 @@ ControllerTest::~ControllerTest() {
 
 void ControllerTest::setup(){
 	TestWithTime::setup();
-	controller=auto_ptr<Controller>(new Controller());
+	actor=new Controller();
 	pinReset();
-	controller->setup();
+	actor->setup();
 }
 
 void ControllerTest::tear_down(){
-	controller.reset();
+	delete actor;
 	TestWithTime::tear_down();
-}
-
-void ControllerTest::advanceTimeAbit(int delay, int inc){
-	while (delay>0) {
-		int step=inc>delay?delay:inc;
-		*time+=step;
-		delay-=step;
-		controller->handle();
-	}
 }
 
 void ControllerTest::testTeleruptors() {

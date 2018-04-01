@@ -10,11 +10,11 @@
 #include <iostream>
 #include <ArduinoSTL.h>
 using namespace std;
+#include "logging.h"
 
 TestWithTime::TestWithTime(): orig(NULL) {
 //	cout << "TestWithTime" << endl;
 	time = new Time();
-
 }
 
 TestWithTime::~TestWithTime() {
@@ -34,3 +34,15 @@ void TestWithTime::tear_down() {
 //	cout << "restore orig time" << endl;
 	setTheTime(orig);
 }
+
+void TestWithTime::advanceTimeAbit(int delay, int inc){
+	int done=delay;
+	while (done>0) {
+		int step=inc>done?done:inc;
+		*time+=step;
+		done-=step;
+		actor->handle();
+	}
+	COUT_DEBUG(cout << "adv time: +" << delay << " to " << time->millis() << endl);
+}
+
