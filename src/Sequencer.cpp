@@ -28,6 +28,7 @@ Sequencer::~Sequencer() {
 void Sequencer::stop(bool restore) {
 	if (restore) {
 		COUT_DEBUG(cout <<"stopping, back to value " << origvalue << endl);
+		out.write(origvalue);
 	} else {
 		out.write(0);
 	}
