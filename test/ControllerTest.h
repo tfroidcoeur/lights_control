@@ -9,8 +9,6 @@
 #define CONTROLLERTEST_H_
 
 #include <cpptest-suite.h>
-#include <Controller.h>
-
 #include "TestWithTime.h"
 
 class ControllerTest: public Test::Suite, public TestWithTime {
@@ -20,10 +18,8 @@ public:
 
 	void setup();
 	void tear_down();
-	void advanceTimeAbit(int delay=100, int inc=10);
 
 private:
-	auto_ptr<Controller> controller;
 	void testTeleruptors();
 	void testMotionSpot();
 };
