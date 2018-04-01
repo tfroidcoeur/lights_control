@@ -7,8 +7,16 @@
 
 #include "Sequencer.h"
 
-#include "Controllino.h"
+#include <Arduino.h>
+#include <ArduinoSTL.h>
+#include <iostream>
+#include <list>
+#include <string>
+#include <sstream>
 #include "logging.h"
+#include <iostream>
+using namespace std;
+
 
 Sequencer::Sequencer(OutPin & out) :
 		out(out), origvalue(0), pattern(nullptr), startTime(0), activeStep(0) {
@@ -86,4 +94,32 @@ void Sequencer::start(struct SeqPattern * pattern) {
 	this->repeatcount = pattern->repeatcount;
 	activate();
 	this->handle();
+}
+
+/* create a pattern from a string
+ * sequence of <ms>*<value> separated by spaces*/
+SeqPattern * Sequencer::createPattern(std::string pat){
+	std::istringstream is(pat);
+	std::list<SeqElement> elements;
+	SeqPattern * result = new SeqPattern;
+	std::string seqstr;
+
+	while (std::getline(is, seqstr, ' ')) {
+		char dummy;
+		SeqElement el;
+		std::istringstream is2(seqstr);
+		is2 >> el.duration ;
+		is2 >> dummy ; // read '*'
+		is2 >> el.value ;
+		elements.push_back(el);
+	}
+	SeqElement el = {0,-1};
+	elements.push_back(el);
+
+	result->elements = new SeqElement[elements.size()];
+	copy(elements.begin(), elements.end(), result->elements);
+
+	result->repeatcount = 1;
+
+	return result;
 }
