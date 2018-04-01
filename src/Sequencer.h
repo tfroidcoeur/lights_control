@@ -10,6 +10,7 @@
 
 #include "Actor.h"
 #include "OutPin.h"
+#include <string>
 
 /**
  * individual seq element
@@ -41,7 +42,6 @@ public:
 	/* functions for Actor */
 	virtual void setup() {
 	}
-	;
 	virtual void handle();
 
 	/* API */
@@ -50,6 +50,7 @@ public:
 	void stop() {
 		stop(true);
 	}
+	static SeqPattern * createPattern(std::string pat);
 private:
 	void activate();
 	OutPin & out;
