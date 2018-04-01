@@ -83,7 +83,6 @@ Controller::Controller(){
 }
 
 Controller::~Controller(){
-	spot.clear();
 }
 
 void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong) {

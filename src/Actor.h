@@ -13,6 +13,7 @@
  */
 class Actor {
 public:
+	virtual ~Actor(){};
 	/**
 	 * method called regularly in the loop
 	 */

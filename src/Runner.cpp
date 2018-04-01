@@ -13,6 +13,6 @@ Runner::Runner() {
 }
 
 Runner::~Runner() {
-	// TODO Auto-generated destructor stub
+	actors.clear();
 }
 
