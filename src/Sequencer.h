@@ -50,6 +50,7 @@ public:
 	void stop() {
 		stop(true);
 	}
+	bool isRunning();
 	static SeqPattern * createPattern(std::string pat);
 private:
 	void activate();

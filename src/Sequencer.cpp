@@ -25,7 +25,11 @@ Sequencer::Sequencer(OutPin & out) :
 Sequencer::~Sequencer() {
 }
 
+bool Sequencer::isRunning() { return pattern != NULL;}
+
 void Sequencer::stop(bool restore) {
+	if (!isRunning()) return;
+
 	if (restore) {
 		COUT_DEBUG(cout <<"stopping, back to value " << origvalue << endl);
 		out.write(origvalue);
