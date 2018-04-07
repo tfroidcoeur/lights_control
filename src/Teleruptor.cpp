@@ -32,3 +32,19 @@ void Teleruptor::notifyInPin(int value) {
 		this->out.toggle();
 	}
 }
+
+void Teleruptor::on() {
+	out.write(1);
+
+}
+void Teleruptor::off() {
+	out.write(0);
+}
+
+bool Teleruptor::isOn() {
+	return out.read();
+}
+
+void Teleruptor::toggle() {
+	out.toggle();
+}
