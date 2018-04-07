@@ -23,7 +23,7 @@ private:
 	struct Debounce d;
 public:
 	InPin(int id);
-	int getInPinValue();
+	int read();
 	int debounce();
 	virtual void handle();
 	virtual void setup();

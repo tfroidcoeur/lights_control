@@ -13,7 +13,7 @@
 
 #define DEBOUNCETIME 20
 
-int InPin::getInPinValue() {
+int InPin::read() {
 	return this->d.stableval;
 }
 
