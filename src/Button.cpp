@@ -13,7 +13,7 @@ std::ostream &operator<<(std::ostream &os, const ButtonMode & m) {
 }
 
 void Button::emit(const ButtonMode & mode) const {
-	COUT_DEBUG(cout << "button " << hex << this << " notify: " << mode <<endl);
+	COUT_DEBUG(cout << "button " << hex << this << dec << " notify: " << mode.name <<endl);
 	if (mode.pressed)
 		mode.pressed->emit();
 }

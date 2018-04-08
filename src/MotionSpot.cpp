@@ -9,6 +9,7 @@
 #include <limits.h>
 #include "sigslot.h"
 //#define DEBUG
+#undef DEBUG
 #include "logging.h"
 
 MotionSpot::~MotionSpot() {
