@@ -46,7 +46,7 @@ public:
 	Button() :
 			started(0), pending(false) {
 		curmode = modes.begin();
-//		cout << "create but " << hex << this << endl;
+//		cout << "create but " << hex << this << dec<< endl;
 	}
 
 	Button(const Button & orig) : Button() {
@@ -55,20 +55,20 @@ public:
 
 		// reset the curmode
 		curmode=modes.begin();
-//		cout << "copy but " << hex << &orig << endl;
+//		cout << "copy but " << hex << &orig << dec << endl;
 	}
 
 	Button(InPin & p)  :
 			started(0), pending(false) {
-		COUT_DEBUG(cout << " attach but " << hex << this << " to " << hex << &p << endl);
+//		COUT_DEBUG(cout << " attach but " << hex << this << " to " << &p << dec << endl);
 		curmode = modes.begin();
 		p.changed.connect(this, &Button::pinChanged);
-		COUT_DEBUG(cout << "create but " << hex << this << endl);
+//		COUT_DEBUG(cout << "create but " << hex << this << dec << endl);
 	}
 
 	void attach(sigslot::signal1<int> & sig) {
 		sig.connect(this, &Button::pinChanged);
-		COUT_DEBUG(cout << " attach but " << hex << this << " to " << hex << &sig << endl);
+//		COUT_DEBUG(cout << " attach but " << hex << this << " to " << dec << &sig << endl);
 	}
 
 	void addMode(const ButtonMode mode) {
@@ -77,7 +77,7 @@ public:
 	}
 
 	virtual ~Button() {
-//		cout << "delete but " << hex << this << endl;
+//		cout << "delete but " << hex << this << dec << endl;
 		modes.clear();
 	}
 

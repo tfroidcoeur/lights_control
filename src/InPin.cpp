@@ -9,6 +9,7 @@
 #include "Arduino.h"
 #include "InPin.h"
 //#define DEBUG
+#undef DEBUG
 #include "logging.h"
 
 #define DEBOUNCETIME 20
