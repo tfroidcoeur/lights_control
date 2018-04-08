@@ -34,8 +34,6 @@ void ControllerTest::tear_down(){
 
 void ControllerTest::testTeleruptors() {
 	vector<int> inpins({
-			CONTROLLINO_A0,
-			CONTROLLINO_A1,
 			CONTROLLINO_A2,
 			CONTROLLINO_A3,
 			CONTROLLINO_A4,
@@ -46,8 +44,6 @@ void ControllerTest::testTeleruptors() {
 			CONTROLLINO_A9,
 	});
 	vector<int> outpins({
-		CONTROLLINO_RELAY_00,
-		CONTROLLINO_RELAY_01,
 		CONTROLLINO_RELAY_02,
 		CONTROLLINO_RELAY_03,
 		CONTROLLINO_RELAY_04,
@@ -124,5 +120,41 @@ void ControllerTest::testMotionSpot(){
 	// we now should be in forced
 	for (it=forcepins.begin(); it!=forcepins.end(); it++) {
 		TEST_ASSERT(digitalRead(*it));
+	}
+}
+
+void ControllerTest::testDimmers() {
+	vector<int> inpins({
+			CONTROLLINO_A0,
+			CONTROLLINO_A1,
+	});
+	vector<int> outpins({
+		CONTROLLINO_D10,
+		CONTROLLINO_D11,
+	});
+
+	vector<int>::iterator it;
+
+	// hold the button down
+	for (it=inpins.begin(); it!=inpins.end(); it++) {
+		digitalWrite(*it,1);
+	}
+
+	advanceTimeAbit(100);
+
+	// outputs should be high
+	for (it=outpins.begin(); it!=outpins.end(); it++) {
+		TEST_ASSERT(digitalRead(*it));
+	}
+
+	advanceTimeAbit(100);
+	for (it=inpins.begin(); it!=inpins.end(); it++) {
+		digitalWrite(*it,0);
+	}
+
+	advanceTimeAbit(100);
+	// outputs should be low again
+	for (it=outpins.begin(); it!=outpins.end(); it++) {
+		TEST_ASSERT(!digitalRead(*it));
 	}
 }
