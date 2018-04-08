@@ -6,6 +6,8 @@
  */
 
 #include "Dimmer.h"
+//#define DEBUG
+#include "logging.h"
 
 Dimmer::Dimmer(InPin & inpin, OutPin & outpin) :
 		seq(outpin), passthrough(inpin,outpin),laststate(false)  {

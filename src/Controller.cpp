@@ -52,10 +52,12 @@ Controller::Controller(){
 	outpinD.push_back(OutPin(CONTROLLINO_D7));
 	outpinD.push_back(OutPin(CONTROLLINO_D8));
 	outpinD.push_back(OutPin(CONTROLLINO_D9));
+	outpinD.push_back(OutPin(CONTROLLINO_D10));
+	outpinD.push_back(OutPin(CONTROLLINO_D11));
 
 	// teleruptors
-	teleruptors.push_back(Teleruptor(inpinA[0], relay[0]));
-	teleruptors.push_back(Teleruptor(inpinA[1], relay[1]));
+//	teleruptors.push_back(Teleruptor(inpinA[0], relay[0]));
+//	teleruptors.push_back(Teleruptor(inpinA[1], relay[1]));
 	teleruptors.push_back(Teleruptor(inpinA[2], relay[2]));
 	teleruptors.push_back(Teleruptor(inpinA[3], relay[3]));
 	teleruptors.push_back(Teleruptor(inpinA[4], relay[4]));
@@ -64,6 +66,10 @@ Controller::Controller(){
 	teleruptors.push_back(Teleruptor(inpinA[7], relay[7]));
 	teleruptors.push_back(Teleruptor(inpinA[8], relay[8]));
 	teleruptors.push_back(Teleruptor(inpinA[9], relay[9]));
+
+	// Dimmers (passthrough)
+	dimmers.push_back(Dimmer(inpinA[0], outpinD[10]));
+	dimmers.push_back(Dimmer(inpinA[1], outpinD[11]));
 
 	// create spots
 	spot.push_back(
@@ -77,7 +83,7 @@ Controller::Controller(){
 	spotButtons.push_back(SimpleButton());
 	spotButtons.push_back(SimpleButton());
 	spotButtons[0].attach(inpinInt[0].changed);
-	spotButtons[0].attach(inpinInt[1].changed);
+	spotButtons[1].attach(inpinInt[1].changed);
 
 //	cout << "constrcuted"<<endl;
 }
@@ -124,6 +130,11 @@ void Controller::setup() {
 	vector<SimpleButton>::iterator butit;
 	for (butit = spotButtons.begin(); butit!=spotButtons.end() ; butit++) {
 		r.addActor(&(*butit));
+	}
+
+	vector<Dimmer>::iterator dimit;
+	for (dimit = dimmers.begin(); dimit!=dimmers.end() ; dimit++) {
+		r.addActor(&(*dimit));
 	}
 
 	// TODO add pins and buttons

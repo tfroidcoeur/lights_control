@@ -24,6 +24,7 @@ private:
 public:
 	InPin(int id);
 	int read();
+	int readStable();
 	int debounce();
 	virtual void handle();
 	virtual void setup();

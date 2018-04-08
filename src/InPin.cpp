@@ -14,6 +14,10 @@
 #define DEBOUNCETIME 20
 
 int InPin::read() {
+	return digitalRead(id);
+}
+
+int InPin::readStable() {
 	return this->d.stableval;
 }
 

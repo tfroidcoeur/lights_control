@@ -63,7 +63,7 @@ public:
 		COUT_DEBUG(cout << " attach but " << hex << this << " to " << hex << &p << endl);
 		curmode = modes.begin();
 		p.changed.connect(this, &Button::pinChanged);
-		cout << "create but " << hex << this << endl;
+		COUT_DEBUG(cout << "create but " << hex << this << endl);
 	}
 
 	void attach(sigslot::signal1<int> & sig) {
@@ -81,51 +81,19 @@ public:
 		modes.clear();
 	}
 
-	void pinChanged(int value) {
-		COUT_DEBUG(Serial.print("button notify "));
-		COUT_DEBUG(Serial.println(value));
-		if (value) {
-			// went high
-			started = millis();
-			pending = true;
-			COUT_DEBUG(Serial.println("button started pending"));
-		} else if (pending) {
-			pending = false;
-			if (curmode != modes.end()) emit(*curmode);
-		}
-	}
+	void pinChanged(int value);
 
 	virtual void setup() {
 	}
 
-	virtual void handle() {
-		if (!pending || curmode == modes.end()) {
-			COUT_DEBUG(cout << "not pending, no handle" << endl);
-			return;
-		}
-		// handle pin, could call callbacks
-		COUT_DEBUG(cout << "button handler " << (pending?"":"not ") << "pending ms: " << millis() << " started " <<started <<endl);
-		COUT_DEBUG(cout << "curmode: " << *curmode << endl);
-		while (pending && (millis() - started > curmode->delay)) {
-			const ButtonMode & prevmode = *curmode;
-			if (++curmode == modes.end()) {
-				pending = false;
-				emit(prevmode);
-				break;
-			}
-			COUT_DEBUG(cout << "next " << *curmode << endl);
-		}
-	}
+	virtual void handle();
 
 private:
+	void emit(const ButtonMode & mode) const;
+
 	std::set<ButtonMode> modes;
 	std::set<ButtonMode>::iterator curmode;
 	unsigned long started;bool pending = true;
-	void emit(const ButtonMode & mode) const {
-		COUT_DEBUG(cout << "button " << hex << this << " notify: " << mode <<endl);
-		if (mode.pressed)
-			mode.pressed->emit();
-	}
 };
 
 #endif /* BUTTON_H_ */
