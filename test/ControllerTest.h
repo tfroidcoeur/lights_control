@@ -22,6 +22,7 @@ public:
 private:
 	void testTeleruptors();
 	void testMotionSpot();
+	void testDimmers();
 };
 
 #endif /* CONTROLLERTEST_H_ */
