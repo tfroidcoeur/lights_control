@@ -8,14 +8,16 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
-#include "Actor.h"
-#include "InPin.h"
-#include "OutPin.h"
-#include "MotionSpot.h"
-#include "Teleruptor.h"
-#include "Runner.h"
-#include "SimpleButton.h"
 #include <vector>
+
+#include "Dimmer.h"
+#include "InPin.h"
+#include "MotionSpot.h"
+#include "OutPin.h"
+#include "Runner.h"
+#include "sigslot.h"
+#include "SimpleButton.h"
+#include "Teleruptor.h"
 
 class Controller: public Actor {
 public:
@@ -33,6 +35,7 @@ private:
 	vector<Teleruptor> teleruptors;
 	vector<MotionSpot> spot;
 	vector<SimpleButton> spotButtons;
+	vector<Dimmer> dimmers;
 	Runner r;
 };
 

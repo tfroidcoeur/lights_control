@@ -8,9 +8,12 @@
 #ifndef PASSTHROUGH_H_
 #define PASSTHROUGH_H_
 
+#include <Arduino.h>
 #include "InPin.h"
 #include "OutPin.h"
 #include "sigslot.h"
+//#define DEBUG
+#include "logging.h"
 
 class PassThrough: public Actor, public sigslot::has_slots<> {
 public:
@@ -26,8 +29,10 @@ public:
 	}
 
 	virtual void handle(void){
-		if (in.read() != out.read()) {
-			out.write(in.read());
+		if (in.readStable() != out.read()) {
+			int val = in.read();
+			COUT_DEBUG( cout << F("passthrough copy ") << val << endl);
+			out.write(val);
 		}
 	}
 	virtual void setup(void){};
