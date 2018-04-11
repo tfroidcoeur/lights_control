@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "Action.h"
 #include "Dimmer.h"
 #include "InPin.h"
 #include "MotionSpot.h"
@@ -28,15 +29,26 @@ public:
 private:
 	void setupMotionSpots();
 	void connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong);
+	void setupLivingGlobal();
 	vector<InPin> inpinA;
 	vector<OutPin> relay;
 	vector<OutPin> outpinD;
 	vector<InPin>inpinInt;
-	vector<Teleruptor> teleruptors;
 	vector<MotionSpot> spot;
-	vector<SimpleButton> spotButtons;
+	vector<SimpleButton *> buttons;
 	vector<Dimmer> dimmers;
 	Runner r;
+	ActionList global1actions;
+
+	// Teleruptors
+	Teleruptor * teleruptorCA2;
+	Teleruptor * teleruptorCC3;
+	Teleruptor * teleruptorCA4;
+	Teleruptor * teleruptor5;
+	Teleruptor * teleruptorCA6;
+	Teleruptor * teleruptorCA7;
+	Teleruptor * teleruptorCA8;
+	Teleruptor * teleruptorCA9;
 };
 
 
