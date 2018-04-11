@@ -12,8 +12,11 @@
 //	in.changed.connect(this, &Teleruptor::notifyInPin);
 //}
 
-Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin):in(inpin),out(outpin) {
-	in.changed.connect(this, &Teleruptor::notifyInPin);
+Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin):out(outpin) {
+	inpin.changed.connect(this, &Teleruptor::notifyInPin);
+}
+Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin & outpin):out(outpin) {
+	sig.connect(this, &Teleruptor::toggle);
 }
 
 Teleruptor::~Teleruptor() {

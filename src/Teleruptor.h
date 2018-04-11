@@ -16,6 +16,7 @@
 class Teleruptor: public Actor, public sigslot::has_slots<>, public Switchable {
 public:
 	Teleruptor(InPin & inpin , OutPin & outpin);
+    Teleruptor( sigslot::signal0<> & sig, OutPin & outpin);
 	virtual ~Teleruptor();
 	virtual void handle(void);
 	virtual void setup(void);
@@ -26,7 +27,6 @@ public:
 	virtual bool isOn();
 	virtual void toggle();
 private:
-	InPin &in;
 	OutPin &out;
 };
 
