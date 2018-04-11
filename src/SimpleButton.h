@@ -14,7 +14,7 @@
 
 class SimpleButton: public Button {
 public:
-	SimpleButton(int shortdelay = 20, int longdelay = 1500) :
+	SimpleButton(int shortdelay = 500, int longdelay = 1500) :
 			Button(), shortdelay(shortdelay), longdelay(longdelay) {
 
 		addMode(ButtonMode(shortdelay, "short", &shortpress));
