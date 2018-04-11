@@ -4,11 +4,13 @@
  *  Created on: Mar 25, 2018
  *      Author: fraco
  */
-#include <Controllino.h>  /* Usage of CONTROLLINO library allows you to use CONTROLLINO_xx aliases in your sketch. */
-#include <HardwareSerial.h>
+
 #include "Controller.h"
-#include "Runner.h"
-#include "SimpleButton.h"
+
+#include <Controllino.h>  /* Usage of CONTROLLINO library allows you to use CONTROLLINO_xx aliases in your sketch. */
+
+#include "Button.h"
+#include "Action.h"
 
 
 Controller::Controller(){
@@ -55,17 +57,14 @@ Controller::Controller(){
 	outpinD.push_back(OutPin(CONTROLLINO_D10));
 	outpinD.push_back(OutPin(CONTROLLINO_D11));
 
-	// teleruptors
-//	teleruptors.push_back(Teleruptor(inpinA[0], relay[0]));
-//	teleruptors.push_back(Teleruptor(inpinA[1], relay[1]));
-	teleruptors.push_back(Teleruptor(inpinA[2], relay[2]));
-	teleruptors.push_back(Teleruptor(inpinA[3], relay[3]));
-	teleruptors.push_back(Teleruptor(inpinA[4], relay[4]));
-	teleruptors.push_back(Teleruptor(inpinA[5], relay[5]));
-	teleruptors.push_back(Teleruptor(inpinA[6], relay[6]));
-	teleruptors.push_back(Teleruptor(inpinA[7], relay[7]));
-	teleruptors.push_back(Teleruptor(inpinA[8], relay[8]));
-	teleruptors.push_back(Teleruptor(inpinA[9], relay[9]));
+	teleruptorCA2=new Teleruptor(inpinA[2], relay[2]);
+	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3]);
+	teleruptorCA4=new Teleruptor(inpinA[4], relay[4]);
+	teleruptor5 = new Teleruptor(inpinA[5], relay[5]);
+	teleruptorCA6 = new Teleruptor(inpinA[6], relay[6]);
+	teleruptorCA7 = new Teleruptor(inpinA[7], relay[7]);
+	teleruptorCA8 = new Teleruptor(inpinA[8], relay[8]);
+	teleruptorCA9 = new Teleruptor(inpinA[9], relay[9]);
 
 	// Dimmers (passthrough)
 	dimmers.push_back(Dimmer(inpinA[0], outpinD[10]));
@@ -79,16 +78,44 @@ Controller::Controller(){
 			MotionSpot(Controller::outpinD[3], Controller::outpinD[4],
 					Controller::outpinD[5]));
 
-	// create spot buttons
-	spotButtons.push_back(SimpleButton());
-	spotButtons.push_back(SimpleButton());
-	spotButtons[0].attach(inpinInt[0].changed);
-	spotButtons[1].attach(inpinInt[1].changed);
 
 //	cout << "constrcuted"<<endl;
 }
 
 Controller::~Controller(){
+	// TODO: delete actions in global1actions
+	// TODO: delete buttons
+
+	delete teleruptorCA2;
+	delete teleruptorCC3;
+	delete teleruptorCA4;
+	delete teleruptor5;
+	delete teleruptorCA6;
+	delete teleruptorCA7;
+	delete teleruptorCA8;
+	delete teleruptorCA9;
+}
+
+
+void Controller::setupLivingGlobal(){
+	buttons.push_back(new SimpleButton());
+	buttons.back()->attach(inpinA[4].changed);
+	buttons.back()->longpress.connect(&global1actions, &ActionList::doit);
+
+	buttons.push_back(new SimpleButton());
+	buttons.back()->attach(inpinA[6].changed);
+	buttons.back()->longpress.connect(&global1actions, &ActionList::doit);
+
+	buttons.push_back(new SimpleButton());
+	buttons.back()->attach(inpinA[9].changed);
+	buttons.back()->longpress.connect(&global1actions, &ActionList::doit);
+
+	global1actions.append(new FunAction<Dimmer>(&dimmers[0], &Dimmer::off));
+	global1actions.append(new FunAction<Dimmer>(&dimmers[1], &Dimmer::off));
+	global1actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::off));
+	global1actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::off));
+	global1actions.append(new FunAction<Teleruptor>(teleruptorCA9, &Teleruptor::off));
+
 }
 
 void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong) {
@@ -97,11 +124,16 @@ void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butsh
 }
 
 void Controller::setupMotionSpots() {
-//	cout << "setup spots"<<endl;
-//	cout << " connect " << hex << &spot[0] << " to " << hex << &spotButtons[0]<< endl;
-	connectMotionSpot(spot[0], spotButtons[0].shortpress, spotButtons[0].longpress);
-//	cout << " connect " << hex << &spot[1] << " to " << hex << &spotButtons[1]<< endl;
-	connectMotionSpot(spot[1], spotButtons[1].shortpress, spotButtons[0].longpress);
+	// FIXME: internal resize makes copies of the objects!!!!! MUST use pointers
+	// create some buttons
+	buttons.reserve(100);
+	buttons.push_back(new SimpleButton());
+	buttons.back()->attach(inpinInt[0].changed);
+	connectMotionSpot(spot[0], buttons.back()->shortpress, buttons.back()->longpress);
+
+	buttons.push_back(new SimpleButton());
+	buttons.back()->attach(inpinInt[1].changed);
+	connectMotionSpot(spot[1], buttons.back()->shortpress, buttons.back()->longpress);
 
 	spot[0].setup();
 	spot[1].setup();
@@ -109,12 +141,13 @@ void Controller::setupMotionSpots() {
 	for (unsigned long i = 0; i < sizeof(spot) / sizeof(class MotionSpot); i++) {
 		r.addActor(&spot[i]);
 	}
-//	cout << "setup spots done"<<endl;
 }
 
 void Controller::setup() {
-//	cout << "setup"<<endl;
 	vector<InPin>::iterator it;
+	setupMotionSpots();
+	setupLivingGlobal();
+
 	for (it = inpinA.begin(); it != inpinA.end(); it++) {
 		r.addActor(&(*it));
 	}
@@ -122,23 +155,25 @@ void Controller::setup() {
 		r.addActor(&(*it));
 	}
 
-	vector<Teleruptor>::iterator teit;
-	for (teit = teleruptors.begin(); teit!=teleruptors.end() ; teit++) {
-		r.addActor(&(*teit));
-	}
-
-	vector<SimpleButton>::iterator butit;
-	for (butit = spotButtons.begin(); butit!=spotButtons.end() ; butit++) {
-		r.addActor(&(*butit));
-	}
+	r.addActor(teleruptorCA2);
+	r.addActor(teleruptorCC3);
+	r.addActor(teleruptorCA4);
+	r.addActor(teleruptor5);
+	r.addActor(teleruptorCA6);
+	r.addActor(teleruptorCA7);
+	r.addActor(teleruptorCA8);
+	r.addActor(teleruptorCA9);
 
 	vector<Dimmer>::iterator dimit;
 	for (dimit = dimmers.begin(); dimit!=dimmers.end() ; dimit++) {
 		r.addActor(&(*dimit));
 	}
 
-	// TODO add pins and buttons
-	setupMotionSpots();
+	vector<SimpleButton *>::iterator butit;
+	for (butit = buttons.begin(); butit!=buttons.end() ; butit++) {
+		r.addActor(*butit);
+	}
+
 	r.setup();
 }
 
