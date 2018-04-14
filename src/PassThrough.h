@@ -29,7 +29,7 @@ public:
 	}
 
 	virtual void handle(void){
-		if (in.readStable() != out.read()) {
+		if (in.read() != out.read()) {
 			int val = in.read();
 			COUT_DEBUG( cout << F("passthrough copy ") << val << endl);
 			out.write(val);
