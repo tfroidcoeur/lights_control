@@ -5,8 +5,6 @@
  *      Author: fraco
  */
 
-#ifndef LOGGING_H_
-#define LOGGING_H_
 #undef COUT_DEBUG
 #undef COUT_INFO
 #undef COUT_WARN
@@ -19,7 +17,3 @@
 #define COUT_INFO(a) a
 #define COUT_WARN(a) a
 #endif
-
-
-
-#endif /* LOGGING_H_ */
