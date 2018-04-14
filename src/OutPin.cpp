@@ -6,9 +6,11 @@
  */
 
 #include <Arduino.h>
+#include <ArduinoSTL.h>
 #include "OutPin.h"
 //#define DEBUG
 #include "logging.h"
+using namespace std;
 
 OutPin::OutPin(int id) {
 	this->id = id;
@@ -16,7 +18,7 @@ OutPin::OutPin(int id) {
 
 void OutPin::setup() {
 	pinMode(this->id, OUTPUT);
-	COUT_DEBUG( cout << F("initialized output pin ") <<  this->id << endl);
+	COUT_DEBUG( cout << "initialized output pin " <<  this->id << endl);
 }
 
 OutPin::~OutPin() {
@@ -28,7 +30,7 @@ void OutPin::toggle() {
 }
 
 void OutPin::write(int value) {
-	COUT_DEBUG( cout << F("write ") << value << " to pin " << id << endl);
+	COUT_DEBUG( cout << "write " << value << " to pin " << id << endl);
 	digitalWrite(this->id, value);
 }
 
