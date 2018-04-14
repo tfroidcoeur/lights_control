@@ -35,6 +35,7 @@ private:
 	void notifyPress2(){press2count++; /* cout << "pressed 2 (" << press2count <<")" << endl; */};
 	int press2count=0;
 	void pressShortTest();
+	void pressShortTestMany();
 	void pressTimeoutTest();
 	void pressLongTest();
 
