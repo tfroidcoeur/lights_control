@@ -13,7 +13,7 @@
 #include "Action.h"
 
 
-Controller::Controller(){
+Controller::Controller(): buttonCA4(500,3000), buttonCA6(500,3000), buttonCA9(500,3000){
 	// create pins
 
 	// inpinsA
@@ -59,12 +59,12 @@ Controller::Controller(){
 
 	teleruptorCA2=new Teleruptor(inpinA[2], relay[2]);
 	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3]);
-	teleruptorCA4=new Teleruptor(inpinA[4], relay[4]);
+	teleruptorCA4=new Teleruptor(buttonCA4.shortpress, relay[4]);
 	teleruptor5 = new Teleruptor(inpinA[5], relay[5]);
-	teleruptorCA6 = new Teleruptor(inpinA[6], relay[6]);
+	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6]);
 	teleruptorCA7 = new Teleruptor(inpinA[7], relay[7]);
 	teleruptorCA8 = new Teleruptor(inpinA[8], relay[8]);
-	teleruptorCA9 = new Teleruptor(inpinA[9], relay[9]);
+	teleruptorCA9 = new Teleruptor(buttonCA9.shortpress, relay[9]);
 
 	// Dimmers (passthrough)
 	dimmerCB1 = new Dimmer(inpinA[0], outpinD[10]);
