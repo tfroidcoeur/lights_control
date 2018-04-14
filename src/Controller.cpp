@@ -107,8 +107,8 @@ void Controller::setupLivingGlobal(){
 	buttonCA9.attach(inpinA[9].changed);
 	buttonCA9.longpress.connect(&living_off_actions, &ActionList::doit);
 
-	living_off_actions.append(new FunAction<Dimmer>(dimmerCB1, &Dimmer::off));
-	living_off_actions.append(new FunAction<Dimmer>(dimmerCB2, &Dimmer::off));
+//	living_off_actions.append(new FunAction<Dimmer>(dimmerCB1, &Dimmer::off));
+//	living_off_actions.append(new FunAction<Dimmer>(dimmerCB2, &Dimmer::off));
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::save));
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::off));
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::save));
@@ -136,8 +136,8 @@ void Controller::setupMotionSpots() {
 
 void Controller::setup() {
 	vector<InPin>::iterator it;
-	setupMotionSpots();
-	setupLivingGlobal();
+//	setupMotionSpots();
+//	setupLivingGlobal();
 
 	for (it = inpinA.begin(); it != inpinA.end(); it++) {
 		r.addActor(&(*it));
@@ -159,14 +159,14 @@ void Controller::setup() {
 	r.addActor(dimmerCB1);
 	r.addActor(dimmerCB2);
 
-	r.addActor(&buttonCA4);
-	r.addActor(&buttonCA6);
-	r.addActor(&buttonCA9);
-	r.addActor(&buttonCB1);
-	r.addActor(&buttonCB2);
-	r.addActor(&buttonAA8);
-	r.addActor(&buttonCC2);
-
+//	r.addActor(&buttonCA4);
+//	r.addActor(&buttonCA6);
+//	r.addActor(&buttonCA9);
+//	r.addActor(&buttonCB1);
+//	r.addActor(&buttonCB2);
+//	r.addActor(&buttonAA8);
+//	r.addActor(&buttonCC2);
+//
 	r.setup();
 }
 
