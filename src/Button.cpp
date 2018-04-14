@@ -20,7 +20,6 @@ void Button::emit(const ButtonMode & mode) const {
 
 void Button::handle() {
 	if (!pending || curmode == modes.end()) {
-		COUT_DEBUG(cout << "not pending, no handle" << endl);
 		return;
 	}
 	// handle pin, could call callbacks
@@ -31,7 +30,8 @@ void Button::handle() {
 			pending = false;
 			emit(prevmode);
 			break;
-		} COUT_DEBUG(cout << "next " << *curmode << endl);
+		}
+		COUT_DEBUG(cout << "next " << *curmode << endl);
 	}
 }
 
@@ -41,10 +41,13 @@ void Button::pinChanged(int value) {
 		// went high
 		started = millis();
 		pending = true;
+		curmode=modes.begin();
 		COUT_DEBUG(Serial.println("button started pending"));
 	} else if (pending) {
+		COUT_DEBUG(cout << "stop pending " << *curmode << endl);
 		pending = false;
 		if (curmode != modes.end())
 			emit (*curmode);
+		curmode=modes.begin();
 	}
 }
