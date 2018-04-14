@@ -1,6 +1,24 @@
 /*
  * Button.h
  *
+ * A button will monitor a pin (debounced output). It will define different modes, based on the duration of the pulse.
+ * Each mode has a delay parameter. The button will emit an event with a mode if
+ * the button was pressed for a duration of < mode.delay. It will emit the mode with the smallest delay value where
+ * press duration < mode.delay.
+ * If the button is pressed for a duration > any mode.delay, the mode with the largest mode.delay is emitted.
+ *
+ * example:
+ *   mode1 delay=100
+ *   mode2 delay=400
+ *   mode3 delay=1000
+ *
+ *   for a press duration between
+ *      0 and 100 -> mode 1
+ *      100 and 400 --> mode 2
+ *      400 and 1000 --> mode 3
+ *
+ *   after 1000 ms, mode 3 will be emitted anyways, even if button still pressed.
+ *
  *  Created on: Dec 17, 2017
  *      Author: fraco
  */
