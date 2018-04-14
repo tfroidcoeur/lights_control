@@ -7,10 +7,12 @@
 
 
 #include "Arduino.h"
+#include "ArduinoSTL.h"
 #include "InPin.h"
 //#define DEBUG
 #undef DEBUG
 #include "logging.h"
+using namespace std;
 
 #define DEBOUNCETIME 20
 
@@ -37,10 +39,10 @@ int InPin::debounce() {
 	if (previousval != val) {
 		// if changed from last read, reset the d timer
 		this->d.changetime = now;
-		COUT_DEBUG(cout << F("debouncing input pin:") << this->id << endl);
+		COUT_DEBUG(cout << "debouncing input pin:" << this->id << endl);
 	} else if (val != this->d.stableval && elapsed > DEBOUNCETIME) {
 		// new stable value
-		COUT_DEBUG(cout << F("dd input pin:") << this->id << " to value " << val << endl);
+		COUT_DEBUG(cout << "dd input pin:" << this->id << " to value " << val << endl);
 		this->d.stableval = val;
 		return true;
 	}
@@ -57,14 +59,14 @@ InPin::InPin(int id){
 
 void InPin::setup() {
 	pinMode(this->id, INPUT);
-	COUT_DEBUG(cout << "initialized input pin " << id);
+	COUT_DEBUG(cout << "initialized input pin " << id << endl);
 }
 
 void InPin::handle() {
 	if (debounce()) {
 		// state changed after debouncing
 		// call state change handler
-		COUT_DEBUG(cout << F("dd input pin:") << id << " emit " << hex << &changed << endl);
+		COUT_DEBUG(cout << "dd input pin:" << id << " emit " << hex << &changed << dec << endl);
 		changed.emit(this->d.stableval);
 	}
 }
