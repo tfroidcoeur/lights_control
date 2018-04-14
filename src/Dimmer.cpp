@@ -24,11 +24,13 @@ SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
 		"100*0 1000*1 100*0 200*1 100*0 200*1");
 
 void Dimmer::on() {
+	COUT_DEBUG( cout << F("Starting dimmer on") << endl);
 	laststate = true;
 	passthrough.disable();
 	seq.start(onSequence);
 }
 void Dimmer::off() {
+	COUT_DEBUG( cout << F("Starting dimmer off")<< endl);
 	laststate = false;
 	passthrough.disable();
 	seq.start(offSequence);
