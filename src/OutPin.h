@@ -8,7 +8,9 @@
 #ifndef OUTPIN_H_
 #define OUTPIN_H_
 
-class OutPin {
+#include "Actor.h"
+
+class OutPin : public Actor {
 public:
 	OutPin(int id);
 	virtual ~OutPin();
