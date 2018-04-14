@@ -12,10 +12,10 @@
 //	in.changed.connect(this, &Teleruptor::notifyInPin);
 //}
 
-Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin):out(outpin) {
+Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin):out(outpin), savedstate(false) {
 	inpin.changed.connect(this, &Teleruptor::notifyInPin);
 }
-Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin & outpin):out(outpin) {
+Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin & outpin):out(outpin), savedstate(false) {
 	sig.connect(this, &Teleruptor::toggle);
 }
 
@@ -35,11 +35,18 @@ void Teleruptor::notifyInPin(int value) {
 		this->out.toggle();
 	}
 }
+void Teleruptor::save() {
+	savedstate=out.read();
+}
+
+void Teleruptor::restore() {
+	out.write(savedstate);
+}
 
 void Teleruptor::on() {
 	out.write(1);
-
 }
+
 void Teleruptor::off() {
 	out.write(0);
 }
