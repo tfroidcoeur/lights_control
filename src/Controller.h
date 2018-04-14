@@ -37,9 +37,7 @@ private:
 
 	Runner r;
 
-	ActionList living_toggle_actions;
 	ActionList living_off_actions;
-	ActionList living_on_actions;
 
 	// Teleruptors
 	Teleruptor * teleruptorCA2;
