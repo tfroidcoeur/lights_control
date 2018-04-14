@@ -34,11 +34,12 @@ private:
 	vector<OutPin> relay;
 	vector<OutPin> outpinD;
 	vector<InPin>inpinInt;
-	vector<MotionSpot> spot;
-	vector<SimpleButton *> buttons;
-	vector<Dimmer> dimmers;
+
 	Runner r;
-	ActionList global1actions;
+
+	ActionList living_toggle_actions;
+	ActionList living_off_actions;
+	ActionList living_on_actions;
 
 	// Teleruptors
 	Teleruptor * teleruptorCA2;
@@ -49,6 +50,25 @@ private:
 	Teleruptor * teleruptorCA7;
 	Teleruptor * teleruptorCA8;
 	Teleruptor * teleruptorCA9;
+
+	// buttons
+	SimpleButton buttonCA4;
+	SimpleButton buttonCA6;
+	SimpleButton buttonCA9;
+	SimpleButton buttonCB1;
+	SimpleButton buttonCB2;
+
+	SimpleButton buttonAA8;
+	SimpleButton buttonCC2;
+
+	// spots
+	MotionSpot * spotAA8;
+	MotionSpot * spotCC2;
+
+	// dimmers
+	Dimmer * dimmerCB1;
+	Dimmer * dimmerCB2;
+
 };
 
 

@@ -67,19 +67,14 @@ Controller::Controller(){
 	teleruptorCA9 = new Teleruptor(inpinA[9], relay[9]);
 
 	// Dimmers (passthrough)
-	dimmers.push_back(Dimmer(inpinA[0], outpinD[10]));
-	dimmers.push_back(Dimmer(inpinA[1], outpinD[11]));
+	dimmerCB1 = new Dimmer(inpinA[0], outpinD[10]);
+	dimmerCB2 = new Dimmer(inpinA[1], outpinD[11]);
 
 	// create spots
-	spot.push_back(
-			MotionSpot(Controller::outpinD[0], Controller::outpinD[1],
-					Controller::outpinD[2]));
-	spot.push_back(
-			MotionSpot(Controller::outpinD[3], Controller::outpinD[4],
-					Controller::outpinD[5]));
-
-
-//	cout << "constrcuted"<<endl;
+	spotAA8 = new MotionSpot(Controller::outpinD[0], Controller::outpinD[1],
+					Controller::outpinD[2]);
+	spotCC2 = new MotionSpot(Controller::outpinD[3], Controller::outpinD[4],
+			Controller::outpinD[5]);
 }
 
 Controller::~Controller(){
@@ -94,28 +89,32 @@ Controller::~Controller(){
 	delete teleruptorCA7;
 	delete teleruptorCA8;
 	delete teleruptorCA9;
+
+	delete spotAA8;
+	delete spotCC2;
+
+	delete dimmerCB1;
+	delete dimmerCB2;
 }
 
-
 void Controller::setupLivingGlobal(){
-	buttons.push_back(new SimpleButton());
-	buttons.back()->attach(inpinA[4].changed);
-	buttons.back()->longpress.connect(&global1actions, &ActionList::doit);
+	buttonCA4.attach(inpinA[4].changed);
+	buttonCA4.longpress.connect(&living_off_actions, &ActionList::doit);
 
-	buttons.push_back(new SimpleButton());
-	buttons.back()->attach(inpinA[6].changed);
-	buttons.back()->longpress.connect(&global1actions, &ActionList::doit);
+	buttonCA6.attach(inpinA[6].changed);
+	buttonCA6.longpress.connect(&living_off_actions, &ActionList::doit);
 
-	buttons.push_back(new SimpleButton());
-	buttons.back()->attach(inpinA[9].changed);
-	buttons.back()->longpress.connect(&global1actions, &ActionList::doit);
+	buttonCA9.attach(inpinA[9].changed);
+	buttonCA9.longpress.connect(&living_off_actions, &ActionList::doit);
 
-	global1actions.append(new FunAction<Dimmer>(&dimmers[0], &Dimmer::off));
-	global1actions.append(new FunAction<Dimmer>(&dimmers[1], &Dimmer::off));
-	global1actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::off));
-	global1actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::off));
-	global1actions.append(new FunAction<Teleruptor>(teleruptorCA9, &Teleruptor::off));
-
+	living_off_actions.append(new FunAction<Dimmer>(dimmerCB1, &Dimmer::off));
+	living_off_actions.append(new FunAction<Dimmer>(dimmerCB2, &Dimmer::off));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::save));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::off));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::save));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::off));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA9, &Teleruptor::save));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA9, &Teleruptor::off));
 }
 
 void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong) {
@@ -124,23 +123,15 @@ void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butsh
 }
 
 void Controller::setupMotionSpots() {
-	// FIXME: internal resize makes copies of the objects!!!!! MUST use pointers
-	// create some buttons
-	buttons.reserve(100);
-	buttons.push_back(new SimpleButton());
-	buttons.back()->attach(inpinInt[0].changed);
-	connectMotionSpot(spot[0], buttons.back()->shortpress, buttons.back()->longpress);
+	buttonAA8.attach(inpinInt[0].changed);
+	connectMotionSpot(*spotAA8, buttonAA8.shortpress, buttonAA8.longpress);
+	spotAA8->setup();
+	r.addActor(spotAA8);
 
-	buttons.push_back(new SimpleButton());
-	buttons.back()->attach(inpinInt[1].changed);
-	connectMotionSpot(spot[1], buttons.back()->shortpress, buttons.back()->longpress);
-
-	spot[0].setup();
-	spot[1].setup();
-
-	for (unsigned long i = 0; i < sizeof(spot) / sizeof(class MotionSpot); i++) {
-		r.addActor(&spot[i]);
-	}
+	buttonCC2.attach(inpinInt[1].changed);
+	connectMotionSpot(*spotCC2, buttonCC2.shortpress, buttonCC2.longpress);
+	spotCC2->setup();
+	r.addActor(spotCC2);
 }
 
 void Controller::setup() {
@@ -165,14 +156,16 @@ void Controller::setup() {
 	r.addActor(teleruptorCA9);
 
 	vector<Dimmer>::iterator dimit;
-	for (dimit = dimmers.begin(); dimit!=dimmers.end() ; dimit++) {
-		r.addActor(&(*dimit));
-	}
+	r.addActor(dimmerCB1);
+	r.addActor(dimmerCB2);
 
-	vector<SimpleButton *>::iterator butit;
-	for (butit = buttons.begin(); butit!=buttons.end() ; butit++) {
-		r.addActor(*butit);
-	}
+	r.addActor(&buttonCA4);
+	r.addActor(&buttonCA6);
+	r.addActor(&buttonCA9);
+	r.addActor(&buttonCB1);
+	r.addActor(&buttonCB2);
+	r.addActor(&buttonAA8);
+	r.addActor(&buttonCC2);
 
 	r.setup();
 }
