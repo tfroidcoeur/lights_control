@@ -10,7 +10,11 @@
 
 #include <list>
 
+#include <Arduino.h>
+#include <ArduinoSTL.h>
 #include "sigslot.h"
+#include "logging.h"
+using namespace std;
 
 class Action {
 public:
