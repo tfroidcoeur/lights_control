@@ -14,7 +14,7 @@
 #include <sigslot.h>
 
 ButtonTest::ButtonTest()  {
-	testbutton = new Button();
+	actor=testbutton = new Button();
 	TEST_ADD(ButtonTest::pressLongTest)
 	TEST_ADD(ButtonTest::pressShortTest)
 	TEST_ADD(ButtonTest::pressTimeoutTest)
@@ -74,62 +74,57 @@ void ButtonTest::pressLongTest() {
 }
 
 void ButtonTest::pressTimeoutTest() {
-	Time &t=*time;
-
-	testbutton->handle();
-	t+=100;
+	advanceTimeAbit(100);
 
 	// notify pin high
 	testbutton->pinChanged(1);
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==0);
-	testbutton->handle();
+	advanceTimeAbit(10);
 
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==0);
 
 	// elapse a little bit of time
-	for (;t<200; t+=10){
-		testbutton->handle();
-		TEST_ASSERT(press1count==0);
-		TEST_ASSERT(press2count==0);
-	}
-	t+=201;
-	testbutton->handle();
+	advanceTimeAbit(200);
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==1);
 
 	// bring the pin down now
-	t+=1;
+	advanceTimeAbit(10);
 	testbutton->pinChanged(0);
-	testbutton->handle();
+	advanceTimeAbit(10);
+	TEST_ASSERT(press2count==1);
 }
 
 void ButtonTest::pressShortTest() {
-	Time &t=*time;
-
-	testbutton->handle();
-	t+=100;
+	advanceTimeAbit(100);
 
 	// notify pin high
 	testbutton->pinChanged(1);
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==0);
-	testbutton->handle();
+	advanceTimeAbit(10);
 
 	TEST_ASSERT(press1count==0);
 	TEST_ASSERT(press2count==0);
 
 	// elapse a little bit of time
-	for (;t<200; t+=10){
-		testbutton->handle();
-		TEST_ASSERT(press1count==0);
-		TEST_ASSERT(press2count==0);
-	}
-	t++;
+	advanceTimeAbit(80);
+	TEST_ASSERT(press1count==0);
+	TEST_ASSERT(press2count==0);
+
 	testbutton->pinChanged(0);
-	testbutton->handle();
+	advanceTimeAbit(10);
 	TEST_ASSERT(press1count==1);
 	TEST_ASSERT(press2count==0);
+}
+
+void ButtonTest::pressShortTestMany() {
+	for (int i=0; i<10; i++) {
+		press1count=0;
+		press2count=0;
+		pressShortTest();
+	}
 }
 
