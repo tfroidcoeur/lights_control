@@ -7,6 +7,10 @@
 
 #include "Teleruptor.h"
 #include "Arduino.h"
+#include "ArduinoSTL.h"
+//#define DEBUG
+#include "logging.h"
+using namespace std;
 
 //Teleruptor::Teleruptor(int inid, int outid):in(inid),out(outid) {
 //	in.changed.connect(this, &Teleruptor::notifyInPin);
@@ -44,17 +48,22 @@ void Teleruptor::restore() {
 }
 
 void Teleruptor::on() {
+	COUT_DEBUG(cout << "teleruptor on " << endl);
 	out.write(1);
 }
 
 void Teleruptor::off() {
+	COUT_DEBUG(cout << "teleruptor off " << endl);
 	out.write(0);
 }
 
 bool Teleruptor::isOn() {
-	return out.read();
+	bool result= out.read();
+	COUT_DEBUG(cout << "teleruptor is " << ( result?"on":"off" ) << endl);
+	return result;
 }
 
 void Teleruptor::toggle() {
+	COUT_DEBUG(cout << "teleruptor toggle " << endl);
 	out.toggle();
 }
