@@ -10,6 +10,7 @@
 #include <Button.h>
 #include <cpptest-suite.h>
 #include <cpptest-assert.h>
+#include <Time.h>
 #include <sigslot.h>
 
 ButtonTest::ButtonTest()  {

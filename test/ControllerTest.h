@@ -23,6 +23,7 @@ private:
 	void testTeleruptors();
 	void testMotionSpot();
 	void testDimmers();
+	void testGlobalButton();
 };
 
 #endif /* CONTROLLERTEST_H_ */

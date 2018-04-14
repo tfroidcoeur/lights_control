@@ -14,6 +14,7 @@
 ControllerTest::ControllerTest(){
 		TEST_ADD(ControllerTest::testMotionSpot);
 		TEST_ADD(ControllerTest::testTeleruptors);
+		TEST_ADD(ControllerTest::testGlobalButton);
 }
 
 ControllerTest::~ControllerTest() {
@@ -157,4 +158,57 @@ void ControllerTest::testDimmers() {
 	for (it=outpins.begin(); it!=outpins.end(); it++) {
 		TEST_ASSERT(!digitalRead(*it));
 	}
+}
+
+void ControllerTest::testGlobalButton() {
+	int pin=CONTROLLINO_A9;
+	int dimdom=CONTROLLINO_A0;
+	int dimdomout=CONTROLLINO_D10;
+	vector<int>::iterator it;
+	vector<int> lightpins({
+		CONTROLLINO_R4,
+		CONTROLLINO_R6,
+		CONTROLLINO_R9,
+	});
+
+	// trigger global control
+	digitalWrite(pin,1);
+	advanceTimeAbit(1501);
+	digitalWrite(pin,0);
+	advanceTimeAbit(50,1);
+
+	// lights should be off
+	for (it=lightpins.begin(); it!=lightpins.end(); it++) {
+		TEST_ASSERT(!digitalRead(*it));
+	}
+
+	// the dimmer off sequence should have started
+	// 100 ms off
+	TEST_ASSERT(!digitalRead(dimdomout));
+
+	// dimmer passthrough should not work
+	digitalWrite(dimdom,1);
+	TEST_ASSERT(!digitalRead(dimdomout));
+
+	advanceTimeAbit(101);
+	// dimmer off sequence should have progressed
+	// 1 second of on
+	TEST_ASSERT(digitalRead(dimdomout));
+
+	advanceTimeAbit(1001);
+	// dimmer should do 100 ms off
+	TEST_ASSERT(!digitalRead(dimdomout));
+
+	advanceTimeAbit(101);
+	TEST_ASSERT(digitalRead(dimdomout));
+
+	advanceTimeAbit(201);
+
+	// dimmer passthrough should work again
+	digitalWrite(dimdom,1);
+	advanceTimeAbit(10);
+	TEST_ASSERT(digitalRead(dimdomout));
+	digitalWrite(dimdom,0);
+	advanceTimeAbit(10);
+	TEST_ASSERT(!digitalRead(dimdomout));
 }
