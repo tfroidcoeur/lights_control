@@ -135,15 +135,25 @@ void Controller::setupMotionSpots() {
 }
 
 void Controller::setup() {
-	vector<InPin>::iterator it;
+	vector<InPin>::iterator init;
+	vector<OutPin>::iterator outit;
 //	setupMotionSpots();
 //	setupLivingGlobal();
 
-	for (it = inpinA.begin(); it != inpinA.end(); it++) {
-		r.addActor(&(*it));
+	for (init = inpinA.begin(); init != inpinA.end(); init++) {
+		r.addActor(&(*init));
 	}
-	for (it = inpinInt.begin(); it != inpinInt.end(); it++) {
-		r.addActor(&(*it));
+
+	for (init = inpinInt.begin(); init != inpinInt.end(); init++) {
+		r.addActor(&(*init));
+	}
+
+	for (outit = outpinD.begin(); outit != outpinD.end(); outit++) {
+		r.addActor(&(*outit));
+	}
+
+	for (outit = relay.begin(); outit != relay.end(); outit++) {
+		r.addActor(&(*outit));
 	}
 
 	r.addActor(teleruptorCA2);
