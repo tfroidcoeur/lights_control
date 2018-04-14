@@ -109,9 +109,11 @@ SeqPattern * Sequencer::createPattern(std::string pat){
 	SeqPattern * result = new SeqPattern;
 	std::string seqstr;
 
-	while (std::getline(is, seqstr, ' ')) {
+	/* arduino ulibc++ getline does not return false when done !*/
+	while (std::getline(is, seqstr, ' ') && seqstr.length() !=0) {
 		char dummy;
 		SeqElement el;
+//		cout << "process \"" << seqstr << "\"" <<endl;
 		std::istringstream is2(seqstr);
 		is2 >> el.duration ;
 		is2 >> dummy ; // read '*'
