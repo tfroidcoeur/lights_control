@@ -33,6 +33,10 @@ void Teleruptor::handle() {
 void Teleruptor::setup() {
 }
 
+void Teleruptor::pressed() {
+	notifyInPin(HIGH);
+}
+
 void Teleruptor::notifyInPin(int value) {
 	if (value == HIGH) {
 		// button pressed, toggle output

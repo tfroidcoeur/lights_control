@@ -13,7 +13,6 @@
 #include "Stashable.h"
 #include "Switchable.h"
 
-
 class Teleruptor: public Actor,
 		public sigslot::has_slots<>,
 		public Switchable,
@@ -25,6 +24,7 @@ public:
 	virtual void handle(void);
 	virtual void setup(void);
 	void notifyInPin(int value);
+	void pressed();
 // Switchable
 	virtual void on();
 	virtual void off();
