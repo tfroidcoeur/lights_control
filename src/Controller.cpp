@@ -71,10 +71,10 @@ Controller::Controller(): buttonCA4(500,3000), buttonCA6(500,3000), buttonCA9(50
 	dimmerCB2 = new Dimmer(inpinA[1], outpinD[11]);
 
 	// create spots
-	spotAA8 = new MotionSpot(Controller::outpinD[0], Controller::outpinD[1],
-					Controller::outpinD[2]);
-	spotCC2 = new MotionSpot(Controller::outpinD[3], Controller::outpinD[4],
-			Controller::outpinD[5]);
+	spotAA8 = new MotionSpot(Controller::outpinD[3], Controller::outpinD[4],
+					Controller::outpinD[5]);
+	spotCC2 = new MotionSpot(Controller::outpinD[0], Controller::outpinD[1],
+			Controller::outpinD[2]);
 }
 
 Controller::~Controller(){
@@ -118,19 +118,19 @@ void Controller::setupLivingGlobal(){
 
 }
 
-void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong) {
-	butshort.connect(&spot,&MotionSpot::shortpressed);
-	butlong.connect(&spot,&MotionSpot::longpressed);
+void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butshort, sigslot::signal0<> * butlong) {
+	if (butshort) butshort->connect(&spot,&MotionSpot::shortpressed);
+	if (butlong) butlong->connect(&spot,&MotionSpot::longpressed);
 }
 
 void Controller::setupMotionSpots() {
-	buttonAA8.attach(inpinInt[0].changed);
-	connectMotionSpot(*spotAA8, buttonAA8.shortpress, buttonAA8.longpress);
+	buttonAA8.attach(inpinInt[1].changed);
+	connectMotionSpot(*spotAA8, &buttonAA8.shortpress, &buttonAA8.longpress);
 	spotAA8->setup();
 	r.addActor(spotAA8);
 
-	buttonCC2.attach(inpinInt[1].changed);
-	connectMotionSpot(*spotCC2, buttonCC2.shortpress, buttonCC2.longpress);
+	buttonCC2.attach(inpinInt[0].changed);
+	connectMotionSpot(*spotCC2, &buttonCC2.longpress, NULL);
 	spotCC2->setup();
 	r.addActor(spotCC2);
 }
@@ -140,6 +140,9 @@ void Controller::setup() {
 	vector<OutPin>::iterator outit;
 	setupMotionSpots();
 	setupLivingGlobal();
+
+	// connect the unused short press of CC2 to
+	buttonCC2.shortpress.connect(teleruptorCC3, &Teleruptor::pressed);
 
 	for (init = inpinA.begin(); init != inpinA.end(); init++) {
 		r.addActor(&(*init));

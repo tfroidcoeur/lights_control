@@ -28,7 +28,7 @@ public:
 	void setup();
 private:
 	void setupMotionSpots();
-	void connectMotionSpot(MotionSpot & spot, sigslot::signal0<> & butshort, sigslot::signal0<> & butlong);
+	void connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butshort, sigslot::signal0<> * butlong);
 	void setupLivingGlobal();
 	vector<InPin> inpinA;
 	vector<OutPin> relay;
