@@ -82,10 +82,15 @@ void ControllerTest::testTeleruptors() {
 }
 
 void ControllerTest::testMotionSpot(){
+	struct InPinInfo {
+		int pinid;
+		bool longpush;
+	};
 	vector<int>::iterator it;
-	vector<int> inpins({
-			CONTROLLINO_IN0,
-			CONTROLLINO_IN1,
+	vector<struct InPinInfo>::iterator init;
+	vector<struct InPinInfo> inpins({
+			{ CONTROLLINO_IN0, true },
+			{ CONTROLLINO_IN1, false }
 	});
 
 	vector<int> ctrlpins({
@@ -108,14 +113,19 @@ void ControllerTest::testMotionSpot(){
 		TEST_ASSERT(!digitalRead(*it));
 	}
 
-	// push the button short
-	for (it=inpins.begin(); it!=inpins.end(); it++) {
-		digitalWrite(*it,1);
+	// push the button
+	for (init=inpins.begin(); init!=inpins.end(); init++) {
+		digitalWrite(init->pinid,1);
 	}
 
 	advanceTimeAbit(100);
-	for (it=inpins.begin(); it!=inpins.end(); it++) {
-		digitalWrite(*it,0);
+	for (init=inpins.begin(); init!=inpins.end(); init++) {
+		if (!init->longpush) digitalWrite(init->pinid,0);
+	}
+
+	advanceTimeAbit(1500);
+	for (init=inpins.begin(); init!=inpins.end(); init++) {
+		if (init->longpush) digitalWrite(init->pinid,0);
 	}
 	advanceTimeAbit(100);
 	// we now should be in forced
