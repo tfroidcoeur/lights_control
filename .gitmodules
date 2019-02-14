@@ -1,0 +1,12 @@
+[submodule "lib/ArduinoSTL"]
+	path = lib/ArduinoSTL
+	url = https://github.com/mike-matera/ArduinoSTL.git
+[submodule "lib/Ethernet"]
+	path = lib/Ethernet
+	url = https://github.com/arduino-libraries/Ethernet.git
+[submodule "lib/core"]
+	path = lib/core
+	url = https://github.com/arduino/ArduinoCore-avr.git
+[submodule "lib/controllino"]
+	path = lib/controllino
+	url = https://github.com/CONTROLLINO-PLC/CONTROLLINO_Library.git
