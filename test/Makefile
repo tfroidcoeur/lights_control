@@ -1,8 +1,10 @@
+CONTROLLINO_DIR=/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library/
+MAIN_DIR = ../src
+
 CXXFLAGS =	-O0 -g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations
 
 SRCS = $(wildcard *.cpp)
 
-MAIN_DIR = ../lights
 MAIN_SRC += $(wildcard $(MAIN_DIR)/*.cpp)
 MAIN_SRC :=$(filter-out ../lights/lights.cpp,$(MAIN_SRC))
 SRCS += $(MAIN_SRC)
@@ -13,7 +15,6 @@ STUBS_SRC += $(wildcard $(STUBS_DIR)/*.cpp)
 SRCS += $(STUBS_SRC)
 CXXFLAGS += -I $(STUBS_DIR)
 
-CONTROLLINO_DIR=/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library/
 CXXFLAGS += -I $(CONTROLLINO_DIR)
 CXXFLAGS += -DCONTROLLINO_MAXI -DARDUINO=10608
 

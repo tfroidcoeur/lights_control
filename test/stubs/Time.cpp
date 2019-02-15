@@ -15,7 +15,9 @@ Time::~Time() { }
 static Time * theTime = new Time();
 
 unsigned long millis(void) {
-	return theTime->millis();
+	/* the Time can be NULL during initialization if called from for example InPin
+	 * returning 0 is reasonable then*/
+	return theTime?theTime->millis():0;
 }
 
 void setTheTime(Time * t){
