@@ -28,7 +28,8 @@ public:
 	}
 
 	virtual ~SimpleButton() {
-
+		shortpress.disconnect_all();
+		longpress.disconnect_all();
 	}
 	sigslot::signal0<> shortpress;
 	sigslot::signal0<> longpress;

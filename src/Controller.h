@@ -30,6 +30,7 @@ private:
 	void setupMotionSpots();
 	void connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butshort, sigslot::signal0<> * butlong);
 	void setupLivingGlobal();
+	void setupBureau();
 	void setupGlobal();
 	vector<InPin> inpinA;
 	vector<OutPin> relay;
@@ -38,6 +39,7 @@ private:
 
 	Runner r;
 
+	ActionList bureau_off_actions;
 	ActionList living_off_actions;
 	ActionList global_off_actions;
 
@@ -54,6 +56,8 @@ private:
 	// buttons
 	SimpleButton buttonCA4;
 	SimpleButton buttonCA6;
+	SimpleButton buttonCA7;
+	SimpleButton buttonCA8;
 	SimpleButton buttonCA9;
 	SimpleButton buttonCB1;
 	SimpleButton buttonCB2;

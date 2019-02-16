@@ -80,6 +80,13 @@ Controller::Controller(): buttonCA4(500,3000), buttonCA6(500,3000), buttonCA9(50
 Controller::~Controller(){
 	// TODO: delete actions in global1actions
 	// TODO: delete buttons
+	for(std::vector<InPin>::iterator it = inpinA.begin(); it != inpinA.end(); ++it) {
+		it->changed.disconnect_all();
+	}
+
+	for(std::vector<InPin>::iterator it = inpinInt.begin(); it != inpinInt.end(); ++it) {
+		it->changed.disconnect_all();
+	}
 
 	delete teleruptorCA2;
 	delete teleruptorCC3;
