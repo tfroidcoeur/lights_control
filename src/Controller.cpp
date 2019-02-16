@@ -60,7 +60,7 @@ Controller::Controller(): buttonCA4(500,3000), buttonCA6(500,3000), buttonCA9(50
 	teleruptorCA2=new Teleruptor(inpinA[2], relay[2]);
 	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3]);
 	teleruptorCA4=new Teleruptor(buttonCA4.shortpress, relay[4]);
-	teleruptor5 = new Teleruptor(inpinA[5], relay[5]);
+	teleruptorCA3 = new Teleruptor(inpinA[5], relay[5]);
 	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6]);
 	teleruptorCA7 = new Teleruptor(inpinA[7], relay[7]);
 	teleruptorCA8 = new Teleruptor(inpinA[8], relay[8]);
@@ -84,7 +84,7 @@ Controller::~Controller(){
 	delete teleruptorCA2;
 	delete teleruptorCC3;
 	delete teleruptorCA4;
-	delete teleruptor5;
+	delete teleruptorCA3;
 	delete teleruptorCA6;
 	delete teleruptorCA7;
 	delete teleruptorCA8;
@@ -100,6 +100,8 @@ Controller::~Controller(){
 void Controller::setupLivingGlobal(){
 	living_off_actions.append(new FunAction<Dimmer>(dimmerCB1, &Dimmer::off));
 	living_off_actions.append(new FunAction<Dimmer>(dimmerCB2, &Dimmer::off));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA3, &Teleruptor::save));
+	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA3, &Teleruptor::off));
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::save));
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::off));
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::save));
@@ -115,7 +117,29 @@ void Controller::setupLivingGlobal(){
 
 	buttonCA9.attach(inpinA[9].changed);
 	buttonCA9.longpress.connect(&living_off_actions, &ActionList::doit);
+}
 
+void Controller::setupGlobal(){
+	global_off_actions.append(new FunAction<Dimmer>(dimmerCB1, &Dimmer::off));
+	global_off_actions.append(new FunAction<Dimmer>(dimmerCB2, &Dimmer::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA2, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA2, &Teleruptor::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC3, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC3, &Teleruptor::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA3, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA3, &Teleruptor::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA4, &Teleruptor::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA6, &Teleruptor::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA7, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA7, &Teleruptor::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA8, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA8, &Teleruptor::off));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA9, &Teleruptor::save));
+	global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA9, &Teleruptor::off));
+
+	buttonAA8.longpress.connect(&global_off_actions, &ActionList::doit);
 }
 
 void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butshort, sigslot::signal0<> * butlong) {
@@ -125,7 +149,7 @@ void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butsh
 
 void Controller::setupMotionSpots() {
 	buttonAA8.attach(inpinInt[1].changed);
-	connectMotionSpot(*spotAA8, &buttonAA8.shortpress, &buttonAA8.longpress);
+	connectMotionSpot(*spotAA8, &buttonAA8.shortpress,NULL);
 	spotAA8->setup();
 	r.addActor(spotAA8);
 
@@ -140,6 +164,7 @@ void Controller::setup() {
 	vector<OutPin>::iterator outit;
 	setupMotionSpots();
 	setupLivingGlobal();
+	setupGlobal();
 
 	// connect the unused short press of CC2 to
 	buttonCC2.shortpress.connect(teleruptorCC3, &Teleruptor::pressed);
@@ -163,7 +188,7 @@ void Controller::setup() {
 	r.addActor(teleruptorCA2);
 	r.addActor(teleruptorCC3);
 	r.addActor(teleruptorCA4);
-	r.addActor(teleruptor5);
+	r.addActor(teleruptorCA3);
 	r.addActor(teleruptorCA6);
 	r.addActor(teleruptorCA7);
 	r.addActor(teleruptorCA8);

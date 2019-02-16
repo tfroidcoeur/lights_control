@@ -30,6 +30,7 @@ private:
 	void setupMotionSpots();
 	void connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butshort, sigslot::signal0<> * butlong);
 	void setupLivingGlobal();
+	void setupGlobal();
 	vector<InPin> inpinA;
 	vector<OutPin> relay;
 	vector<OutPin> outpinD;
@@ -38,12 +39,13 @@ private:
 	Runner r;
 
 	ActionList living_off_actions;
+	ActionList global_off_actions;
 
 	// Teleruptors
 	Teleruptor * teleruptorCA2;
 	Teleruptor * teleruptorCC3;
+	Teleruptor * teleruptorCA3;
 	Teleruptor * teleruptorCA4;
-	Teleruptor * teleruptor5;
 	Teleruptor * teleruptorCA6;
 	Teleruptor * teleruptorCA7;
 	Teleruptor * teleruptorCA8;
