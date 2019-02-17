@@ -13,7 +13,7 @@
 #include "Action.h"
 
 
-Controller::Controller(): buttonCA4(500,3000), buttonCA6(500,3000), buttonCA9(500,3000){
+Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(500,2000), buttonCA8(500,2000), buttonCA9(500,2000){
 	// create pins
 
 	// inpinsA
@@ -62,8 +62,8 @@ Controller::Controller(): buttonCA4(500,3000), buttonCA6(500,3000), buttonCA9(50
 	teleruptorCA4=new Teleruptor(buttonCA4.shortpress, relay[4]);
 	teleruptorCA3 = new Teleruptor(inpinA[5], relay[5]);
 	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6]);
-	teleruptorCA7 = new Teleruptor(inpinA[7], relay[7]);
-	teleruptorCA8 = new Teleruptor(inpinA[8], relay[8]);
+	teleruptorCA7 = new Teleruptor(buttonCA7.shortpress, relay[7]);
+	teleruptorCA8 = new Teleruptor(buttonCA8.shortpress, relay[8]);
 	teleruptorCA9 = new Teleruptor(buttonCA9.shortpress, relay[9]);
 
 	// Dimmers (passthrough)
@@ -126,6 +126,16 @@ void Controller::setupLivingGlobal(){
 	buttonCA9.longpress.connect(&living_off_actions, &ActionList::doit);
 }
 
+void Controller::setupBureau(){
+	bureau_off_actions.append(new FunAction<Teleruptor>(teleruptorCA7, &Teleruptor::off));
+	bureau_off_actions.append(new FunAction<Teleruptor>(teleruptorCA8, &Teleruptor::off));
+
+	buttonCA7.attach(inpinA[7].changed);
+	buttonCA7.longpress.connect(&bureau_off_actions, &ActionList::doit);
+	buttonCA8.attach(inpinA[8].changed);
+	buttonCA8.longpress.connect(&bureau_off_actions, &ActionList::doit);
+}
+
 void Controller::setupGlobal(){
 	global_off_actions.append(new FunAction<Dimmer>(dimmerCB1, &Dimmer::off));
 	global_off_actions.append(new FunAction<Dimmer>(dimmerCB2, &Dimmer::off));
@@ -172,8 +182,9 @@ void Controller::setup() {
 	setupMotionSpots();
 	setupLivingGlobal();
 	setupGlobal();
+	setupBureau();
 
-	// connect the unused short press of CC2 to
+	// connect the unused short press of CC2 to control the lamp CC3
 	buttonCC2.shortpress.connect(teleruptorCC3, &Teleruptor::pressed);
 
 	for (init = inpinA.begin(); init != inpinA.end(); init++) {
@@ -207,6 +218,8 @@ void Controller::setup() {
 
 	r.addActor(&buttonCA4);
 	r.addActor(&buttonCA6);
+	r.addActor(&buttonCA7);
+	r.addActor(&buttonCA8);
 	r.addActor(&buttonCA9);
 	r.addActor(&buttonCB1);
 	r.addActor(&buttonCB2);
