@@ -1,19 +1,13 @@
-ifeq ($(OS),Windows_NT)
-SHELL = cmd
-RMDIR = rmdir /s /q
-RM = del /q
-mymkdir = if not exist "$1" mkdir "$1"
-else
 RMDIR = rm -fr
 RM = rm -f
 mymkdir = mkdir -p $1
-endif
 
 LIBRARIES=lib
 ARDUINOSTL=$(LIBRARIES)/ArduinoSTL
 CORELIB=$(LIBRARIES)/core
 ETHERNETLIB=$(LIBRARIES)/Ethernet
 CONTROLLINOLIB=$(LIBRARIES)/controllino
+NTPCLIENT=$(LIBRARIES)/ntpclient
 BUILD=build
 
 OBJCOPY=avr-objcopy
@@ -30,7 +24,23 @@ INCLUDES=-I"$(CORELIB)/cores/arduino" \
 		 -I"$(CORELIB)/libraries/SoftwareSerial/src" \
 		 -I"$(CONTROLLINOLIB)" \
 		 -I"$(CORELIB)/libraries/SPI/src" \
-		 -I"$(ARDUINOSTL)/src"
+		 -I"$(ARDUINOSTL)/src" \
+		 -I"$(NTPCLIENT)" \
+		 -I"$(LIBRARIES)/sigslot"
+
+DEFINES=-D"SIGSLOT_PURE_ISO" \
+		-D"F_CPU=16000000L" \
+		-D"ARDUINO=10608" \
+		-D"ARDUINO_AVR_MEGA2560" \
+		-D"ARDUINO_ARCH_AVR"
+
+FLAGS=-c -g -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560
+CPPFLAGS=-std=gnu++11 -fpermissive -fno-exceptions -fno-threadsafe-statics $(FLAGS)
+CFLAGS=-std=gnu11 -fno-fat-lto-objects $(FLAGS)
+ASFLAGS=-c -g -x assembler-with-cpp -flto -MMD -mmcu=atmega2560
+$(info $(FLAGS))
+$(info $(CFLAGS))
+$(info $(CPPFLAGS))
 
 TARGETS = \
 	$(BUILD)/lights.hex
@@ -142,7 +152,8 @@ LIBRARIES_OBJS = \
 	$(BUILD)/lib/ArduinoSTL/src/stdexcept.cpp.o \
 	$(BUILD)/lib/ArduinoSTL/src/abi/abi.cpp.o \
 	$(BUILD)/lib/ArduinoSTL/src/del_opvs.cpp.o \
-	$(BUILD)/lib/ArduinoSTL/src/string.cpp.o
+	$(BUILD)/lib/ArduinoSTL/src/string.cpp.o \
+	$(BUILD)/lib/ntpclient/NTPClient.cpp.o
 
 -include $(LIBRARIES_OBJS:.o=.d)
 
@@ -167,53 +178,53 @@ size:
 
 $(BUILD)/src/%.cpp.o: src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/core/%.cpp.o: $(CORELIB)/cores/arduino/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/core/%.cpp.o: $(CORELIB)/libraries/HID/src/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/core/%.c.o: $(CORELIB)/cores/arduino/%.c
 	@$(call mymkdir,$(dir $@))
-	$(GCC) -c -g -Os -w -std=gnu11 -ffunction-sections -fdata-sections -MMD -flto -fno-fat-lto-objects -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR $(INCLUDES) "$<" -o "$@"
+	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/lib/Ethernet/src/%.cpp.o:  $(ETHERNETLIB)/src/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/lib/Ethernet/src/utility/%.cpp.o:  $(ETHERNETLIB)/src/utility/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/lib/SoftwareSerial/src/%.cpp.o: $(CORELIB)/libraries/SoftwareSerial/src/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/lib/SoftwareSerial/src/%.cpp.o: $(CORELIB)/libraries/SoftwareSerial/src/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/lib/CONTROLLINO_Library/%.cpp.o: $(CONTROLLINOLIB)/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/lib/SPI/src/%.cpp.o:  $(CORELIB)/libraries/SPI/src/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/lib/ArduinoSTL/src/%.cpp.o: $(ARDUINOSTL)/src/%.cpp
+$(BUILD)/lib/%.cpp.o: $(LIBRARIES)/%.cpp
 	@$(call mymkdir,$(dir $@))
-	$(GPP) -c -g -Os -w -std=gnu++11 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR     $(INCLUDES) "$<" -o "$@"
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/core/%.S.o: $(CORELIB)/cores/arduino/%.S
 	@$(call mymkdir,$(dir $@))
-	$(GCC) -c -g -x assembler-with-cpp -flto -MMD -mmcu=atmega2560 -DF_CPU=16000000L -DARDUINO=10608 -DARDUINO_AVR_MEGA2560 -DARDUINO_ARCH_AVR $(INCLUDES) "$<" -o "$@"
+	$(GCC) $(ASFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 

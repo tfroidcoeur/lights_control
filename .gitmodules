@@ -10,3 +10,9 @@
 [submodule "lib/controllino"]
 	path = lib/controllino
 	url = https://github.com/CONTROLLINO-PLC/CONTROLLINO_Library.git
+[submodule "lib/ntpclient"]
+	path = lib/ntpclient
+	url = https://github.com/arduino-libraries/NTPClient.git
+[submodule "lib/sigslot"]
+	path = lib/sigslot
+	url = https://github.com/KubaO/sigslot

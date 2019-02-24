@@ -57,9 +57,9 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	outpinD.push_back(OutPin(CONTROLLINO_D10));
 	outpinD.push_back(OutPin(CONTROLLINO_D11));
 
-	teleruptorCA2=new Teleruptor(inpinA[2], relay[2]);
+	teleruptorCA2 = new Teleruptor(inpinA[2], relay[2]);
 	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3]);
-	teleruptorCA4=new Teleruptor(buttonCA4.shortpress, relay[4]);
+	teleruptorCA4 = new Teleruptor(buttonCA4.shortpress, relay[4]);
 	teleruptorCA3 = new Teleruptor(inpinA[5], relay[5]);
 	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6]);
 	teleruptorCA7 = new Teleruptor(buttonCA7.shortpress, relay[7]);

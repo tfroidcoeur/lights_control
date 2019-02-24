@@ -17,7 +17,9 @@ make flash will flash using the first connected usb `ACM` device. It will assume
 
 ## libraries
 this application makes use of following libraries:
-* ArduinoSTL https://github.com/mike-matera/ArduinoSTL.git
-* Ethernet Library for Arduino https://github.com/arduino-libraries/Ethernet
-* Arduino AVR core https://github.com/arduino/ArduinoCore-avr
-* Controllino library https://github.com/CONTROLLINO-PLC/CONTROLLINO_Library
+* ArduinoSTL [https://github.com/mike-matera/ArduinoSTL.git]
+* Ethernet Library for Arduino [https://github.com/arduino-libraries/Ethernet]
+* Arduino AVR core [https://github.com/arduino/ArduinoCore-avr]
+* Controllino library [https://github.com/CONTROLLINO-PLC/CONTROLLINO_Library]
+* Arduino NTP Client [https://github.com/arduino-libraries/NTPClient]
+* Sigslot by Sarah Thompson [http://sigslot.sourceforge.net/]
