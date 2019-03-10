@@ -3,6 +3,7 @@
 	<name>lights</name>
 	<comment></comment>
 	<projects>
+		<project>lights_libs</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
