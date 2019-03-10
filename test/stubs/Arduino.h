@@ -27,6 +27,8 @@ int digitalRead(uint8_t);
 
 unsigned long millis(void);
 using namespace std;
+typedef bool boolean;
+typedef uint8_t byte;
 
 /* adapted from Arduino SDK */
 

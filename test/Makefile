@@ -1,5 +1,7 @@
 CONTROLLINO_DIR=/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library/
 MAIN_DIR = ../src
+LIB_DIR=../lib
+SIGSLOT_LIB=$(LIB_DIR)/sigslot
 
 CXXFLAGS =	-O0 -g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations
 
@@ -19,6 +21,8 @@ CXXFLAGS += -I $(CONTROLLINO_DIR)
 CXXFLAGS += -DCONTROLLINO_MAXI -DARDUINO=10608
 
 CXXFLAGS += `pkg-config libcpptest --libs --cflags`
+
+CXXFLAGS += -I $(SIGSLOT_LIB)
 
 OBJS := $(SRCS:.cpp=.o)
 
