@@ -22,8 +22,6 @@ public:
 	 * setup function
 	 */
 	virtual void setup()=0;
-
-//	virtual ~Actor();
 };
 
 #endif /* ACTOR_H_ */

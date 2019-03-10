@@ -1,6 +1,8 @@
 /*
  * OutPin.cpp
  *
+ * Simple abstraction of an digital output pin.
+ *
  *  Created on: Dec 16, 2017
  *      Author: fraco
  */
@@ -22,7 +24,6 @@ void OutPin::setup() {
 }
 
 OutPin::~OutPin() {
-	// TODO Auto-generated destructor stub
 }
 
 void OutPin::toggle() {

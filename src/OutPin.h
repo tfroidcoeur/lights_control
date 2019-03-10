@@ -14,11 +14,15 @@ class OutPin : public Actor {
 public:
 	OutPin(int id);
 	virtual ~OutPin();
-	void setup();
-	void handle(){};
+	/* toggle the output to the opposite state */
 	void toggle();
+
 	void write(int val);
 	int read();
+
+	/* Actor */
+	void setup();
+	void handle(){};
 
 private:
 	int id;
