@@ -26,6 +26,10 @@ public:
 
 private:
 	int id;
+	/* DigitalRead is not always correct, so
+	 * we track the last recorded output value as
+	 * the current expected state. */
+	int state;
 };
 
 #endif /* OUTPIN_H_ */

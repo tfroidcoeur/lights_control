@@ -16,10 +16,12 @@ using namespace std;
 
 OutPin::OutPin(int id) {
 	this->id = id;
+	this->state=0;
 }
 
 void OutPin::setup() {
 	pinMode(this->id, OUTPUT);
+	this->state=digitalRead(this->id);
 	COUT_DEBUG( cout << "initialized output pin " <<  this->id << endl);
 }
 
@@ -32,9 +34,11 @@ void OutPin::toggle() {
 
 void OutPin::write(int value) {
 	COUT_DEBUG( cout << "write " << value << " to pin " << id << endl);
+	this->state=value;
 	digitalWrite(this->id, value);
 }
 
 int OutPin::read() {
-	return digitalRead(this->id);
+	//return digitalRead(this->id);
+	return this->state;
 }
