@@ -16,8 +16,6 @@ public:
 	  void begin(uint8_t *mac_address, IPAddress local_ip) {};
 	  void begin(uint8_t *mac_address, IPAddress local_ip, IPAddress dns_server) {};
 	  void begin(uint8_t *mac, IPAddress ip, IPAddress dns, IPAddress gateway, IPAddress subnet) {};
-
-
 };
 
 extern EthernetClass Ethernet;

@@ -23,11 +23,14 @@ IPAddress dns(8, 8, 8, 8);
 IPAddress netmask(255, 255, 255, 0);
 #endif
 
+/* near daily */
+#define NTP_PERIOD 3600*24*1000+3141
+
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP udp;
 
 // NTP client sync at regular intervals
-NTPClient ntpclient(udp, "pool.ntp.org", 0, 60000);
+NTPClient ntpclient(udp, "pool.ntp.org", 0, NTP_PERIOD);
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
@@ -42,7 +45,7 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-	static const unsigned long REFRESH_INTERVAL = 5000; // ms
+	static const unsigned long REFRESH_INTERVAL = 60000; // ms
 	static unsigned long lastRefreshTime = 0;
 
 	controller.handle();
