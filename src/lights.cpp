@@ -3,6 +3,9 @@
 #include "Controller.h"
 #include "Ethernet.h"
 #include "NTPClient.h"
+#include <time.h>
+#include <util/eu_dst.h>
+#include <stdio.h>
 
 static Controller controller;
 
@@ -24,7 +27,7 @@ IPAddress netmask(255, 255, 255, 0);
 #endif
 
 /* near daily */
-#define NTP_PERIOD 3600*24*1000+3141
+#define NTP_PERIOD (3600*24*1000+3141)
 
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP udp;
@@ -40,12 +43,19 @@ void setup() {
 	Ethernet.begin(mac, ip, dns, gw, netmask);
 	ntpclient.begin();
 
+	// set up for Belgium
+	set_zone(1*ONE_HOUR);
+	set_dst(eu_dst);
+
 	Serial.println("setup done");
 }
 
 // the loop function runs over and over again forever
 void loop() {
-	static const unsigned long REFRESH_INTERVAL = 60000; // ms
+	time_t t;
+	struct tm ts;
+	char buf[80];
+	static const unsigned long REFRESH_INTERVAL = 10000; // ms
 	static unsigned long lastRefreshTime = 0;
 
 	controller.handle();
@@ -54,7 +64,14 @@ void loop() {
 
 	if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
 	{
-		lastRefreshTime += REFRESH_INTERVAL;
+		lastRefreshTime = millis();
 		Serial.println(ntpclient.getFormattedTime());
+		t=ntpclient.getEpochTime()-UNIX_OFFSET;
+		// not really needed, unless we want to use time() to obtain time
+		// set_system_time(t);
+
+		localtime_r(&t,&ts);
+		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+		cout << buf << endl;
 	}
 }
