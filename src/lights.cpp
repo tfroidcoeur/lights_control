@@ -50,6 +50,13 @@ void setup() {
 	Serial.println("setup done");
 }
 
+/*07:09:41
+1554448181
+Sun 2037-11-22 23:33:59 ?
+Mon 2041-12-16 04:37:52 ?
+
+*/
+
 // the loop function runs over and over again forever
 void loop() {
 	time_t t;
@@ -67,11 +74,34 @@ void loop() {
 		lastRefreshTime = millis();
 		Serial.println(ntpclient.getFormattedTime());
 		t=ntpclient.getEpochTime()-UNIX_OFFSET;
+		Serial.println(ntpclient.getEpochTime());
+		Serial.println(t);
+
+
 		// not really needed, unless we want to use time() to obtain time
 		// set_system_time(t);
 
 		localtime_r(&t,&ts);
 		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
 		cout << buf << endl;
+
+		gmtime_r(&t,&ts);
+		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+		cout << buf << endl;
+
+		memset(&ts, 0, sizeof(ts));
+		ts.tm_year=118;
+		ts.tm_mon=3;
+		ts.tm_mday=4;
+		t=mktime(&ts);
+		Serial.println(t);
+
+		gmtime_r(&t,&ts);
+		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
+		cout << buf << endl;
+
+
+
+
 	}
 }
