@@ -46,19 +46,19 @@ private:
 	// Teleruptors
 	Teleruptor * teleruptorCA2;
 	Teleruptor * teleruptorCC3;
-	Teleruptor * teleruptorCA3;
+	Teleruptor * teleruptorDM1;
 	Teleruptor * teleruptorCA4;
 	Teleruptor * teleruptorCA6;
 	Teleruptor * teleruptorCA7;
 	Teleruptor * teleruptorCA8;
-	Teleruptor * teleruptorCA9;
+	Teleruptor * teleruptorDM2;
 
 	// buttons
 	SimpleButton buttonCA4;
 	SimpleButton buttonCA6;
 	SimpleButton buttonCA7;
 	SimpleButton buttonCA8;
-	SimpleButton buttonCA9;
+	SimpleButton buttonDM2;
 	SimpleButton buttonCB1;
 	SimpleButton buttonCB2;
 
