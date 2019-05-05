@@ -56,6 +56,19 @@ Sun 2037-11-22 23:33:59 ?
 Mon 2041-12-16 04:37:52 ?
 
 */
+#ifdef DEBUG
+void checkTimeSpent(int maxtime, char * where) {
+	static unsigned long last = 0;
+	unsigned long newt=millis();
+	if (newt-last > maxtime && last) {
+		cout << (newt-last) ;
+		cout << " spent in " << where <<endl;
+	}
+	last = newt;
+}
+#else
+#define checkTimeSpent(a,b)
+#endif
 
 // the loop function runs over and over again forever
 void loop() {
@@ -65,9 +78,14 @@ void loop() {
 	static const unsigned long REFRESH_INTERVAL = 10000; // ms
 	static unsigned long lastRefreshTime = 0;
 
+	checkTimeSpent(20, "start");
 	controller.handle();
+	checkTimeSpent(20, "controller");
+
 	ntpclient.checkSend();
+	checkTimeSpent(20, "ntp send");
 	ntpclient.checkUpdate();
+	checkTimeSpent(20, "ntp receive");
 
 	if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
 	{
@@ -99,9 +117,6 @@ void loop() {
 		gmtime_r(&t,&ts);
 		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
 		cout << buf << endl;
-
-
-
-
 	}
+	checkTimeSpent(20, "debug prints");
 }
