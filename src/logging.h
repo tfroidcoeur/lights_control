@@ -5,6 +5,8 @@
  *      Author: fraco
  */
 
+#include <ArduinoSTL.h>
+using namespace std;
 #undef COUT_DEBUG
 #undef COUT_INFO
 #undef COUT_WARN

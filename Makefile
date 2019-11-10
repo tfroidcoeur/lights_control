@@ -217,6 +217,10 @@ $(BUILD)/lib/CONTROLLINO_Library/%.cpp.o: $(CONTROLLINOLIB)/%.cpp
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
+lib/ArduinoSTL/src/%: lib/ArduinoSTL/src/%.cpp
+	@$(call mymkdir,$(dir $@))
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
+
 $(BUILD)/lib/SPI/src/%.cpp.o:  $(CORELIB)/libraries/SPI/src/%.cpp
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
@@ -229,4 +233,3 @@ $(BUILD)/core/%.S.o: $(CORELIB)/cores/arduino/%.S
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(ASFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
-
