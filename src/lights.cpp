@@ -6,6 +6,7 @@
 #include <time.h>
 #include <util/eu_dst.h>
 #include <stdio.h>
+#include <utility/w5100.h>
 
 static Controller controller;
 
@@ -34,7 +35,10 @@ IPAddress netmask(255, 255, 255, 0);
 EthernetUDP udp;
 
 // NTP client sync at regular intervals
-NTPClient ntpclient(udp, "pool.ntp.org", 0, NTP_PERIOD);
+// use own openwrt gateway with ntp server by ip
+// to minimize delays and skip dns lookup
+// because NTPClient will block when querying the
+NTPClient ntpclient(udp, "10.0.0.1", 0, NTP_PERIOD, 100);
 #endif
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
@@ -44,6 +48,12 @@ void setup() {
 
 #ifdef USE_NTP
 	Ethernet.begin(mac, ip, dns, gw, netmask);
+	// crazy chip: 500 = 50ms
+	// and w the ##$@$ do you wait for UDP to succeed
+	// TODO make sure the crazy chip does send the UDP packet,
+	// check what normal times are for this process
+	W5100.setRetransmissionTime(500);
+	W5100.setRetransmissionCount(1);
 	ntpclient.begin();
 
 	// set up for Belgium
