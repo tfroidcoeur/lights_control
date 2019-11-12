@@ -8,6 +8,7 @@ CORELIB=$(LIBRARIES)/core
 ETHERNETLIB=$(LIBRARIES)/Ethernet
 CONTROLLINOLIB=$(LIBRARIES)/controllino
 NTPCLIENT=$(LIBRARIES)/ntpclient
+MQTTLIB=$(LIBRARIES)/mqtt
 BUILD=build
 
 OBJCOPY=avr-objcopy
@@ -26,7 +27,9 @@ INCLUDES=-I"$(CORELIB)/cores/arduino" \
 		 -I"$(CORELIB)/libraries/SPI/src" \
 		 -I"$(ARDUINOSTL)/src" \
 		 -I"$(NTPCLIENT)" \
-		 -I"$(LIBRARIES)/sigslot"
+		 -I"$(LIBRARIES)/sigslot" \
+		 -I"$(LIBRARIES)/mqtt/src" \
+		 -I"$(LIBRARIES)/mqtt/src/lwmqtt"
 
 DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"F_CPU=16000000L" \
@@ -35,14 +38,12 @@ DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"ARDUINO_ARCH_AVR" \
 		-D"USE_NTP" \
 		-D"FROIDCOEUR_GW" \
+		-D"MQTT"
 
 FLAGS=-c -g -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560
 CPPFLAGS=-std=gnu++11 -fpermissive -fno-exceptions -fno-threadsafe-statics $(FLAGS)
 CFLAGS=-std=gnu11 -fno-fat-lto-objects $(FLAGS)
 ASFLAGS=-c -g -x assembler-with-cpp -flto -MMD -mmcu=atmega2560
-$(info $(FLAGS))
-$(info $(CFLAGS))
-$(info $(CPPFLAGS))
 
 TARGETS = \
 	$(BUILD)/lights.hex
@@ -155,7 +156,13 @@ LIBRARIES_OBJS = \
 	$(BUILD)/lib/ArduinoSTL/src/abi/abi.cpp.o \
 	$(BUILD)/lib/ArduinoSTL/src/del_opvs.cpp.o \
 	$(BUILD)/lib/ArduinoSTL/src/string.cpp.o \
-	$(BUILD)/lib/ntpclient/NTPClient.cpp.o
+	$(BUILD)/lib/ntpclient/NTPClient.cpp.o \
+	$(BUILD)/lib/mqtt/src/MQTTClient.cpp.o \
+	$(BUILD)/lib/mqtt/lwmqtt/client.o \
+	$(BUILD)/lib/mqtt/lwmqtt/helpers.o \
+	$(BUILD)/lib/mqtt/lwmqtt/packet.o \
+	$(BUILD)/lib/mqtt/lwmqtt/string.o
+
 
 -include $(LIBRARIES_OBJS:.o=.d)
 
@@ -193,6 +200,11 @@ $(BUILD)/core/%.cpp.o: $(CORELIB)/libraries/HID/src/%.cpp
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/core/%.c.o: $(CORELIB)/cores/arduino/%.c
+	@$(call mymkdir,$(dir $@))
+	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
+	$(AR) rcs  "$(BUILD)/core.a" "$@"
+
+$(BUILD)/lib/mqtt/lwmqtt/%.o: $(MQTTLIB)/src/lwmqtt/%.c
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"

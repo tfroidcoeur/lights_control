@@ -7,6 +7,8 @@
 #include <util/eu_dst.h>
 #include <stdio.h>
 #include <utility/w5100.h>
+#include <Ethernet.h>
+#include <MQTT.h>
 
 static Controller controller;
 
@@ -41,6 +43,17 @@ EthernetUDP udp;
 NTPClient ntpclient(udp, "10.0.0.1", 0, NTP_PERIOD, 100);
 #endif
 
+#ifdef MQTT
+EthernetClient net;
+MQTTClient mqttclient;
+
+
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
+  mqttclient.publish("controllino/hello_back", "pong");
+}
+#endif
+
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
 	Serial.begin(9600);
@@ -62,7 +75,16 @@ void setup() {
 #endif
 
 	Serial.println("setup done");
+
+#ifdef MQTT
+	/* thats right, you blocking network stack, get connected in 20ms then*/
+	net.setConnectionTimeout(10);
+	mqttclient.begin("10.0.0.202", 1883, net);
+
+	mqttclient.onMessage(messageReceived);
+#endif
 }
+
 
 /*07:09:41
 1554448181
@@ -135,4 +157,17 @@ void loop() {
 	}
 #endif
 	checkTimeSpent(20, "debug prints");
+
+#ifdef MQTT
+	if (!mqttclient.connected()) {
+		mqttclient.connect("Controllino");
+		if (mqttclient.connected()) {
+			mqttclient.subscribe("controllino/hello");
+		}
+		checkTimeSpent(20, "mqtt connect");
+	} else {
+		mqttclient.loop();
+		checkTimeSpent(20, "mqtt loop");
+	}
+#endif
 }

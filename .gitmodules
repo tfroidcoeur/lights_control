@@ -16,3 +16,6 @@
 [submodule "lib/sigslot"]
 	path = lib/sigslot
 	url = https://github.com/KubaO/sigslot
+[submodule "lib/mqtt"]
+	path = lib/mqtt
+	url = https://github.com/256dpi/arduino-mqtt.git
