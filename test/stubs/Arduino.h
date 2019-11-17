@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <iostream>
+#include <stdint.h>
 
 #ifndef STUBS_ARDUINO_H_
 #define STUBS_ARDUINO_H_
@@ -113,5 +114,9 @@ public:
 #define F(a) a
 
 extern HardwareSerial Serial;
+static inline void delay(int d){};
 
+#define u32 uint32_t
+#define u16 uint16_t
+#define u8 uint8_t
 #endif /* STUBS_ARDUINO_H_ */
