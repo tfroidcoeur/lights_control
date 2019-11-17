@@ -9,6 +9,7 @@ ETHERNETLIB=$(LIBRARIES)/Ethernet
 CONTROLLINOLIB=$(LIBRARIES)/controllino
 NTPCLIENT=$(LIBRARIES)/ntpclient
 MQTTLIB=$(LIBRARIES)/mqtt
+MEMFREELIB=$(LIBRARIES)/memoryfree
 BUILD=build
 
 OBJCOPY=avr-objcopy
@@ -29,7 +30,8 @@ INCLUDES=-I"$(CORELIB)/cores/arduino" \
 		 -I"$(NTPCLIENT)" \
 		 -I"$(LIBRARIES)/sigslot" \
 		 -I"$(LIBRARIES)/mqtt/src" \
-		 -I"$(LIBRARIES)/mqtt/src/lwmqtt"
+		 -I"$(LIBRARIES)/mqtt/src/lwmqtt"\
+		 -I"$(MEMFREELIB)"
 
 DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"F_CPU=16000000L" \
@@ -161,7 +163,8 @@ LIBRARIES_OBJS = \
 	$(BUILD)/lib/mqtt/lwmqtt/client.o \
 	$(BUILD)/lib/mqtt/lwmqtt/helpers.o \
 	$(BUILD)/lib/mqtt/lwmqtt/packet.o \
-	$(BUILD)/lib/mqtt/lwmqtt/string.o
+	$(BUILD)/lib/mqtt/lwmqtt/string.o \
+	$(BUILD)/lib/memoryfree/MemoryFree.o
 
 
 -include $(LIBRARIES_OBJS:.o=.d)
@@ -189,59 +192,63 @@ $(BUILD)/src/%.cpp.o: src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/core/%.cpp.o: $(CORELIB)/cores/arduino/%.cpp
+$(BUILD)/core/%.cpp.o: $(CORELIB)/cores/arduino/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
-$(BUILD)/core/%.cpp.o: $(CORELIB)/libraries/HID/src/%.cpp
+$(BUILD)/core/%.cpp.o: $(CORELIB)/libraries/HID/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
-$(BUILD)/core/%.c.o: $(CORELIB)/cores/arduino/%.c
+$(BUILD)/core/%.c.o: $(CORELIB)/cores/arduino/%.c $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
-$(BUILD)/lib/mqtt/lwmqtt/%.o: $(MQTTLIB)/src/lwmqtt/%.c
+$(BUILD)/lib/mqtt/lwmqtt/%.o: $(MQTTLIB)/src/lwmqtt/%.c $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
-$(BUILD)/lib/Ethernet/src/%.cpp.o:  $(ETHERNETLIB)/src/%.cpp
+$(BUILD)/lib/Ethernet/src/%.cpp.o:  $(ETHERNETLIB)/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/lib/Ethernet/src/utility/%.cpp.o:  $(ETHERNETLIB)/src/utility/%.cpp
+$(BUILD)/lib/Ethernet/src/utility/%.cpp.o:  $(ETHERNETLIB)/src/utility/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/lib/SoftwareSerial/src/%.cpp.o: $(CORELIB)/libraries/SoftwareSerial/src/%.cpp
+$(BUILD)/lib/SoftwareSerial/src/%.cpp.o: $(CORELIB)/libraries/SoftwareSerial/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/lib/SoftwareSerial/src/%.cpp.o: $(CORELIB)/libraries/SoftwareSerial/src/%.cpp
+$(BUILD)/lib/SoftwareSerial/src/%.cpp.o: $(CORELIB)/libraries/SoftwareSerial/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/lib/CONTROLLINO_Library/%.cpp.o: $(CONTROLLINOLIB)/%.cpp
+$(BUILD)/lib/CONTROLLINO_Library/%.cpp.o: $(CONTROLLINOLIB)/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-lib/ArduinoSTL/src/%: lib/ArduinoSTL/src/%.cpp
+lib/ArduinoSTL/src/%: lib/ArduinoSTL/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/lib/SPI/src/%.cpp.o:  $(CORELIB)/libraries/SPI/src/%.cpp
+$(BUILD)/lib/SPI/src/%.cpp.o:  $(CORELIB)/libraries/SPI/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/lib/%.cpp.o: $(LIBRARIES)/%.cpp
+$(BUILD)/lib/%.cpp.o: $(LIBRARIES)/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
-$(BUILD)/core/%.S.o: $(CORELIB)/cores/arduino/%.S
+$(BUILD)/core/%.S.o: $(CORELIB)/cores/arduino/%.S $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(ASFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 	$(AR) rcs  "$(BUILD)/core.a" "$@"
+
+$(BUILD)/lib/memoryfree/%.o:  $(MEMFREELIB)/%.cpp $(CONTROLLINO_BOARDS)
+	@$(call mymkdir,$(dir $@))
+	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"

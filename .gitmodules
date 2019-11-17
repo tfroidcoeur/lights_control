@@ -19,3 +19,6 @@
 [submodule "lib/mqtt"]
 	path = lib/mqtt
 	url = https://github.com/256dpi/arduino-mqtt.git
+[submodule "lib/memoryfree"]
+	path = lib/memoryfree
+	url = https://github.com/McNeight/MemoryFree.git

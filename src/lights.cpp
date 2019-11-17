@@ -9,6 +9,7 @@
 #include <utility/w5100.h>
 #include <Ethernet.h>
 #include <MQTT.h>
+#include <MemoryFree.h>
 
 static Controller controller;
 
@@ -57,7 +58,10 @@ void messageReceived(String &topic, String &payload) {
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
 	Serial.begin(9600);
+	delay(1000);
+	cout << "free: " << freeMemory() <<endl;
 	controller.setup();
+	cout << "free: " << freeMemory() <<endl;
 
 #ifdef USE_NTP
 	Ethernet.begin(mac, ip, dns, gw, netmask);
