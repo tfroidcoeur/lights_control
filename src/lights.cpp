@@ -9,6 +9,7 @@
 
 static Controller controller;
 
+#ifdef USE_NTP
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
 byte mac[] = {
@@ -34,18 +35,21 @@ EthernetUDP udp;
 
 // NTP client sync at regular intervals
 NTPClient ntpclient(udp, "pool.ntp.org", 0, NTP_PERIOD);
+#endif
 
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
 	Serial.begin(9600);
 	controller.setup();
 
+#ifdef USE_NTP
 	Ethernet.begin(mac, ip, dns, gw, netmask);
 	ntpclient.begin();
 
 	// set up for Belgium
 	set_zone(1*ONE_HOUR);
 	set_dst(eu_dst);
+#endif
 
 	Serial.println("setup done");
 }
@@ -82,6 +86,7 @@ void loop() {
 	controller.handle();
 	checkTimeSpent(20, "controller");
 
+#ifdef USE_NTP
 	ntpclient.checkSend();
 	checkTimeSpent(20, "ntp send");
 	ntpclient.checkUpdate();
@@ -118,5 +123,6 @@ void loop() {
 		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
 		cout << buf << endl;
 	}
+#endif
 	checkTimeSpent(20, "debug prints");
 }
