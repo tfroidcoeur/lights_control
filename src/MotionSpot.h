@@ -41,7 +41,7 @@ public:
 private:
 	int force;
 	int ctrl;
-	SeqPattern (& pat);
+	SeqPattern & pat;
 	MotionSpotState ** nextstate;
 	const char * name;
 

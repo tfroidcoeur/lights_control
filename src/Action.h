@@ -18,12 +18,14 @@ using namespace std;
 
 class Action {
 public:
+	virtual ~Action(){};
 	virtual void doit() = 0;
 };
 
 template<class Target>
 class FunAction: public Action {
 public:
+	virtual ~FunAction(){};
 	FunAction(Target * target, void (Target::*fun)()) :
 			fun(fun), target(target) {
 	}
@@ -40,6 +42,13 @@ class ActionList: public Action, public sigslot::has_slots<> {
 
 public:
 	ActionList(){};
+	~ActionList(){
+		std::list<Action *>::iterator it = actions.begin();
+		for (; it != actions.end(); it++) {
+			delete *it;
+		}
+
+	}
 	void append(Action * act) {
 		actions.push_back(act);
 	}
