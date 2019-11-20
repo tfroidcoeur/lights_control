@@ -46,6 +46,7 @@
 #include "MotionSpotTest.h"
 #include "ControllerTest.h"
 #include "SequencerTest.h"
+#include "MqttDirectoryTest.h"
 
 class MotionSpotTest;
 
@@ -211,6 +212,7 @@ main(int argc, char* argv[])
 		ts.add(auto_ptr<Test::Suite>(new MotionSpotTest));
 		ts.add(auto_ptr<Test::Suite>(new ControllerTest));
 		ts.add(auto_ptr<Test::Suite>(new SequencerTest));
+		ts.add(auto_ptr<Test::Suite>(new MqttDirectoryTest));
 
 		// Run the tests
 		//
@@ -228,4 +230,3 @@ main(int argc, char* argv[])
 	}
 	return EXIT_SUCCESS;
 }
-

@@ -65,7 +65,9 @@ PROJECT_OBJS = \
 	$(BUILD)/src/Runner.cpp.o \
 	$(BUILD)/src/Sequencer.cpp.o \
 	$(BUILD)/src/Teleruptor.cpp.o \
-	$(BUILD)/src/lights.cpp.o
+	$(BUILD)/src/lights.cpp.o \
+	$(BUILD)/src/MqttDirectory.cpp.o \
+
 
 -include $(PROJECT_OBJS:.o=.d)
 
