@@ -11,6 +11,7 @@
 
 #include "Button.h"
 #include "Action.h"
+#include "MqttDirectory.h"
 
 
 Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(500,2000), buttonCA8(500,2000), buttonDM2(500,2000){
@@ -57,14 +58,19 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	outpinD.push_back(OutPin(CONTROLLINO_D10));
 	outpinD.push_back(OutPin(CONTROLLINO_D11));
 
-	teleruptorCA2 = new Teleruptor(inpinA[2], relay[2]);
-	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3]);
-	teleruptorCA4 = new Teleruptor(buttonCA4.shortpress, relay[4]);
-	teleruptorDM1 = new Teleruptor(inpinA[5], relay[5]);
-	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6]);
-	teleruptorCA7 = new Teleruptor(buttonCA7.shortpress, relay[7]);
-	teleruptorCA8 = new Teleruptor(buttonCA8.shortpress, relay[8]);
-	teleruptorDM2 = new Teleruptor(buttonDM2.shortpress, relay[9]);
+	// Mqtt directories
+	huis = new MqttDirectory("home", NULL);
+	// TODO create parent for huis: new class, light or controller?
+
+	// Teleruptors
+	teleruptorCA2 = new Teleruptor(inpinA[2], relay[2], "CA2", huis);
+	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3], "CA3", huis);
+	teleruptorCA4 = new Teleruptor(buttonCA4.shortpress, relay[4], "CA4", huis);
+	teleruptorDM1 = new Teleruptor(inpinA[5], relay[5], "DM1", huis);
+	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6], "CA6", huis);
+	teleruptorCA7 = new Teleruptor(buttonCA7.shortpress, relay[7], "CA7", huis);
+	teleruptorCA8 = new Teleruptor(buttonCA8.shortpress, relay[8], "CA8", huis);
+	teleruptorDM2 = new Teleruptor(buttonDM2.shortpress, relay[9], "DM2", huis);
 
 	// Dimmers (passthrough)
 	dimmerCB1 = new Dimmer(inpinA[0], outpinD[10]);

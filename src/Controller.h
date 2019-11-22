@@ -19,6 +19,7 @@
 #include "sigslot.h"
 #include "SimpleButton.h"
 #include "Teleruptor.h"
+#include "MqttDirectory.h"
 
 class Controller: public Actor {
 public:
@@ -73,6 +74,8 @@ private:
 	Dimmer * dimmerCB1;
 	Dimmer * dimmerCB2;
 
+	// MqttDirectories
+	MqttDirectory * huis;
 };
 
 

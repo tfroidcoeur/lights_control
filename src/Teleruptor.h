@@ -12,19 +12,22 @@
 #include "sigslot.h"
 #include "Stashable.h"
 #include "Switchable.h"
+#include "MqttNode.h"
 
 class Teleruptor: public Actor,
 		public sigslot::has_slots<>,
 		public Switchable,
-		public Stashable {
+		public Stashable,
+		public MqttNode {
 public:
-	Teleruptor(InPin & inpin, OutPin & outpin);
-	Teleruptor(sigslot::signal0<> & sig, OutPin & outpin);
+	Teleruptor(InPin & inpin, OutPin & outpin, string name, MqttNode * parent = NULL);
+	Teleruptor(sigslot::signal0<> & sig, OutPin & outpin, string name, MqttNode * parent = NULL);
 	virtual ~Teleruptor();
 	virtual void handle(void);
 	virtual void setup(void);
 	void notifyInPin(int value);
 	void pressed();
+	virtual void update(string const& path, string const & value);
 // Switchable
 	virtual void on();
 	virtual void off();
@@ -36,6 +39,8 @@ public:
 private:
 	OutPin &out;
 	bool savedstate;
+	static const string ON;
+	static const string OFF;
 };
 
 #endif /* TELERUPTOR_H_ */

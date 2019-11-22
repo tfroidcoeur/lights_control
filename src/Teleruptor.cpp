@@ -12,14 +12,15 @@
 #include "logging.h"
 using namespace std;
 
-//Teleruptor::Teleruptor(int inid, int outid):in(inid),out(outid) {
-//	in.changed.connect(this, &Teleruptor::notifyInPin);
-//}
+string const Teleruptor::ON = "ON";
+string const Teleruptor::OFF = "ON";
 
-Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin):out(outpin), savedstate(false) {
+Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin, string name, MqttNode * parent):
+		MqttNode(name, parent), out(outpin), savedstate(false) {
 	inpin.changed.connect(this, &Teleruptor::notifyInPin);
 }
-Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin & outpin):out(outpin), savedstate(false) {
+Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin & outpin, string name, MqttNode * parent):
+		MqttNode(name, parent), out(outpin), savedstate(false) {
 	sig.connect(this, &Teleruptor::toggle);
 }
 
@@ -31,6 +32,7 @@ void Teleruptor::handle() {
 }
 
 void Teleruptor::setup() {
+	subscribe(name);
 }
 
 void Teleruptor::pressed() {
@@ -43,6 +45,7 @@ void Teleruptor::notifyInPin(int value) {
 		this->out.toggle();
 	}
 }
+
 void Teleruptor::save() {
 	savedstate=out.read();
 }
@@ -54,11 +57,13 @@ void Teleruptor::restore() {
 void Teleruptor::on() {
 	COUT_DEBUG(cout << "teleruptor on " << endl);
 	out.write(1);
+	publish(name, ON);
 }
 
 void Teleruptor::off() {
 	COUT_DEBUG(cout << "teleruptor off " << endl);
 	out.write(0);
+	publish(name, OFF);
 }
 
 bool Teleruptor::isOn() {
@@ -70,4 +75,12 @@ bool Teleruptor::isOn() {
 void Teleruptor::toggle() {
 	COUT_DEBUG(cout << "teleruptor toggle " << endl);
 	out.toggle();
+	publish(name, isOn() ? ON:OFF);
+}
+
+void Teleruptor::update(string const& path, string const & value){
+	if (value == ON )
+		on();
+	else if (value == OFF)
+		off();
 }
