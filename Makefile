@@ -38,9 +38,10 @@ DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"ARDUINO=10608" \
 		-D"ARDUINO_AVR_MEGA2560" \
 		-D"ARDUINO_ARCH_AVR" \
-		-D"USE_NTP" \
 		-D"FROIDCOEUR_GW" \
 		-D"MQTT"
+
+#		-D"USE_NTP" \
 
 FLAGS=-c -g -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560
 CPPFLAGS=-std=gnu++11 -fpermissive -fno-exceptions -fno-threadsafe-statics $(FLAGS)

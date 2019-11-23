@@ -25,8 +25,9 @@ public:
    // Actor
 
    void setup() {
+      Serial.println("setup mqtt");
       /* thats right, you blocking network stack, get connected in 20ms then*/
-      net.setConnectionTimeout(10);
+      net.setConnectionTimeout(20);
       mqttclient.begin("10.0.0.202", 1883, net);
 
       mqttclient.onMessage(__messageReceived);
@@ -37,7 +38,7 @@ public:
          // Serial.println("connect mqt");
          mqttclient.connect("Controllino");
          if (mqttclient.connected()) {
-            // Serial.println("connected mqt");
+            Serial.println("connected mqt");
             mqttclient.subscribe("controllino/hello");
             // Serial.println("subscribed mqt");
          }

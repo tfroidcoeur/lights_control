@@ -18,7 +18,7 @@ static MqttRoot mqtt;
 #ifdef USE_NTP
 #define USE_NET
 #endif
-#ifdef USE_MQTT
+#ifdef MQTT
 #define USE_NET
 #endif
 
@@ -58,21 +58,20 @@ NTPClient ntpclient(udp, "10.0.0.1", 0, NTP_PERIOD, 100);
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
 	Serial.begin(9600);
-	delay(1000);
 	cout << "free: " << freeMemory() <<endl;
 	controller.setup();
 	cout << "free: " << freeMemory() <<endl;
 
 #ifdef USE_NET
 	Ethernet.begin(mac, ip, dns, gw, netmask);
-#endif
-#ifdef USE_NTP
 	// crazy chip: 500 = 50ms
 	// and w the ##$@$ do you wait for UDP to succeed
 	// TODO make sure the crazy chip does send the UDP packet,
 	// check what normal times are for this process
 	W5100.setRetransmissionTime(500);
 	W5100.setRetransmissionCount(1);
+#endif
+#ifdef USE_NTP
 	ntpclient.begin();
 
 	// set up for Belgium
@@ -83,18 +82,12 @@ void setup() {
 #ifdef MQTT
 	mqtt.setup();
 #endif
+	cout << "free: " << freeMemory() <<endl;
 
+	delay(1000);
 	Serial.println("setup done");
-
 }
 
-
-/*07:09:41
-1554448181
-Sun 2037-11-22 23:33:59 ?
-Mon 2041-12-16 04:37:52 ?
-
-*/
 #ifdef DEBUG
 void checkTimeSpent(int maxtime, char * where) {
 	static unsigned long last = 0;
