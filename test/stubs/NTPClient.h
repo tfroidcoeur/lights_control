@@ -8,7 +8,6 @@
 
 #ifndef NTPCLIENT_H_
 #define NTPCLIENT_H_
-typedef const char * String;
 class NTPClient {
   public:
     NTPClient(UDP& udp);

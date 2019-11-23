@@ -67,7 +67,7 @@ PROJECT_OBJS = \
 	$(BUILD)/src/Teleruptor.cpp.o \
 	$(BUILD)/src/lights.cpp.o \
 	$(BUILD)/src/MqttDirectory.cpp.o \
-
+	$(BUILD)/src/MqttRoot.cpp.o
 
 -include $(PROJECT_OBJS:.o=.d)
 

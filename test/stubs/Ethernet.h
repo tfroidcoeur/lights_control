@@ -10,6 +10,7 @@
 #ifndef ETHERNET_H_
 #define ETHERNET_H_
 
+class Client {};
 class EthernetClass {
 public:
 	  int begin(uint8_t *mac_address, unsigned long timeout = 60000, unsigned long responseTimeout = 4000) { return 1;}
@@ -22,6 +23,11 @@ extern EthernetClass Ethernet;
 class EthernetUDP : public UDP{
 public:
 	EthernetUDP(){};
+};
+class EthernetClient: public Client {
+public:
+	virtual void setConnectionTimeout(uint16_t timeout) {  }
+
 };
 
 #endif /* ETHERNET_H_ */

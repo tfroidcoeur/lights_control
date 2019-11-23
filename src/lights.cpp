@@ -7,13 +7,22 @@
 #include <util/eu_dst.h>
 #include <stdio.h>
 #include <utility/w5100.h>
-#include <Ethernet.h>
-#include <MQTT.h>
 #include <MemoryFree.h>
+#include "MqttRoot.h"
 
 static Controller controller;
+#ifdef MQTT
+static MqttRoot mqtt;
+#endif
 
 #ifdef USE_NTP
+#define USE_NET
+#endif
+#ifdef USE_MQTT
+#define USE_NET
+#endif
+
+#ifdef USE_NET
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
 byte mac[] = {
@@ -30,7 +39,9 @@ IPAddress gw(192, 168, 0, 1);
 IPAddress dns(8, 8, 8, 8);
 IPAddress netmask(255, 255, 255, 0);
 #endif
+#endif
 
+#ifdef USE_NTP
 /* near daily */
 #define NTP_PERIOD (3600*24*1000+3141)
 
@@ -44,17 +55,6 @@ EthernetUDP udp;
 NTPClient ntpclient(udp, "10.0.0.1", 0, NTP_PERIOD, 100);
 #endif
 
-#ifdef MQTT
-EthernetClient net;
-MQTTClient mqttclient;
-
-
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
-  mqttclient.publish("controllino/hello_back", "pong");
-}
-#endif
-
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
 	Serial.begin(9600);
@@ -63,8 +63,10 @@ void setup() {
 	controller.setup();
 	cout << "free: " << freeMemory() <<endl;
 
-#ifdef USE_NTP
+#ifdef USE_NET
 	Ethernet.begin(mac, ip, dns, gw, netmask);
+#endif
+#ifdef USE_NTP
 	// crazy chip: 500 = 50ms
 	// and w the ##$@$ do you wait for UDP to succeed
 	// TODO make sure the crazy chip does send the UDP packet,
@@ -78,15 +80,12 @@ void setup() {
 	set_dst(eu_dst);
 #endif
 
+#ifdef MQTT
+	mqtt.setup();
+#endif
+
 	Serial.println("setup done");
 
-#ifdef MQTT
-	/* thats right, you blocking network stack, get connected in 20ms then*/
-	net.setConnectionTimeout(10);
-	mqttclient.begin("10.0.0.202", 1883, net);
-
-	mqttclient.onMessage(messageReceived);
-#endif
 }
 
 
@@ -112,11 +111,13 @@ void checkTimeSpent(int maxtime, char * where) {
 
 // the loop function runs over and over again forever
 void loop() {
+#ifdef USE_NTP
 	time_t t;
 	struct tm ts;
 	char buf[80];
 	static const unsigned long REFRESH_INTERVAL = 10000; // ms
 	static unsigned long lastRefreshTime = 0;
+#endif
 
 	checkTimeSpent(20, "start");
 	controller.handle();
@@ -163,15 +164,6 @@ void loop() {
 	checkTimeSpent(20, "debug prints");
 
 #ifdef MQTT
-	if (!mqttclient.connected()) {
-		mqttclient.connect("Controllino");
-		if (mqttclient.connected()) {
-			mqttclient.subscribe("controllino/hello");
-		}
-		checkTimeSpent(20, "mqtt connect");
-	} else {
-		mqttclient.loop();
-		checkTimeSpent(20, "mqtt loop");
-	}
+	mqtt.handle();
 #endif
 }

@@ -115,6 +115,7 @@ public:
 
 extern HardwareSerial Serial;
 static inline void delay(int d){};
+typedef string String;
 
 #define u32 uint32_t
 #define u16 uint16_t
