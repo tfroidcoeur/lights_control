@@ -59,18 +59,26 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	outpinD.push_back(OutPin(CONTROLLINO_D11));
 
 	// Mqtt directories
-	huis = new MqttDirectory("home", NULL);
-	// TODO create parent for huis: new class, light or controller?
+	huis = new MqttDirectory(string("home"), &mqtt);
+	mqtt.setChild(huis);
 
 	// Teleruptors
 	teleruptorCA2 = new Teleruptor(inpinA[2], relay[2], "CA2", huis);
+	huis->addNode(teleruptorCA2);
 	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3], "CA3", huis);
+	huis->addNode(teleruptorCC3);
 	teleruptorCA4 = new Teleruptor(buttonCA4.shortpress, relay[4], "CA4", huis);
+	huis->addNode(teleruptorCA4);
 	teleruptorDM1 = new Teleruptor(inpinA[5], relay[5], "DM1", huis);
+	huis->addNode(teleruptorDM1);
 	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6], "CA6", huis);
+	huis->addNode(teleruptorCA6);
 	teleruptorCA7 = new Teleruptor(buttonCA7.shortpress, relay[7], "CA7", huis);
+	huis->addNode(teleruptorCA7);
 	teleruptorCA8 = new Teleruptor(buttonCA8.shortpress, relay[8], "CA8", huis);
+	huis->addNode(teleruptorCA8);
 	teleruptorDM2 = new Teleruptor(buttonDM2.shortpress, relay[9], "DM2", huis);
+	huis->addNode(teleruptorDM2);
 
 	// Dimmers (passthrough)
 	dimmerCB1 = new Dimmer(inpinA[0], outpinD[10]);
@@ -193,6 +201,7 @@ void Controller::setup() {
 	// connect the unused short press of CC2 to control the lamp CC3
 	buttonCC2.shortpress.connect(teleruptorCC3, &Teleruptor::pressed);
 
+	r.addActor(&mqtt);
 	for (init = inpinA.begin(); init != inpinA.end(); init++) {
 		r.addActor(&(*init));
 	}

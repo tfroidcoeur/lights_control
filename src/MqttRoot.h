@@ -16,7 +16,7 @@ class MqttHandler {
       virtual void messageReceived(String &topic, String &payload)=0;
 };
 
-class MqttRoot: public MqttNode, Actor, MqttHandler{
+class MqttRoot: public MqttNode, public Actor, public MqttHandler{
 public:
    // MqttNode
 	MqttRoot();
@@ -68,7 +68,7 @@ public:
       mqttclient.publish("controllino/hello_back", "pong");
    };
 
-   void setChild(MqttNode * child);
+  void setChild(MqttNode * child) {this->child = child;}
 private:
    MqttNode * child;
    MQTTClient mqttclient;

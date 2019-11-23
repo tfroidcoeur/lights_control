@@ -8,19 +8,9 @@
 #include <stdio.h>
 #include <utility/w5100.h>
 #include <MemoryFree.h>
-#include "MqttRoot.h"
 
 static Controller controller;
-#ifdef MQTT
-static MqttRoot mqtt;
-#endif
 
-#ifdef USE_NTP
-#define USE_NET
-#endif
-#ifdef MQTT
-#define USE_NET
-#endif
 
 #ifdef USE_NET
 // Enter a MAC address and IP address for your controller below.
@@ -54,7 +44,7 @@ EthernetUDP udp;
 // because NTPClient will block when querying the
 NTPClient ntpclient(udp, "10.0.0.1", 0, NTP_PERIOD, 100);
 #endif
-
+// #define DEBUG
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
 	Serial.begin(9600);
@@ -79,9 +69,6 @@ void setup() {
 	set_dst(eu_dst);
 #endif
 
-#ifdef MQTT
-	mqtt.setup();
-#endif
 	cout << "free: " << freeMemory() <<endl;
 
 	delay(1000);
@@ -112,9 +99,9 @@ void loop() {
 	static unsigned long lastRefreshTime = 0;
 #endif
 
-	checkTimeSpent(20, "start");
+	checkTimeSpent(0, "start");
 	controller.handle();
-	checkTimeSpent(20, "controller");
+	checkTimeSpent(0, "controller");
 
 #ifdef USE_NTP
 	ntpclient.checkSend();
@@ -156,7 +143,4 @@ void loop() {
 #endif
 	checkTimeSpent(20, "debug prints");
 
-#ifdef MQTT
-	mqtt.handle();
-#endif
 }

@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <Ethernet.h>
 #include <memory>
 typedef void (*MQTTClientCallbackSimple)(String &topic, String &payload);
