@@ -43,10 +43,10 @@ DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"USE_NET"
 
 
-FLAGS=-c -g -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560
+FLAGS=-c -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560
 CPPFLAGS=-std=gnu++11 -fpermissive -fno-exceptions -fno-threadsafe-statics $(FLAGS)
 CFLAGS=-std=gnu11 -fno-fat-lto-objects $(FLAGS)
-ASFLAGS=-c -g -x assembler-with-cpp -flto -MMD -mmcu=atmega2560
+ASFLAGS=-c -x assembler-with-cpp -flto -MMD -mmcu=atmega2560
 
 TARGETS = \
 	$(BUILD)/lights.hex
