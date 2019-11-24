@@ -39,6 +39,8 @@ public:
      if (parent)
       parent->publish(path, value);
    };
+   /* re-subscribe and publish state */
+   virtual void refresh()=0;
 	/* parent notifies child of a publish, sub path provided */
 	virtual void update(string const& path, string const & value)=0;
    string const &getName() { return name; }

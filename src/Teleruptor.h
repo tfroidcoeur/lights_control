@@ -27,7 +27,10 @@ public:
 	virtual void setup(void);
 	void notifyInPin(int value);
 	void pressed();
+
+	// mqtt node
 	virtual void update(string const& path, string const & value);
+	virtual void refresh();
 // Switchable
 	virtual void on();
 	virtual void off();

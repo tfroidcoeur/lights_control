@@ -13,7 +13,7 @@
 using namespace std;
 
 string const Teleruptor::ON = "ON";
-string const Teleruptor::OFF = "ON";
+string const Teleruptor::OFF = "OFF";
 
 Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin, string name, MqttNode * parent):
 		MqttNode(name, parent), out(outpin), savedstate(false) {
@@ -32,7 +32,7 @@ void Teleruptor::handle() {
 }
 
 void Teleruptor::setup() {
-	subscribe(name);
+	refresh();
 }
 
 void Teleruptor::pressed() {
@@ -57,13 +57,13 @@ void Teleruptor::restore() {
 void Teleruptor::on() {
 	COUT_DEBUG(cout << "teleruptor on " << endl);
 	out.write(1);
-	publish(name, ON);
+	publish(name+"/state", ON);
 }
 
 void Teleruptor::off() {
 	COUT_DEBUG(cout << "teleruptor off " << endl);
 	out.write(0);
-	publish(name, OFF);
+	publish(name+"/state", OFF);
 }
 
 bool Teleruptor::isOn() {
@@ -75,12 +75,19 @@ bool Teleruptor::isOn() {
 void Teleruptor::toggle() {
 	COUT_DEBUG(cout << "teleruptor toggle " << endl);
 	out.toggle();
-	publish(name, isOn() ? ON:OFF);
+	publish(name+"/state", isOn() ? ON:OFF);
 }
 
 void Teleruptor::update(string const& path, string const & value){
+	cout << "teleruptor mqtt " << path << " " << value << endl;
 	if (value == ON )
 		on();
 	else if (value == OFF)
 		off();
+}
+
+void Teleruptor::refresh(){
+	cout << "refresh " << name << endl;
+	subscribe(name + "/control");
+	publish(name+"/state", isOn() ? ON:OFF);
 }

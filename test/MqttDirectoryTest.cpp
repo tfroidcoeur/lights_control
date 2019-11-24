@@ -32,6 +32,7 @@ public:
     lastuppath = path;
     lastupval = value;
   }
+  void refresh(){};
   string lastsubpath;
   string lastpubpath;
   string lastuppath;
@@ -52,9 +53,9 @@ void MqttDirectoryTest::testUpdate() {
   dir.addNode(&child1);
   dir.addNode(&child2);
 
-  dir.update("child1/pad/ding", "hello child1");
-  dir.update("child2/pad/ding/dong", "hello child2");
-  dir.update("someotherchild/pad/ding/dong", "hello child none");
+  dir.update("mydir/child1/pad/ding", "hello child1");
+  dir.update("mydir/child2/pad/ding/dong", "hello child2");
+  dir.update("mydir/someotherchild/pad/ding/dong", "hello child none");
 
   TEST_ASSERT_EQUALS("pad/ding",child1.lastuppath);
   TEST_ASSERT_EQUALS("pad/ding/dong",child2.lastuppath);

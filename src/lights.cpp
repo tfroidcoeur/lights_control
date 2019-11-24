@@ -50,7 +50,6 @@ void setup() {
 	Serial.begin(9600);
 	cout << "free: " << freeMemory() <<endl;
 	controller.setup();
-	cout << "free: " << freeMemory() <<endl;
 
 #ifdef USE_NET
 	Ethernet.begin(mac, ip, dns, gw, netmask);
@@ -71,7 +70,6 @@ void setup() {
 
 	cout << "free: " << freeMemory() <<endl;
 
-	delay(1000);
 	Serial.println("setup done");
 }
 

@@ -9,6 +9,8 @@ using namespace std;
 #include <MQTT.h>
 #include <Ethernet.h>
 #include "Actor.h"
+#include "logging.h"
+#include <MemoryFree.h>
 
 
 class MqttHandler {
@@ -20,29 +22,32 @@ class MqttRoot: public MqttNode, public Actor, public MqttHandler{
 public:
    // MqttNode
 	MqttRoot();
-	~MqttRoot() {};
+	~MqttRoot(){};
 
    // Actor
 
    void setup() {
-      Serial.println("setup mqtt");
       /* thats right, you blocking network stack, get connected in 20ms then*/
       net.setConnectionTimeout(20);
       mqttclient.begin("10.0.0.202", 1883, net);
-
+      mqttclient.setOptions(30, true, 100);
       mqttclient.onMessage(__messageReceived);
    }
 
    void handle() {
-      if (!mqttclient.connected()) {
-         // Serial.println("connect mqt");
-         mqttclient.connect("Controllino");
-         if (mqttclient.connected()) {
-            Serial.println("connected mqt");
-            mqttclient.subscribe("controllino/hello");
-            // Serial.println("subscribed mqt");
+      if (!mqttclient.connected()){
+         if (millis() - lastConnectAttempt > connectRetryTime) {
+            mqttclient.connect("Controllino");
+            lastConnectAttempt=millis();
+            if (mqttclient.connected()) {
+               Serial.println("connected mqt");
+               refresh();
+            }
          }
-      } else {
+      } else  {
+         // update lastConnectAttempt to make sure we don't hit the wrap
+         // around and will try to reconnect after timeout
+         lastConnectAttempt=millis();
             // Serial.println("loop mqtt");
          mqttclient.loop();
       }
@@ -50,8 +55,12 @@ public:
 
    // MqttNode
 	virtual void subscribe(string const& path) {
+      cout << "Subscribe " << path << endl;
+      mqttclient.subscribe(path.c_str());
    }
 	virtual void publish(string const& path, string const & value) {
+      cout << "Publish " << path << " = " << value << endl;
+      mqttclient.publish(path.c_str(),value.c_str(), true, 0);
    }
 
 	virtual void update(string const& path, string const & value){
@@ -63,16 +72,25 @@ public:
    static void __messageReceived(String &topic, String &payload);
 
    void messageReceived(String &topic, String &payload) {
+      cout << "free: " << freeMemory() <<endl;
       string msg = string("incoming: ") + topic.c_str() + " - " + payload.c_str();
       Serial.println(msg.c_str());
-      mqttclient.publish("controllino/hello_back", "pong");
+      child->update(topic.c_str(), payload.c_str());
    };
 
   void setChild(MqttNode * child) {this->child = child;}
+  void refresh(){
+      if (child) {
+         cout << "refresh " << child->getName() << endl;
+         child->refresh();
+      }
+  }
 private:
    MqttNode * child;
    MQTTClient mqttclient;
    EthernetClient net;
+   unsigned long lastConnectAttempt=0;
+   unsigned long connectRetryTime=10000;
 };
 
 #endif /* MQTTROOT_H */

@@ -28,6 +28,7 @@ public:
    }
 
    void addNode(MqttNode * child) {
+      cout << "add child" << child->getName() << endl;
       if (children[child->getName()])
          delete children[child->getName()];
       children[child->getName()] = child;
@@ -39,28 +40,55 @@ public:
    }
 	virtual void update(string const& path, string const & value) {
       MqttNode *  n;
+      string us;
+      string childn;
       string remainpath;
+
+      cout << "find path " << path << endl;
       // if path is empty, skip
       if (path.size() == 0)
          return;
+      // us/child/further or
+      // us/child or
+      // us
 
       // split off first part of the path
       std::size_t slashpos;
       slashpos=path.find('/');
+      // no child, don't care
+      if (std::string::npos == slashpos)
+         return;
+
+      // not us
+      us=path.substr(0, slashpos);
+      if (us != name)
+         return;
+      // child/remain
+      remainpath = path.substr(slashpos+1, string::npos);
+      slashpos=remainpath.find('/');
+
       if (std::string::npos == slashpos) {
-         n = children[path];
+         childn = remainpath;
          remainpath = "";
       } else {
-         n=children[path.substr(0, slashpos)];
-         remainpath = path.substr(slashpos+1, string::npos);
+         childn=remainpath.substr(0, slashpos);
+         remainpath = remainpath.substr(slashpos+1, string::npos);
       }
+      n = children[childn];
       if (n) {
+         cout << "found path " << path << endl;
          n->update(remainpath, value);
       }
    }
 	virtual void publish(string const& path, string const & value) {
       if (parent)
          parent->publish(name + "/" + path, value);
+   }
+   virtual void refresh(){
+     for (auto const& x : children) {
+        cout << "refresh " << x.second->getName() << endl;
+        x.second->refresh();
+     }
    }
 private:
    std::map<string, MqttNode*> children;
