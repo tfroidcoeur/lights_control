@@ -10,7 +10,6 @@
 #include <MemoryFree.h>
 
 static Controller controller;
-// #define DEBUG
 
 #ifdef USE_NET
 // Enter a MAC address and IP address for your controller below.
@@ -95,6 +94,7 @@ void loop() {
 	Ethernet.maintain();
 	checkTimeSpent(10, "DHCP");
 #endif
+#ifdef DEBUG
 #ifdef USE_NTP
 	time_t t;
 	struct tm ts;
@@ -103,6 +103,7 @@ void loop() {
 #ifdef USE_NET
 	static const unsigned long REFRESH_INTERVAL = 10000; // ms
 	static unsigned long lastRefreshTime = 0;
+#endif
 #endif
 
 	controller.handle();
@@ -115,6 +116,7 @@ void loop() {
 	checkTimeSpent(50, "ntp receive");
 #endif
 
+#ifdef DEBUG
 #ifdef USE_NET
 	if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
 	{
@@ -158,6 +160,7 @@ void loop() {
 		gmtime_r(&t,&ts);
 		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
 		cout << buf << endl;
+#endif
 #endif
 	}
 #endif
