@@ -81,8 +81,10 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	huis->addNode(teleruptorDM2);
 
 	// Dimmers (passthrough)
-	dimmerCB1 = new Dimmer(inpinA[0], outpinD[10]);
-	dimmerCB2 = new Dimmer(inpinA[1], outpinD[11]);
+	dimmerCB1 = new Dimmer(inpinA[0], outpinD[10], "CB1", huis);
+	huis->addNode(dimmerCB1);
+	dimmerCB2 = new Dimmer(inpinA[1], outpinD[11], "CB2", huis);
+	huis->addNode(dimmerCB2);
 
 	// create spots
 	spotAA8 = new MotionSpot(Controller::outpinD[3], Controller::outpinD[4],

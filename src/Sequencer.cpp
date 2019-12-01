@@ -105,7 +105,7 @@ void Sequencer::start(struct SeqPattern * pattern) {
  * sequence of <ms>*<value> separated by spaces*/
 SeqPattern * Sequencer::createPattern(std::string pat){
 	std::istringstream is(pat);
-	std::list<SeqElement> elements;
+	std::vector<SeqElement> elements;
 	SeqPattern * result = new SeqPattern;
 	std::string seqstr;
 

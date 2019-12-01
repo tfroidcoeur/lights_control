@@ -13,10 +13,11 @@
 #include "PassThrough.h"
 #include "Sequencer.h"
 #include "Switchable.h"
+#include "MqttNode.h"
 
-class Dimmer: public Switchable, public Actor {
+class Dimmer: public Switchable, public Actor, public MqttNode {
 public:
-	Dimmer(InPin & inpin, OutPin & outpin);
+	Dimmer(InPin & inpin, OutPin & outpin, string name, MqttNode * parent = NULL) ;
 	virtual ~Dimmer();
 
 	/* Switchable */
@@ -27,11 +28,17 @@ public:
 	/* Actor */
 	virtual void handle();
 	virtual void setup();
+
+	/* mqtt node */
+	virtual void update(string const& path, string const & value);
+	virtual void refresh();
 private:
 	Sequencer seq;
 	PassThrough passthrough;
+	OutPin & out;
 	static SeqPattern * onSequence;
 	static SeqPattern * offSequence;
+	static SeqPattern * testSequence;
 	bool laststate;
 };
 
