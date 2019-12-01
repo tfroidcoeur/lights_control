@@ -55,11 +55,11 @@ public:
 
    // MqttNode
 	virtual void subscribe(string const& path) {
-      cout << "Subscribe " << path << endl;
+      COUT_DEBUG( cout << "Subscribe " << path << endl);
       mqttclient.subscribe(path.c_str());
    }
 	virtual void publish(string const& path, string const & value) {
-      cout << "Publish " << path << " = " << value << endl;
+      COUT_DEBUG( cout << "Publish " << path << " = " << value << endl);
       mqttclient.publish(path.c_str(),value.c_str(), true, 0);
    }
 
@@ -73,15 +73,17 @@ public:
 
    void messageReceived(String &topic, String &payload) {
       cout << "free: " << freeMemory() <<endl;
+      #ifdef DEBUG
       string msg = string("incoming: ") + topic.c_str() + " - " + payload.c_str();
       Serial.println(msg.c_str());
+      #endif
       child->update(topic.c_str(), payload.c_str());
    };
 
   void setChild(MqttNode * child) {this->child = child;}
   void refresh(){
       if (child) {
-         cout << "refresh " << child->getName() << endl;
+         COUT_DEBUG( cout << "refresh " << child->getName() << endl);
          child->refresh();
       }
   }

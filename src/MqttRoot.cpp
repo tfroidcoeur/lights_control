@@ -10,9 +10,6 @@ static MqttHandler *r;
 void MqttRoot::__messageReceived(String &topic, String &payload) {
   if (r)
         r->messageReceived(topic, payload);
-  else {
-            Serial.println("no r for mqtt");
-  }
 };
 
 MqttRoot::MqttRoot() : MqttNode(name) {

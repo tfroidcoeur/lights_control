@@ -4,6 +4,7 @@
 #include <string>
 #include <iterator>
 #include <memory>
+#include "logging.h"
 using namespace std;
 #include "MqttNode.h"
 
@@ -28,7 +29,7 @@ public:
    }
 
    void addNode(MqttNode * child) {
-      cout << "add child" << child->getName() << endl;
+      COUT_DEBUG( cout << "add child" << child->getName() << endl);
       if (children[child->getName()])
          delete children[child->getName()];
       children[child->getName()] = child;
@@ -44,7 +45,7 @@ public:
       string childn;
       string remainpath;
 
-      cout << "find path " << path << endl;
+      COUT_DEBUG( cout << "find path " << path << endl);
       // if path is empty, skip
       if (path.size() == 0)
          return;
@@ -76,7 +77,7 @@ public:
       }
       n = children[childn];
       if (n) {
-         cout << "found path " << path << endl;
+         COUT_DEBUG( cout << "found path " << path << endl);
          n->update(remainpath, value);
       }
    }
@@ -86,7 +87,7 @@ public:
    }
    virtual void refresh(){
      for (auto const& x : children) {
-        cout << "refresh " << x.second->getName() << endl;
+        COUT_DEBUG( out << "refresh " << x.second->getName() << endl);
         x.second->refresh();
      }
    }

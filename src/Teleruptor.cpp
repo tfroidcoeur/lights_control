@@ -79,7 +79,7 @@ void Teleruptor::toggle() {
 }
 
 void Teleruptor::update(string const& path, string const & value){
-	cout << "teleruptor mqtt " << path << " " << value << endl;
+	COUT_DEBUG( cout << "teleruptor mqtt " << path << " " << value << endl);
 	if (value == ON )
 		on();
 	else if (value == OFF)
@@ -87,7 +87,7 @@ void Teleruptor::update(string const& path, string const & value){
 }
 
 void Teleruptor::refresh(){
-	cout << "refresh " << name << endl;
+	COUT_DEBUG( cout << "refresh " << name << endl);
 	subscribe(name + "/control");
 	publish(name+"/state", isOn() ? ON:OFF);
 }
