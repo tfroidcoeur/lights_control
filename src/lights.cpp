@@ -10,7 +10,7 @@
 #include <MemoryFree.h>
 
 static Controller controller;
-
+// #define DEBUG
 
 #ifdef USE_NET
 // Enter a MAC address and IP address for your controller below.
@@ -52,7 +52,8 @@ void setup() {
 	controller.setup();
 
 #ifdef USE_NET
-	Ethernet.begin(mac, ip, dns, gw, netmask);
+//	Ethernet.begin(mac, ip, dns, gw, netmask);
+	Ethernet.begin(mac);
 	// crazy chip: 500 = 50ms
 	// and w the ##$@$ do you wait for UDP to succeed
 	// TODO make sure the crazy chip does send the UDP packet,
@@ -89,27 +90,47 @@ void checkTimeSpent(int maxtime, char * where) {
 
 // the loop function runs over and over again forever
 void loop() {
+	checkTimeSpent(50, "start");
+#ifdef USE_NET
+	Ethernet.maintain();
+	checkTimeSpent(10, "DHCP");
+#endif
 #ifdef USE_NTP
 	time_t t;
 	struct tm ts;
 	char buf[80];
+#endif
+#ifdef USE_NET
 	static const unsigned long REFRESH_INTERVAL = 10000; // ms
 	static unsigned long lastRefreshTime = 0;
 #endif
 
-	checkTimeSpent(0, "start");
 	controller.handle();
-	checkTimeSpent(0, "controller");
+	checkTimeSpent(50, "controller");
 
 #ifdef USE_NTP
 	ntpclient.checkSend();
-	checkTimeSpent(20, "ntp send");
+	checkTimeSpent(50, "ntp send");
 	ntpclient.checkUpdate();
-	checkTimeSpent(20, "ntp receive");
+	checkTimeSpent(50, "ntp receive");
+#endif
 
+#ifdef USE_NET
 	if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
 	{
 		lastRefreshTime = millis();
+		cout << "ip: ";
+		Serial.print(Ethernet.localIP());
+		cout << "/";
+		Serial.print(Ethernet.subnetMask());
+		cout << endl;
+		cout << "gw: ";
+		Serial.print(Ethernet.gatewayIP());
+		cout << endl;
+		cout << "dns: ";
+		Serial.print(Ethernet.dnsServerIP());
+		cout << endl;
+#ifdef USE_NTP
 		Serial.println(ntpclient.getFormattedTime());
 		t=ntpclient.getEpochTime()-UNIX_OFFSET;
 		Serial.println(ntpclient.getEpochTime());
@@ -137,8 +158,9 @@ void loop() {
 		gmtime_r(&t,&ts);
 		strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
 		cout << buf << endl;
+#endif
 	}
 #endif
-	checkTimeSpent(20, "debug prints");
+	checkTimeSpent(50, "debug prints");
 
 }
