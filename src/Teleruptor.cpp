@@ -42,7 +42,7 @@ void Teleruptor::pressed() {
 void Teleruptor::notifyInPin(int value) {
 	if (value == HIGH) {
 		// button pressed, toggle output
-		this->out.toggle();
+		this->toggle();
 	}
 }
 
