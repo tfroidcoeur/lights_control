@@ -21,8 +21,8 @@ MotionSpot::~MotionSpot() {
 //				&MotionSpotState::Auto), blink(indicator) {
 //}
 
-MotionSpot::MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator) :
-		ctrl(ctrl), force(force), indicator(indicator), state(
+MotionSpot::MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, string name, MqttNode * parent):
+		MqttNode(name, parent), ctrl(ctrl), force(force), indicator(indicator), state(
 				&MotionSpotState::Auto), blink(indicator) {
 //	cout << "mspto " << hex << this <<endl;
 }
@@ -58,6 +58,9 @@ void MotionSpot::activateState() {
 	// set outputs according to state
 	ctrl.write(state->getCtrl());
 	force.write(state->getForce());
+
+	// mqtt notify
+	publish(name+"/state", state->getName());
 }
 
 void MotionSpot::notifyButton(int mode) {
@@ -92,9 +95,9 @@ MotionSpotState* autostates[] = { &MotionSpotState::ForcedOn,
 MotionSpotState* onstates[] = { &MotionSpotState::Off, &MotionSpotState::Off };
 
 /* three states for the motionspot */
-MotionSpotState MotionSpotState::Off("Off", 0, 0, offpattern, offstates);
-MotionSpotState MotionSpotState::Auto("Auto", 0, 1, autopattern, autostates);
-MotionSpotState MotionSpotState::ForcedOn("ForcedOn", 1, 0, onpattern,
+MotionSpotState MotionSpotState::Off("OFF", 0, 0, offpattern, offstates);
+MotionSpotState MotionSpotState::Auto("AUTO", 0, 1, autopattern, autostates);
+MotionSpotState MotionSpotState::ForcedOn("ON", 1, 0, onpattern,
 		onstates);
 
 MotionSpotState::MotionSpotState(const char * name, int force, int ctrl,
@@ -103,4 +106,22 @@ MotionSpotState::MotionSpotState(const char * name, int force, int ctrl,
 }
 
 MotionSpotState::~MotionSpotState() {
+}
+
+void MotionSpot::update(string const& path, string const & value){
+	MotionSpotState * prevState = state;
+	if ( value == MotionSpotState::ForcedOn.getName() )
+		state = &MotionSpotState::ForcedOn;
+	else if (value == MotionSpotState::Off.getName())
+		state = &MotionSpotState::Off;
+	else if (value == MotionSpotState::Auto.getName())
+		state = &MotionSpotState::Auto;
+	if (prevState != state)
+		activateState();
+}
+
+void MotionSpot::refresh(){
+	cout << "refresh " << name << endl;
+	subscribe(name + "/control");
+	publish(name+"/state", state->getName());
 }

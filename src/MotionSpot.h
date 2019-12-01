@@ -12,6 +12,7 @@
 #include "InPin.h"
 #include "OutPin.h"
 #include "Sequencer.h"
+#include "MqttNode.h"
 
 /* MotionSpot is a spotlight with motion detector control
  *
@@ -20,7 +21,7 @@
  * long press will switch between forced on and off
  * led will blink different patterns depending on mode
  */
-class MotionSpotState {
+class MotionSpotState{
 public:
 	virtual ~MotionSpotState();
 	MotionSpotState(const char * name, int force, int ctrl, SeqPattern &pat, MotionSpotState ** nextstate);
@@ -47,17 +48,21 @@ private:
 
 };
 
-class MotionSpot: public Actor, public sigslot::has_slots<> {
+class MotionSpot: public MqttNode, public Actor, public sigslot::has_slots<> {
 public:
 	virtual ~MotionSpot();
-	MotionSpot(const MotionSpot & orig): ctrl(orig.ctrl), force(orig.force), indicator(orig.indicator), state(orig.state), blink(orig.blink) {
-//		cout << "mspto() " << hex << this << " from " << &orig << endl;
+	MotionSpot(const MotionSpot & orig): MqttNode(orig), ctrl(orig.ctrl), force(orig.force), indicator(orig.indicator), state(orig.state), blink(orig.blink) {
 	}
-	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator);
+	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, string name, MqttNode * parent = NULL);
 	void setup();
 	void handle();
 	void shortpressed();
 	void longpressed();
+
+	// mqtt node
+	virtual void update(string const& path, string const & value);
+	virtual void refresh();
+
 
 private:
 	void activateState();

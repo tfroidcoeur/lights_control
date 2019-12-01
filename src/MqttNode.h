@@ -27,6 +27,7 @@ class MqttNode {
 public:
 	MqttNode( string const name, MqttNode * parent): name(name), parent(parent){}
 	MqttNode( string const name): name(name), parent(NULL){}
+	MqttNode(const MqttNode & orig): name(orig.name), parent(orig.parent){}
 	virtual ~MqttNode(){};
 	/* child node asks parent node to subscribe to the sub path provided
 	   this ripples up the tree until it reaches the root */

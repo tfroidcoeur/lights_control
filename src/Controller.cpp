@@ -86,9 +86,11 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 
 	// create spots
 	spotAA8 = new MotionSpot(Controller::outpinD[3], Controller::outpinD[4],
-					Controller::outpinD[5]);
+					Controller::outpinD[5], "AA8", huis);
+	huis->addNode(spotAA8);
 	spotCC2 = new MotionSpot(Controller::outpinD[0], Controller::outpinD[1],
-			Controller::outpinD[2]);
+			Controller::outpinD[2], "CC2", huis);
+	huis->addNode(spotCC2);
 }
 
 Controller::~Controller(){
