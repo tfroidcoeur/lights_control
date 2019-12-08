@@ -14,9 +14,7 @@
 #include <cpptest-assert.h>
 
 
-MotionSpotTest::~MotionSpotTest() {
-	// TODO Auto-generated destructor stub
-}
+MotionSpotTest::~MotionSpotTest() { }
 
 void MotionSpotTest::testBasic(){
 	// starts in mode auto

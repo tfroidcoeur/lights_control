@@ -53,7 +53,7 @@ public:
 	virtual ~MotionSpot();
 	MotionSpot(const MotionSpot & orig): MqttNode(orig), ctrl(orig.ctrl), force(orig.force), indicator(orig.indicator), state(orig.state), blink(orig.blink) {
 	}
-	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, string name, MqttNode * parent = NULL);
+	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, string name = string("anon"), MqttNode * parent = NULL);
 	void setup();
 	void handle();
 	void shortpressed();

@@ -5,6 +5,7 @@
 #include <iterator>
 #include <memory>
 #include "logging.h"
+#include <iostream>
 using namespace std;
 #include "MqttNode.h"
 
@@ -22,11 +23,8 @@ class MqttDirectory: public MqttNode{
 public:
    // MqttNode
 	MqttDirectory( string const name, MqttNode * parent):
-      MqttNode(name, parent) {
-
-      }
-	~MqttDirectory() {
-   }
+      MqttNode(name, parent) {}
+	~MqttDirectory() {}
 
    void addNode(MqttNode * child) {
       COUT_DEBUG( cout << "add child" << child->getName() << endl);
@@ -87,7 +85,7 @@ public:
    }
    virtual void refresh(){
      for (auto const& x : children) {
-        COUT_DEBUG( out << "refresh " << x.second->getName() << endl);
+        COUT_DEBUG( cout << "refresh " << x.second->getName() << endl);
         x.second->refresh();
      }
    }

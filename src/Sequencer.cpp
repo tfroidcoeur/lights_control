@@ -15,6 +15,7 @@
 #include <sstream>
 #include "logging.h"
 #include <iostream>
+#include <vector>
 using namespace std;
 
 

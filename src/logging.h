@@ -6,6 +6,7 @@
  */
 
 #include <ArduinoSTL.h>
+#include <iostream>
 using namespace std;
 #undef COUT_DEBUG
 #undef COUT_INFO
