@@ -14,8 +14,6 @@
 #include "logging.h"
 using namespace std;
 
-#define DEBOUNCETIME 20
-
 int InPin::read() {
 	return digitalRead(id);
 }
@@ -40,7 +38,7 @@ int InPin::debounce() {
 		// if changed from last read, reset the d timer
 		this->d.changetime = now;
 		COUT_DEBUG(cout << "debouncing input pin:" << this->id << endl);
-	} else if (val != this->d.stableval && elapsed > DEBOUNCETIME) {
+	} else if (val != this->d.stableval && elapsed > debouncetime) {
 		// new stable value
 		COUT_DEBUG(cout << "dd input pin:" << this->id << " to value " << val << endl);
 		this->d.stableval = val;
@@ -49,8 +47,7 @@ int InPin::debounce() {
 	return false;
 }
 
-InPin::InPin(int id){
-	this->id=id;
+InPin::InPin(int id, uint32_t debouncetime): id(id), debouncetime(debouncetime){
 	// if someone is pressing a button during boot, it
 	// will be dd and then reported as a buttonpush
 	d.readval = d.stableval = 0;
@@ -67,6 +64,6 @@ void InPin::handle() {
 		// state changed after debouncing
 		// call state change handler
 		COUT_DEBUG(cout << "dd input pin:" << id << " emit " << hex << &changed << dec << endl);
-		changed.emit(this->d.stableval);
+		changed.emit(d.stableval);
 	}
 }
