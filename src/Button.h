@@ -61,8 +61,7 @@ std::ostream &operator<<(std::ostream &os, const ButtonMode & m);
 
 class Button: public sigslot::has_slots<>, public Actor {
 public:
-	Button() :
-			started(0), pending(false) {
+	Button() : started(0), pending(false) {
 		curmode = modes.begin();
 //		cout << "create but " << hex << this << dec<< endl;
 	}
@@ -76,8 +75,7 @@ public:
 //		cout << "copy but " << hex << &orig << dec << endl;
 	}
 
-	Button(InPin & p)  :
-			started(0), pending(false) {
+	Button(InPin & p)  : started(0), pending(false) {
 //		COUT_DEBUG(cout << " attach but " << hex << this << " to " << &p << dec << endl);
 		curmode = modes.begin();
 		p.changed.connect(this, &Button::pinChanged);
@@ -101,8 +99,7 @@ public:
 
 	void pinChanged(int value);
 
-	virtual void setup() {
-	}
+	virtual void setup() { }
 
 	virtual void handle();
 
