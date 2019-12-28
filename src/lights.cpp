@@ -49,16 +49,18 @@ void setup() {
 	Serial.begin(9600);
 	cout << "free: " << freeMemory() <<endl;
 	controller.setup();
+	cout << "controller setup done" << endl;
 
 #ifdef USE_NET
-//	Ethernet.begin(mac, ip, dns, gw, netmask);
-	Ethernet.begin(mac);
+	Ethernet.begin(mac, ip, dns, gw, netmask);
+	// Ethernet.begin(mac);
 	// crazy chip: 500 = 50ms
 	// and w the ##$@$ do you wait for UDP to succeed
 	// TODO make sure the crazy chip does send the UDP packet,
 	// check what normal times are for this process
 	W5100.setRetransmissionTime(500);
 	W5100.setRetransmissionCount(1);
+	cout << "net setup done" << endl;
 #endif
 #ifdef USE_NTP
 	ntpclient.begin();
