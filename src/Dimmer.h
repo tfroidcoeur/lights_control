@@ -33,6 +33,7 @@ public:
 	virtual void update(string const& path, string const & value);
 	virtual void refresh();
 private:
+	bool isBlocked() { return seq.isRunning();}
 	Sequencer seq;
 	PassThrough passthrough;
 	OutPin & out;
