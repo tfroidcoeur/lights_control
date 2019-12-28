@@ -84,7 +84,7 @@ void Dimmer::setup() {
 }
 
 void Dimmer::update(string const& path, string const & value){
-	cout << "update " << name << " " << path << " " <<value <<endl;
+	COUT_DEBUG(cout << "update " << name << " " << path << " " <<value <<endl);
 	if (path == "control") {
 		if (value == "ON") {
 			this->on();
@@ -93,7 +93,7 @@ void Dimmer::update(string const& path, string const & value){
 		}
 	} else if (path == "pulse") {
 		int duration = std::atoi(value.c_str());
-	passthrough.disable();
+		passthrough.disable();
 		cout << "pulse...";
 		out.write(0);
 		delay(500);
@@ -101,7 +101,7 @@ void Dimmer::update(string const& path, string const & value){
 		delay(duration);
 		out.write(0);
 		cout << "done" << endl;
-	passthrough.enable();
+		passthrough.enable();
 	} else if (path == "dimSpeed") {
 		dimSpeed=std::atof(value.c_str());
 	} else if (path == "dimThreshOff") {
