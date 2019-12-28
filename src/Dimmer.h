@@ -41,6 +41,11 @@ private:
 	static SeqPattern * offSequence;
 	static SeqPattern * testSequence;
 	bool laststate;
+	/* percent per second*/
+	float dimSpeed;
+	/* millis to press button before dim kicks in for off and on state */
+	float dimThreshOnMs;
+	float dimThreshOffMs;
 };
 
 #endif /* DIMMER_H_ */
