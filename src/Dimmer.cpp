@@ -41,6 +41,11 @@ SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
 SeqPattern * Dimmer::testSequence = NULL;
 
 void Dimmer::on() {
+	if (isBlocked()){
+		COUT_DEBUG( cout << "Dimmer blocked" << endl);
+		return;
+	}
+
 	if (!isOn()) {
 		COUT_DEBUG( cout << "Starting dimmer on" << endl);
 		laststate = true;
@@ -50,6 +55,10 @@ void Dimmer::on() {
 	publish(name+"/state", "ON");
 }
 void Dimmer::off() {
+	if (isBlocked()){
+		COUT_DEBUG( cout << "Dimmer blocked" << endl);
+		return;
+	}
 	COUT_DEBUG( cout << "Starting dimmer off"<< endl);
 	laststate = false;
 	passthrough.disable();
