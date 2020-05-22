@@ -1,6 +1,6 @@
 [submodule "lib/ArduinoSTL"]
 	path = lib/ArduinoSTL
-	url = https://github.com/mike-matera/ArduinoSTL.git
+	url = ssh://home.froidcoeur.net/public/git_repos/ArduinoSTL 
 [submodule "lib/Ethernet"]
 	path = lib/Ethernet
 	url = https://github.com/arduino-libraries/Ethernet.git
@@ -12,7 +12,7 @@
 	url = https://github.com/CONTROLLINO-PLC/CONTROLLINO_Library.git
 [submodule "lib/ntpclient"]
 	path = lib/ntpclient
-	url = https://github.com/arduino-libraries/NTPClient.git
+	url = ssh://home.froidcoeur.net/public/git_repos/ntpclient 
 [submodule "lib/sigslot"]
 	path = lib/sigslot
 	url = https://github.com/KubaO/sigslot
