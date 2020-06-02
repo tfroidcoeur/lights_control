@@ -183,7 +183,8 @@ $(BUILD)/lights.hex: $(BUILD)/lights.elf
 $(BUILD)/lights.elf: $(PROJECT_OBJS) $(LIBRARIES_OBJS) $(BUILD)/core.a
 	$(GCC) -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu=atmega2560  -o "$(BUILD)/lights.elf" $(PROJECT_OBJS) $(LIBRARIES_OBJS) "$(BUILD)/core.a" "-L." -lm
 
-$(BUILD)/core.a:	$(PLATFORM_CORE_OBJS) $(PLATFORM_VARIANT_OBJS)
+$(BUILD)/core.a: $(PLATFORM_CORE_OBJS) $(PLATFORM_VARIANT_OBJS)
+	$(AR) rcs  "$(BUILD)/core.a" $?
 
 clean:
 	-$(RMDIR) $(BUILD)
@@ -198,22 +199,18 @@ $(BUILD)/src/%.cpp.o: src/%.cpp $(CONTROLLINO_BOARDS)
 $(BUILD)/core/%.cpp.o: $(CORELIB)/cores/arduino/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
-	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/core/%.cpp.o: $(CORELIB)/libraries/HID/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GPP) $(CPPFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
-	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/core/%.c.o: $(CORELIB)/cores/arduino/%.c $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
-	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/lib/mqtt/lwmqtt/%.o: $(MQTTLIB)/src/lwmqtt/%.c $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
-	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/lib/Ethernet/src/%.cpp.o:  $(ETHERNETLIB)/src/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
@@ -246,7 +243,6 @@ $(BUILD)/lib/%.cpp.o: $(LIBRARIES)/%.cpp $(CONTROLLINO_BOARDS)
 $(BUILD)/core/%.S.o: $(CORELIB)/cores/arduino/%.S $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(ASFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
-	$(AR) rcs  "$(BUILD)/core.a" "$@"
 
 $(BUILD)/lib/memoryfree/%.o:  $(MEMFREELIB)/%.cpp $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
