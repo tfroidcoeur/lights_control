@@ -20,7 +20,9 @@ private:
 public:
 	DebouncedInput(Input * in, uint32_t debouncetime=20);
 	Input * getRawInput() { return in;}
-	virtual ~DebouncedInput(){};
+	virtual ~DebouncedInput(){
+		delete  in;
+	};
 	/* Input */
 	virtual int read();
 	/* NotifiedInput */

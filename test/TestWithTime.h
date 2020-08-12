@@ -17,8 +17,8 @@ public:
 	virtual ~TestWithTime();
 	void advanceTimeAbit(int delay=100, int inc=10);
 protected:
-	void setup();
-	void tear_down();
+	virtual void setup();
+	virtual void tear_down();
 protected:
 	Time * time;
 	Time * orig;

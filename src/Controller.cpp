@@ -107,6 +107,16 @@ Controller::~Controller(){
 		delete *it;
 	}
 
+	for(std::vector<OutPin*>::iterator it = relay.begin(); it != relay.end(); ++it) {
+		delete *it;
+	}
+
+	for(std::vector<OutPin*>::iterator it = outpinD.begin(); it != outpinD.end(); ++it) {
+		delete *it;
+	}
+
+	delete huis;
+
 	delete teleruptorCA2;
 	delete teleruptorCC3;
 	delete teleruptorCA4;

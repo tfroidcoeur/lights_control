@@ -25,9 +25,15 @@ struct SeqElement {
 /**
  * a seq pattern is a series of seq elements plus some info
  */
-struct SeqPattern {
-	int repeatcount;
-	struct SeqElement * elements;
+class SeqPattern {
+	public:
+		int repeatcount;
+		struct SeqElement * elements;
+	SeqPattern(int repeatcount = 0, struct SeqElement * elements = NULL) :
+		repeatcount(repeatcount), elements(elements) {}
+	virtual ~SeqPattern(){
+		if (elements) delete [] elements;
+	}
 };
 
 /**
@@ -56,7 +62,7 @@ private:
 	void activate();
 	OutPin * out;
 	int origvalue;
-	struct SeqPattern * pattern;
+	SeqPattern * pattern;
 	unsigned long startTime;
 	int activeStep;
 	int repeatcount;

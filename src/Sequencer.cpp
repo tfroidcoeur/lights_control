@@ -92,7 +92,7 @@ void Sequencer::handle() {
 	}
 }
 
-void Sequencer::start(struct SeqPattern * pattern) {
+void Sequencer::start(SeqPattern * pattern) {
 	this->pattern = pattern;
 	startTime = millis();
 	activeStep = 0;
@@ -107,7 +107,7 @@ void Sequencer::start(struct SeqPattern * pattern) {
 SeqPattern * Sequencer::createPattern(std::string pat){
 	std::istringstream is(pat);
 	std::vector<SeqElement> elements;
-	SeqPattern * result = new SeqPattern;
+	SeqPattern * result = new SeqPattern();
 	std::string seqstr;
 
 	/* arduino ulibc++ getline does not return false when done !*/

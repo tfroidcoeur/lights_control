@@ -16,8 +16,8 @@ public:
 	ControllerTest();
 	virtual ~ControllerTest();
 
-	void setup();
-	void tear_down();
+	virtual void setup();
+	virtual void tear_down();
 
 private:
 	void testTeleruptors();

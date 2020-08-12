@@ -92,8 +92,8 @@ private:
 		Time &t=*time;
 
 		// pin under test
-		InPin pin(CONTROLLINO_A1);
-		DebouncedInput p(&pin);
+		InPin * pin = new InPin (CONTROLLINO_A1);
+		DebouncedInput p(pin);
 		p.getChangeSignal().connect(this, &InPinTest::notify);
 		p.setup();
 
