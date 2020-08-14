@@ -72,7 +72,6 @@ public:
    static void __messageReceived(String &topic, String &payload);
 
    void messageReceived(String &topic, String &payload) {
-      cout << "free: " << freeMemory() <<endl;
       #ifdef DEBUG
       string msg = string("incoming: ") + topic.c_str() + " - " + payload.c_str();
       Serial.println(msg.c_str());
