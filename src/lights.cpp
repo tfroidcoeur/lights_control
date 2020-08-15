@@ -47,6 +47,7 @@ NTPClient ntpclient(udp, "10.0.0.1", 0, NTP_PERIOD, 100);
 // the setup function runs once when you press reset (CONTROLLINO RST button) or connect the CONTROLLINO to the PC
 void setup() {
 	Serial.begin(115200);
+	cout << "size of Controller " << sizeof(Controller) << endl;
 	cout << "Lights version " << VERSION << endl;
 	cout << "free: " << freeMemory() <<endl;
 	controller.setup();

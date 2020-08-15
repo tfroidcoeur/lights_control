@@ -15,10 +15,15 @@
 #include "Input.h"
 #include "MqttDirectory.h"
 
-
 Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(500,2000), buttonCA8(500,2000), buttonDM2(500,2000){
 	// create pins
 
+	COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);
+	COUT_DEBUG(cout << "size of SimpleButton " << sizeof(SimpleButton) << endl);
+	COUT_DEBUG(cout << "size of Teleruptor " << sizeof(Teleruptor) << endl);
+	COUT_DEBUG(cout << "size of FunAction<Teleruptor> " << sizeof(FunAction<Teleruptor>) << endl);
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "pins A" << endl);
 	// inpinsA
 	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A0)));
 	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A1)));
@@ -31,10 +36,14 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A8)));
 	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A9)));
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "pins INT" << endl);
 	// inpin INT
 	inpinInt.push_back(new DebouncedInput(new InPin(CONTROLLINO_IN0)));
 	inpinInt.push_back(new DebouncedInput(new InPin(CONTROLLINO_IN1)));
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG( cout << "pins relay" << endl);
 	// outpins, relay
 	relay.push_back(new OutPin(CONTROLLINO_RELAY_00));
 	relay.push_back(new OutPin(CONTROLLINO_RELAY_01));
@@ -47,6 +56,8 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	relay.push_back(new OutPin(CONTROLLINO_RELAY_08));
 	relay.push_back(new OutPin(CONTROLLINO_RELAY_09));
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "pins D" << endl);
 	// outpins, digital
 	outpinD.push_back(new OutPin(CONTROLLINO_D0));
 	outpinD.push_back(new OutPin(CONTROLLINO_D1));
@@ -61,10 +72,14 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	outpinD.push_back(new OutPin(CONTROLLINO_D10));
 	outpinD.push_back(new OutPin(CONTROLLINO_D11));
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "huis" << endl);
 	// Mqtt directories
 	huis = new MqttDirectory(string("home"), &mqtt);
 	mqtt.setChild(huis);
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG( cout << "teleruptors" << endl);
 	// Teleruptors
 	teleruptorCA2 = new Teleruptor(inpinA[2], relay[2], "CA2", huis);
 	huis->addNode(teleruptorCA2);
@@ -83,12 +98,16 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	teleruptorDM2 = new Teleruptor(buttonDM2.shortpress, relay[9], "DM2", huis);
 	huis->addNode(teleruptorDM2);
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "dimmers" << endl);
 	// Dimmers (passthrough)
 	dimmerCB1 = new Dimmer(inpinA[0]->getRawInput(), outpinD[10], "CB1", huis);
 	huis->addNode(dimmerCB1);
 	dimmerCB2 = new Dimmer(inpinA[1]->getRawInput(), outpinD[11], "CB2", huis);
 	huis->addNode(dimmerCB2);
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "spots" << endl);
 	// create spots
 	spotAA8 = new MotionSpot(*outpinD[3], *outpinD[4],
 					*outpinD[5], "AA8", huis);
@@ -96,6 +115,7 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	spotCC2 = new MotionSpot(*outpinD[0], *outpinD[1],
 			*outpinD[2], "CC2", huis);
 	huis->addNode(spotCC2);
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 }
 
 Controller::~Controller(){
@@ -208,14 +228,24 @@ void Controller::setupMotionSpots() {
 void Controller::setup() {
 	vector<DebouncedInput*>::iterator init;
 	vector<OutPin*>::iterator outit;
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Setup spots" << endl);
 	setupMotionSpots();
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Setup living" << endl);
 	setupLivingGlobal();
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Setup global" << endl);
 	setupGlobal();
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Setup bureau" << endl);
 	setupBureau();
-
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Connect CC2" << endl);
 	// connect the unused short press of CC2 to control the lamp CC3
 	buttonCC2.shortpress.connect(teleruptorCC3, &Teleruptor::pressed);
 
+	COUT_DEBUG( cout << "Add actors" << endl);
 	r.addActor(&mqtt);
 	for (init = inpinA.begin(); init != inpinA.end(); init++) {
 		r.addActor(*init);
@@ -233,6 +263,8 @@ void Controller::setup() {
 		r.addActor(*outit);
 	}
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Add actors teleruptors" << endl);
 	r.addActor(teleruptorCA2);
 	r.addActor(teleruptorCC3);
 	r.addActor(teleruptorCA4);
@@ -242,9 +274,13 @@ void Controller::setup() {
 	r.addActor(teleruptorCA8);
 	r.addActor(teleruptorDM2);
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Add actors dimmers" << endl);
 	r.addActor(dimmerCB1);
 	r.addActor(dimmerCB2);
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Add actors buttons" << endl);
 	r.addActor(&buttonCA4);
 	r.addActor(&buttonCA6);
 	r.addActor(&buttonCA7);
@@ -255,6 +291,8 @@ void Controller::setup() {
 	r.addActor(&buttonAA8);
 	r.addActor(&buttonCC2);
 
+	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	COUT_DEBUG(cout << "Run all actor setups" << endl);
 	r.setup();
 }
 
