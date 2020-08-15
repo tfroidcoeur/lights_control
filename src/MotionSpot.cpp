@@ -22,7 +22,7 @@ MotionSpot::~MotionSpot() {
 //}
 
 MotionSpot::MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, string name, MqttNode * parent):
-		MqttNode(name, parent), ctrl(ctrl), force(force), indicator(indicator), state(
+		MqttNode(name, parent), ctrl(&ctrl), force(&force), indicator(&indicator), state(
 				&MotionSpotState::Auto), blink(indicator) {
 //	cout << "mspto " << hex << this <<endl;
 }
@@ -33,9 +33,9 @@ void MotionSpot::handle() {
 }
 
 void MotionSpot::setup() {
-	ctrl.setup();
-	force.setup();
-	indicator.setup();
+	ctrl->setup();
+	force->setup();
+	indicator->setup();
 	blink.setup();
 
 	// reset all pins according to state
@@ -56,8 +56,8 @@ void MotionSpot::activateState() {
 	blink.start(state->getPattern());
 
 	// set outputs according to state
-	ctrl.write(state->getCtrl());
-	force.write(state->getForce());
+	ctrl->write(state->getCtrl());
+	force->write(state->getForce());
 
 	// mqtt notify
 	publish(name+"/state", state->getName());

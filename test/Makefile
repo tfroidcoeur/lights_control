@@ -1,6 +1,6 @@
-CONTROLLINO_DIR=/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library/
 MAIN_DIR = ../src
 LIB_DIR=../lib
+CONTROLLINO_DIR=../lib/controllino/
 SIGSLOT_LIB=$(LIB_DIR)/sigslot
 
 CXXFLAGS =	-O0 -g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declarations

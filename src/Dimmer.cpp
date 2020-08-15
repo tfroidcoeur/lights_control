@@ -11,8 +11,9 @@
 #include <iostream>
 #include <string>
 
-Dimmer::Dimmer(InPin & inpin, OutPin & outpin, string name, MqttNode * parent) :
-		MqttNode(name, parent), seq(outpin), passthrough(inpin,outpin),laststate(false), out(outpin)
+Dimmer::Dimmer(Input * in, OutPin * outpin, string name, MqttNode * parent) :
+		MqttNode(name, parent), laststate(false), out(*outpin),
+		passthrough(*in,*outpin), seq(*outpin), tracker(*in)
 {
 }
 
@@ -54,6 +55,7 @@ void Dimmer::on() {
 	}
 	publish(name+"/state", "ON");
 }
+
 void Dimmer::off() {
 	if (isBlocked()){
 		COUT_DEBUG( cout << "Dimmer blocked" << endl);
@@ -65,6 +67,7 @@ void Dimmer::off() {
 	seq.start(offSequence);
 	publish(name+"/state", "OFF");
 }
+
 bool Dimmer::isOn() {
 	/* worthless guess at possible state of the dimmer */
 	return laststate;
@@ -103,14 +106,27 @@ void Dimmer::update(string const& path, string const & value){
 		cout << "done" << endl;
 		passthrough.enable();
 	} else if (path == "dimSpeed") {
-		dimSpeed=std::atof(value.c_str());
+		tracker.dimSpeed=std::atof(value.c_str());
 	} else if (path == "dimThreshOff") {
-		dimThreshOffMs=std::atof(value.c_str());
+		tracker.dimThreshOffMs=std::atof(value.c_str());
 	} else if (path == "dimThreshOn") {
-		dimThreshOnMs=std::atof(value.c_str());
+		tracker.dimThreshOnMs=std::atof(value.c_str());
+	} else {
+		tracker.update(path, value);
 	}
 
+}
 
+void DimmerTracker::update(string const &path, string const &value) {
+  COUT_DEBUG(cout << "tracker update " << name << " " << path << " " << value << endl);
+
+  if (path == "dimSpeed") {
+    dimSpeed = std::atof(value.c_str());
+  } else if (path == "dimThreshOff") {
+    dimThreshOffMs = std::atof(value.c_str());
+  } else if (path == "dimThreshOn") {
+    dimThreshOnMs = std::atof(value.c_str());
+  }
 }
 
 void Dimmer::refresh(){

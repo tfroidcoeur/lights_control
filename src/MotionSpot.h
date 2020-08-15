@@ -66,9 +66,9 @@ public:
 
 private:
 	void activateState();
-	OutPin &ctrl;
-	OutPin &force;
-	OutPin &indicator;
+	OutPin *ctrl;
+	OutPin *force;
+	OutPin *indicator;
 	MotionSpotState * state;
 	Sequencer blink;
 	void notifyButton(int mode);

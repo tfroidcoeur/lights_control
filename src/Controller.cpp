@@ -11,6 +11,8 @@
 
 #include "Button.h"
 #include "Action.h"
+#include "DebouncedInput.h"
+#include "Input.h"
 #include "MqttDirectory.h"
 
 
@@ -18,45 +20,46 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	// create pins
 
 	// inpinsA
-	inpinA.push_back(InPin(CONTROLLINO_A0));
-	inpinA.push_back(InPin(CONTROLLINO_A1));
-	inpinA.push_back(InPin(CONTROLLINO_A2));
-	inpinA.push_back(InPin(CONTROLLINO_A3));
-	inpinA.push_back(InPin(CONTROLLINO_A4));
-	inpinA.push_back(InPin(CONTROLLINO_A5));
-	inpinA.push_back(InPin(CONTROLLINO_A6));
-	inpinA.push_back(InPin(CONTROLLINO_A7));
-	inpinA.push_back(InPin(CONTROLLINO_A8));
-	inpinA.push_back(InPin(CONTROLLINO_A9));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A0)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A1)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A2)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A3)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A4)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A5)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A6)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A7)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A8)));
+	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A9)));
 
 	// inpin INT
-	inpinInt.push_back(InPin(CONTROLLINO_IN0));
-	inpinInt.push_back(InPin(CONTROLLINO_IN1));
+	inpinInt.push_back(new DebouncedInput(new InPin(CONTROLLINO_IN0)));
+	inpinInt.push_back(new DebouncedInput(new InPin(CONTROLLINO_IN1)));
+
 	// outpins, relay
-	relay.push_back(OutPin(CONTROLLINO_RELAY_00));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_01));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_02));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_03));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_04));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_05));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_06));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_07));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_08));
-	relay.push_back(OutPin(CONTROLLINO_RELAY_09));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_00));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_01));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_02));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_03));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_04));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_05));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_06));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_07));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_08));
+	relay.push_back(new OutPin(CONTROLLINO_RELAY_09));
 
 	// outpins, digital
-	outpinD.push_back(OutPin(CONTROLLINO_D0));
-	outpinD.push_back(OutPin(CONTROLLINO_D1));
-	outpinD.push_back(OutPin(CONTROLLINO_D2));
-	outpinD.push_back(OutPin(CONTROLLINO_D3));
-	outpinD.push_back(OutPin(CONTROLLINO_D4));
-	outpinD.push_back(OutPin(CONTROLLINO_D5));
-	outpinD.push_back(OutPin(CONTROLLINO_D6));
-	outpinD.push_back(OutPin(CONTROLLINO_D7));
-	outpinD.push_back(OutPin(CONTROLLINO_D8));
-	outpinD.push_back(OutPin(CONTROLLINO_D9));
-	outpinD.push_back(OutPin(CONTROLLINO_D10));
-	outpinD.push_back(OutPin(CONTROLLINO_D11));
+	outpinD.push_back(new OutPin(CONTROLLINO_D0));
+	outpinD.push_back(new OutPin(CONTROLLINO_D1));
+	outpinD.push_back(new OutPin(CONTROLLINO_D2));
+	outpinD.push_back(new OutPin(CONTROLLINO_D3));
+	outpinD.push_back(new OutPin(CONTROLLINO_D4));
+	outpinD.push_back(new OutPin(CONTROLLINO_D5));
+	outpinD.push_back(new OutPin(CONTROLLINO_D6));
+	outpinD.push_back(new OutPin(CONTROLLINO_D7));
+	outpinD.push_back(new OutPin(CONTROLLINO_D8));
+	outpinD.push_back(new OutPin(CONTROLLINO_D9));
+	outpinD.push_back(new OutPin(CONTROLLINO_D10));
+	outpinD.push_back(new OutPin(CONTROLLINO_D11));
 
 	// Mqtt directories
 	huis = new MqttDirectory(string("home"), &mqtt);
@@ -81,29 +84,27 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	huis->addNode(teleruptorDM2);
 
 	// Dimmers (passthrough)
-	dimmerCB1 = new Dimmer(inpinA[0], outpinD[10], "CB1", huis);
+	dimmerCB1 = new Dimmer(inpinA[0]->getRawInput(), outpinD[10], "CB1", huis);
 	huis->addNode(dimmerCB1);
-	dimmerCB2 = new Dimmer(inpinA[1], outpinD[11], "CB2", huis);
+	dimmerCB2 = new Dimmer(inpinA[1]->getRawInput(), outpinD[11], "CB2", huis);
 	huis->addNode(dimmerCB2);
 
 	// create spots
-	spotAA8 = new MotionSpot(Controller::outpinD[3], Controller::outpinD[4],
-					Controller::outpinD[5], "AA8", huis);
+	spotAA8 = new MotionSpot(*outpinD[3], *outpinD[4],
+					*outpinD[5], "AA8", huis);
 	huis->addNode(spotAA8);
-	spotCC2 = new MotionSpot(Controller::outpinD[0], Controller::outpinD[1],
-			Controller::outpinD[2], "CC2", huis);
+	spotCC2 = new MotionSpot(*outpinD[0], *outpinD[1],
+			*outpinD[2], "CC2", huis);
 	huis->addNode(spotCC2);
 }
 
 Controller::~Controller(){
-	// TODO: delete actions in global1actions
-	// TODO: delete buttons
-	for(std::vector<InPin>::iterator it = inpinA.begin(); it != inpinA.end(); ++it) {
-		it->changed.disconnect_all();
+	for(std::vector<DebouncedInput*>::iterator it = inpinA.begin(); it != inpinA.end(); ++it) {
+		delete *it;
 	}
 
-	for(std::vector<InPin>::iterator it = inpinInt.begin(); it != inpinInt.end(); ++it) {
-		it->changed.disconnect_all();
+	for(std::vector<DebouncedInput*>::iterator it = inpinInt.begin(); it != inpinInt.end(); ++it) {
+		delete *it;
 	}
 
 	delete teleruptorCA2;
@@ -134,13 +135,13 @@ void Controller::setupLivingGlobal(){
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2, &Teleruptor::save));
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2, &Teleruptor::off));
 
-	buttonCA4.attach(inpinA[4].changed);
+	buttonCA4.attach(inpinA[4]->getChangeSignal());
 	buttonCA4.longpress.connect(&living_off_actions, &ActionList::doit);
 
-	buttonCA6.attach(inpinA[6].changed);
+	buttonCA6.attach(inpinA[6]->getChangeSignal());
 	buttonCA6.longpress.connect(&living_off_actions, &ActionList::doit);
 
-	buttonDM2.attach(inpinA[9].changed);
+	buttonDM2.attach(inpinA[9]->getChangeSignal());
 	buttonDM2.longpress.connect(&living_off_actions, &ActionList::doit);
 }
 
@@ -148,9 +149,9 @@ void Controller::setupBureau(){
 	bureau_off_actions.append(new FunAction<Teleruptor>(teleruptorCA7, &Teleruptor::off));
 	bureau_off_actions.append(new FunAction<Teleruptor>(teleruptorCA8, &Teleruptor::off));
 
-	buttonCA7.attach(inpinA[7].changed);
+	buttonCA7.attach(inpinA[7]->getChangeSignal());
 	buttonCA7.longpress.connect(&bureau_off_actions, &ActionList::doit);
-	buttonCA8.attach(inpinA[8].changed);
+	buttonCA8.attach(inpinA[8]->getChangeSignal());
 	buttonCA8.longpress.connect(&bureau_off_actions, &ActionList::doit);
 }
 
@@ -183,20 +184,20 @@ void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butsh
 }
 
 void Controller::setupMotionSpots() {
-	buttonAA8.attach(inpinInt[1].changed);
+	buttonAA8.attach(inpinInt[1]->getChangeSignal());
 	connectMotionSpot(*spotAA8, &buttonAA8.shortpress,NULL);
 	spotAA8->setup();
 	r.addActor(spotAA8);
 
-	buttonCC2.attach(inpinInt[0].changed);
+	buttonCC2.attach(inpinInt[0]->getChangeSignal());
 	connectMotionSpot(*spotCC2, &buttonCC2.longpress, NULL);
 	spotCC2->setup();
 	r.addActor(spotCC2);
 }
 
 void Controller::setup() {
-	vector<InPin>::iterator init;
-	vector<OutPin>::iterator outit;
+	vector<DebouncedInput*>::iterator init;
+	vector<OutPin*>::iterator outit;
 	setupMotionSpots();
 	setupLivingGlobal();
 	setupGlobal();
@@ -207,19 +208,19 @@ void Controller::setup() {
 
 	r.addActor(&mqtt);
 	for (init = inpinA.begin(); init != inpinA.end(); init++) {
-		r.addActor(&(*init));
+		r.addActor(*init);
 	}
 
 	for (init = inpinInt.begin(); init != inpinInt.end(); init++) {
-		r.addActor(&(*init));
+		r.addActor(*init);
 	}
 
 	for (outit = outpinD.begin(); outit != outpinD.end(); outit++) {
-		r.addActor(&(*outit));
+		r.addActor(*outit);
 	}
 
 	for (outit = relay.begin(); outit != relay.end(); outit++) {
-		r.addActor(&(*outit));
+		r.addActor(*outit);
 	}
 
 	r.addActor(teleruptorCA2);

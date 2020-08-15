@@ -63,6 +63,7 @@ PROJECT_OBJS = \
 	$(BUILD)/src/Controller.cpp.o \
 	$(BUILD)/src/Dimmer.cpp.o \
 	$(BUILD)/src/InPin.cpp.o \
+	$(BUILD)/src/DebouncedInput.cpp.o \
 	$(BUILD)/src/MotionSpot.cpp.o \
 	$(BUILD)/src/OutPin.cpp.o \
 	$(BUILD)/src/Runner.cpp.o \

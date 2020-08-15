@@ -54,7 +54,7 @@ public:
 	static SeqPattern * createPattern(std::string pat);
 private:
 	void activate();
-	OutPin & out;
+	OutPin * out;
 	int origvalue;
 	struct SeqPattern * pattern;
 	unsigned long startTime;

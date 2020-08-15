@@ -9,18 +9,19 @@
 #include "Arduino.h"
 #include "ArduinoSTL.h"
 //#define DEBUG
+#include "Input.h"
 #include "logging.h"
 using namespace std;
 
 string const Teleruptor::ON = "ON";
 string const Teleruptor::OFF = "OFF";
 
-Teleruptor::Teleruptor(InPin & inpin , OutPin & outpin, string name, MqttNode * parent):
-		MqttNode(name, parent), out(outpin), savedstate(false) {
-	inpin.changed.connect(this, &Teleruptor::notifyInPin);
+Teleruptor::Teleruptor(NotifiedInput * inpin , OutPin * outpin, string name, MqttNode * parent):
+		MqttNode(name, parent), out(*outpin), savedstate(false) {
+	inpin->getChangeSignal().connect(this, &Teleruptor::notifyInPin);
 }
-Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin & outpin, string name, MqttNode * parent):
-		MqttNode(name, parent), out(outpin), savedstate(false) {
+Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin * outpin, string name, MqttNode * parent):
+		MqttNode(name, parent), out(*outpin), savedstate(false) {
 	sig.connect(this, &Teleruptor::toggle);
 }
 

@@ -17,7 +17,7 @@
 
 class PassThrough: public Actor, public sigslot::has_slots<> {
 public:
-	PassThrough(InPin & in, OutPin & out, bool enabled = true) :
+	PassThrough(Input & in, OutPin & out, bool enabled = true) :
 			in(in), out(out), enabled(enabled) {
 	}
 	virtual ~PassThrough(){};
@@ -37,7 +37,7 @@ public:
 	}
 	virtual void setup(void){};
 private:
-	InPin & in;
+	Input & in;
 	OutPin & out;
 	bool enabled;
 };

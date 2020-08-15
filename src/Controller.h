@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "Action.h"
+#include "DebouncedInput.h"
 #include "Dimmer.h"
 #include "InPin.h"
 #include "MotionSpot.h"
@@ -34,10 +35,10 @@ private:
 	void setupLivingGlobal();
 	void setupBureau();
 	void setupGlobal();
-	vector<InPin> inpinA;
-	vector<OutPin> relay;
-	vector<OutPin> outpinD;
-	vector<InPin>inpinInt;
+	vector<DebouncedInput*> inpinA;
+	vector<OutPin*> relay;
+	vector<OutPin*> outpinD;
+	vector<DebouncedInput*> inpinInt;
 
 	Runner r;
 

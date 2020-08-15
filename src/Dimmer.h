@@ -14,10 +14,26 @@
 #include "Sequencer.h"
 #include "Switchable.h"
 #include "MqttNode.h"
+#include "sigslot.h"
+
+class DimmerTracker : public sigslot::has_slots<>{
+public:
+  DimmerTracker(Input &in) : in(in){};
+  void update(string const& path, string const & value);
+
+  /* percent per second*/
+  float dimSpeed;
+  /* millis to press button before dim kicks in for off and on state */
+  float dimThreshOnMs;
+  float dimThreshOffMs;
+
+private:
+  Input &in;
+};
 
 class Dimmer: public Switchable, public Actor, public MqttNode {
 public:
-	Dimmer(InPin & inpin, OutPin & outpin, string name, MqttNode * parent = NULL) ;
+	Dimmer(Input * in, OutPin * outpin, string name, MqttNode * parent = NULL) ;
 	virtual ~Dimmer();
 
 	/* Switchable */
@@ -34,18 +50,14 @@ public:
 	virtual void refresh();
 private:
 	bool isBlocked() { return seq.isRunning();}
-	Sequencer seq;
-	PassThrough passthrough;
+	bool laststate;
 	OutPin & out;
+	PassThrough passthrough;
+	Sequencer seq;
+	DimmerTracker tracker;
 	static SeqPattern * onSequence;
 	static SeqPattern * offSequence;
 	static SeqPattern * testSequence;
-	bool laststate;
-	/* percent per second*/
-	float dimSpeed;
-	/* millis to press button before dim kicks in for off and on state */
-	float dimThreshOnMs;
-	float dimThreshOffMs;
 };
 
 #endif /* DIMMER_H_ */

@@ -43,6 +43,8 @@
 #include <iostream>
 
 #include "ButtonTest.h"
+#include "DebouncedInput.h"
+#include "Input.h"
 #include "MotionSpotTest.h"
 #include "ControllerTest.h"
 #include "SequencerTest.h"
@@ -90,8 +92,9 @@ private:
 		Time &t=*time;
 
 		// pin under test
-		InPin p(CONTROLLINO_A1);
-		p.changed.connect(this, &InPinTest::notify);
+		InPin pin(CONTROLLINO_A1);
+		DebouncedInput p(&pin);
+		p.getChangeSignal().connect(this, &InPinTest::notify);
 		p.setup();
 
 		// run the pin a first time
@@ -106,7 +109,6 @@ private:
 
 		// now activate the input pin
 		digitalWrite(CONTROLLINO_A1,1);
-
 
 		// the pin should not be notfied before it has been stable for 20 ms
 		p.handle();

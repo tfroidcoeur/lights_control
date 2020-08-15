@@ -20,7 +20,7 @@ using namespace std;
 
 
 Sequencer::Sequencer(OutPin & out) :
-		out(out), origvalue(0), pattern(nullptr), startTime(0), activeStep(0) {
+		out(&out), origvalue(0), pattern(nullptr), startTime(0), activeStep(0) {
 }
 
 Sequencer::~Sequencer() {
@@ -33,9 +33,9 @@ void Sequencer::stop(bool restore) {
 
 	if (restore) {
 		COUT_DEBUG(cout <<"stopping, back to value " << origvalue << endl);
-		out.write(origvalue);
+		out->write(origvalue);
 	} else {
-		out.write(0);
+		out->write(0);
 	}
 	pattern = nullptr;
 }
@@ -71,7 +71,7 @@ void Sequencer::activate() {
 	if (el.value == -1) {
 		endPattern(el.value);
 	} else {
-		out.write(el.value);
+		out->write(el.value);
 	}
 }
 
@@ -94,12 +94,12 @@ void Sequencer::handle() {
 
 void Sequencer::start(struct SeqPattern * pattern) {
 	this->pattern = pattern;
-	this->startTime = millis();
-	this->activeStep = 0;
-	this->origvalue = out.read();
-	this->repeatcount = pattern->repeatcount;
+	startTime = millis();
+	activeStep = 0;
+	origvalue = out->read();
+	repeatcount = pattern->repeatcount;
 	activate();
-	this->handle();
+	handle();
 }
 
 /* create a pattern from a string

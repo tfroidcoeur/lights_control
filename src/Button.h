@@ -75,10 +75,10 @@ public:
 //		cout << "copy but " << hex << &orig << dec << endl;
 	}
 
-	Button(InPin & p)  : started(0), pending(false) {
+	Button(NotifiedInput & p)  : started(0), pending(false) {
 //		COUT_DEBUG(cout << " attach but " << hex << this << " to " << &p << dec << endl);
 		curmode = modes.begin();
-		p.changed.connect(this, &Button::pinChanged);
+		p.getChangeSignal().connect(this, &Button::pinChanged);
 //		COUT_DEBUG(cout << "create but " << hex << this << dec << endl);
 	}
 
