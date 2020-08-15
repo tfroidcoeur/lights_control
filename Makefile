@@ -17,6 +17,7 @@ GCC=avr-gcc
 GPP=avr-g++
 AR=avr-gcc-ar
 AVRDUDE=avrdude
+VERSION=$(shell git describe --tags)
 
 #INCLUDES=-I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/cores/arduino" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/variants/Controllino_maxi" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/Ethernet/src" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SoftwareSerial/src" -I"/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SPI/src" -I"/home/fraco/.arduinocdt/libraries/ArduinoSTL/1.0.5/src"
 #INCLUDES=-I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/cores/arduino" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/variants/Controllino_maxi" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/Ethernet/src" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SoftwareSerial/src" -I"/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SPI/src" -I"/home/fraco/.arduinocdt/libraries/ArduinoSTL/1.0.5/src"
@@ -40,7 +41,8 @@ DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"ARDUINO_ARCH_AVR" \
 		-D"FROIDCOEUR_GW" \
 		-D"MQTT" \
-		-D"USE_NET"
+		-D"USE_NET" \
+		-D"VERSION=\"$(VERSION)\""
 
 
 FLAGS=-c -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560

@@ -41,6 +41,7 @@ public:
             lastConnectAttempt=millis();
             if (mqttclient.connected()) {
                Serial.println("connected mqt");
+               publish("home/version",string(VERSION));
                refresh();
             }
          }
