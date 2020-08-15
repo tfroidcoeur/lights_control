@@ -105,12 +105,6 @@ void Dimmer::update(string const& path, string const & value){
 		out.write(0);
 		cout << "done" << endl;
 		passthrough.enable();
-	} else if (path == "dimSpeed") {
-		tracker.dimSpeed=std::atof(value.c_str());
-	} else if (path == "dimThreshOff") {
-		tracker.dimThreshOffMs=std::atof(value.c_str());
-	} else if (path == "dimThreshOn") {
-		tracker.dimThreshOnMs=std::atof(value.c_str());
 	} else {
 		tracker.update(path, value);
 	}
@@ -118,7 +112,7 @@ void Dimmer::update(string const& path, string const & value){
 }
 
 void DimmerTracker::update(string const &path, string const &value) {
-  COUT_DEBUG(cout << "tracker update " << name << " " << path << " " << value << endl);
+  COUT_DEBUG(cout << "tracker update " << " " << path << " " << value << endl);
 
   if (path == "dimSpeed") {
     dimSpeed = std::atof(value.c_str());
@@ -130,7 +124,7 @@ void DimmerTracker::update(string const &path, string const &value) {
 }
 
 void Dimmer::refresh(){
-	cout << "refresh " << name << endl;
+	COUT_DEBUG(cout << "refresh " << name << endl);
 	subscribe(name + "/control");
 	subscribe(name + "/pulse");
 	publish(name+"/state", isOn()?"ON":"OFF");
