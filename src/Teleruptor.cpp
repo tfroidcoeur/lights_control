@@ -89,5 +89,5 @@ void Teleruptor::update(string const& path, string const & value){
 void Teleruptor::refresh(){
 	COUT_DEBUG( cout << "refresh " << name << endl);
 	subscribe(name + "/control");
-	publish(name+"/state", isOn() ? ON:OFF);
+	// publish(name+"/state", isOn() ? ON:OFF);
 }

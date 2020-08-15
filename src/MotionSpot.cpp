@@ -123,5 +123,5 @@ void MotionSpot::update(string const& path, string const & value){
 void MotionSpot::refresh(){
 	cout << "refresh " << name << endl;
 	subscribe(name + "/control");
-	publish(name+"/state", state->getName());
+	// publish(name+"/state", state->getName());
 }
