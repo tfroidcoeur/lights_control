@@ -9,7 +9,7 @@
 #include <utility/w5100.h>
 #include <MemoryFree.h>
 
-static Controller controller;
+static Controller * controller;
 
 #ifdef USE_NET
 // Enter a MAC address and IP address for your controller below.
@@ -50,7 +50,8 @@ void setup() {
 	cout << "size of Controller " << sizeof(Controller) << endl;
 	cout << "Lights version " << VERSION << endl;
 	cout << "free: " << freeMemory() <<endl;
-	controller.setup();
+	controller = new Controller();
+	controller->setup();
 	cout << "controller setup done" << endl;
 
 #ifdef USE_NET
@@ -110,7 +111,7 @@ void loop() {
 #endif
 #endif
 
-	controller.handle();
+	controller->handle();
 	checkTimeSpent(50, "controller");
 
 #ifdef USE_NTP
