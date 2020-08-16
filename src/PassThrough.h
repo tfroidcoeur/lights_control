@@ -15,10 +15,10 @@
 //#define DEBUG
 #include "logging.h"
 
-class PassThrough: public Actor, public sigslot::has_slots<> {
+class PassThrough: public Actor, public Input {
 public:
 	PassThrough(Input & in, OutPin & out, bool enabled = true) :
-			in(in), out(out), enabled(enabled) {
+			in(in), out(out), enabled(enabled), val(0) {
 	}
 	virtual ~PassThrough(){};
 	void enable() {
@@ -28,18 +28,29 @@ public:
 		enabled = false;
 	}
 
+	// return the result of the passthrough
+	virtual int read(){ return val;};
+
 	virtual void handle(void){
-		if (in.read() != out.read()) {
-			int val = in.read();
-			COUT_DEBUG( cout << F("passthrough copy ") << val << endl);
-			out.write(val);
+		val = out.read();
+		if (enabled && in.read() != val) {
+			val = in.read();
+			COUT_DEBUG( cout << "passthrough copy " << val << endl);
+		} else if (!enabled) {
+			val=0;
 		}
+		out.write(val);
 	}
-	virtual void setup(void){};
+
+	virtual void setup(void){
+		val=in.read();
+	};
+
 private:
 	Input & in;
 	OutPin & out;
 	bool enabled;
+	int val;
 };
 
 #endif /* PASSTHROUGH_H_ */
