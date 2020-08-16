@@ -108,7 +108,8 @@ private:
 
 	std::set<ButtonMode> modes;
 	std::set<ButtonMode>::iterator curmode;
-	unsigned long started;bool pending = true;
+	unsigned long started;
+	bool pending = true;
 };
 
 #endif /* BUTTON_H_ */

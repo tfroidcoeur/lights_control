@@ -8,8 +8,6 @@
 #ifndef ACTION_H_
 #define ACTION_H_
 
-#include <list>
-
 #include <Arduino.h>
 #include <ArduinoSTL.h>
 #include "sigslot.h"
@@ -43,7 +41,7 @@ class ActionList: public Action, public sigslot::has_slots<> {
 public:
 	ActionList(){};
 	~ActionList(){
-		std::list<Action *>::iterator it = actions.begin();
+		std::vector<Action *>::iterator it = actions.begin();
 		for (; it != actions.end(); it++) {
 			delete *it;
 		}
@@ -54,13 +52,13 @@ public:
 	}
 
 	void doit() {
-		std::list<Action *>::iterator it = actions.begin();
+		std::vector<Action *>::iterator it = actions.begin();
 		for (; it != actions.end(); it++) {
 			(*it)->doit();
 		}
 	}
 private:
-	std::list<Action *> actions;
+	std::vector<Action *> actions;
 };
 
 #endif /* ACTION_H_ */

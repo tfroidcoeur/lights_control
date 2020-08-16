@@ -10,7 +10,6 @@
 #include <Arduino.h>
 #include <ArduinoSTL.h>
 #include <iostream>
-#include <list>
 #include <string>
 #include <sstream>
 #include "logging.h"
