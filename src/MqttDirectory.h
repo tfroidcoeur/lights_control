@@ -28,7 +28,7 @@ public:
 
    void addNode(MqttNode * child) {
       string name(child->getName());
-      COUT_DEBUG( cout << "add child" << name << endl);
+      COUT_DEBUG( cout << "add child " << name << endl);
       if (children[name])
          delete children[name];
       children[name] = child;
