@@ -6,22 +6,18 @@
 #include <stdint.h>
 #include "Input.h"
 
-struct Debounce {
-	unsigned long changetime;
-	int readval;
-	int stableval;
-};
-
 class DebouncedInput : public NotifiedInput {
 private:
 	uint32_t debouncetime;
 	Input * in;
-	struct Debounce d;
+	unsigned long changetime;
+	int readval;
+	int stableval;
 public:
-	DebouncedInput(Input * in, uint32_t debouncetime=20);
+	DebouncedInput(Input * in, bool owninput = false, uint32_t debouncetime=20);
 	Input * getRawInput() { return in;}
 	virtual ~DebouncedInput(){
-		delete  in;
+		if (owninput) delete in;
 	};
 	/* Input */
 	virtual int read();
@@ -35,6 +31,7 @@ public:
 private:
 	int debounce();
 	sigslot::signal1<int> changed;
+	bool owninput;
 };
 
 #endif /* DEBOUNCEDINPUT_H_ */
