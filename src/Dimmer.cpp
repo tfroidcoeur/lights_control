@@ -7,13 +7,14 @@
 
 #include "Dimmer.h"
 // #define DEBUG
+#include "DebouncedInput.h"
 #include "logging.h"
 #include <iostream>
 #include <string>
 
 Dimmer::Dimmer(Input * in, OutPin * outpin, string name, MqttNode * parent) :
 		MqttNode(name, parent), laststate(false), out(*outpin),
-		passthrough(*in,*outpin), seq(*outpin), tracker(*in)
+		passthrough(*in,*outpin), debounced(in, false), seq(*outpin), tracker(*in)
 {
 }
 
@@ -34,10 +35,10 @@ Dimmer::~Dimmer() {
 
 /* 1 sec on 100 ms off to turn the dimmer lights off */
 SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
-		"100*0 1000*1 100*0 200*1");
+		"100*0 1000*1 100*0 200*1 2000*0");
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
-		"200*1");
+		"200*1" "2000 * 0");
 
 SeqPattern * Dimmer::testSequence = NULL;
 
@@ -80,10 +81,14 @@ void Dimmer::handle() {
 		passthrough.handle();
 	}
 	seq.handle();
+	debounced.handle();
 }
+
 void Dimmer::setup() {
 	passthrough.setup();
 	seq.setup();
+	debounced.setup();
+	debounced.getChangeSignal().connect(&tracker, &DimmerTracker::updateInput);
 }
 
 void Dimmer::update(string const& path, string const & value){
@@ -111,6 +116,13 @@ void Dimmer::update(string const& path, string const & value){
 
 }
 
+void Dimmer::refresh(){
+	COUT_DEBUG(cout << "refresh " << name << endl);
+	subscribe(string(name) + "/control");
+	subscribe(string(name) + "/pulse");
+	publish(string(name)+"/state", isOn()?"ON":"OFF");
+}
+
 void DimmerTracker::update(string const &path, string const &value) {
   COUT_DEBUG(cout << "tracker update " << " " << path << " " << value << endl);
 
@@ -123,9 +135,11 @@ void DimmerTracker::update(string const &path, string const &value) {
   }
 }
 
-void Dimmer::refresh(){
-	COUT_DEBUG(cout << "refresh " << name << endl);
-	subscribe(string(name) + "/control");
-	subscribe(string(name) + "/pulse");
-	publish(string(name)+"/state", isOn()?"ON":"OFF");
-}
+void DimmerTracker::updateInput(int val) {
+		if (!val) {
+			// if we toggle from 1 to 0 in stable val
+			cout << "Dimmer " << " " << "pressed for " << millis() - press_started << "ms" << endl;
+		} else {
+			press_started = millis();
+		}
+	}

@@ -9,6 +9,7 @@
 #define DIMMER_H_
 
 #include "InPin.h"
+#include "DebouncedInput.h"
 #include "OutPin.h"
 #include "PassThrough.h"
 #include "Sequencer.h"
@@ -27,8 +28,11 @@ public:
   float dimThreshOnMs;
   float dimThreshOffMs;
 
+  void updateInput(int val);
+
 private:
   Input &in;
+  unsigned long press_started;
 };
 
 class Dimmer: public Switchable, public Actor, public MqttNode {
@@ -53,6 +57,7 @@ private:
 	bool laststate;
 	OutPin & out;
 	PassThrough passthrough;
+	DebouncedInput debounced;
 	Sequencer seq;
 	DimmerTracker tracker;
 	static SeqPattern * onSequence;
