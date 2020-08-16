@@ -242,7 +242,6 @@ void Controller::setup() {
 	r.addActor(teleruptorCA8);
 	r.addActor(teleruptorDM2);
 
-	vector<Dimmer>::iterator dimit;
 	r.addActor(dimmerCB1);
 	r.addActor(dimmerCB2);
 
