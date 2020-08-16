@@ -8,6 +8,8 @@
 #include <string>
 #include <iterator>
 #include <iostream>
+#include <string.h>
+#include <stdlib.h>
 using namespace std;
 
 #ifndef MQTTNODE_H_
@@ -25,10 +27,13 @@ using namespace std;
    */
 class MqttNode {
 public:
-	MqttNode( string const name, MqttNode * parent): name(name), parent(parent){}
-	MqttNode( string const name): name(name), parent(NULL){}
-	MqttNode(const MqttNode & orig): name(orig.name), parent(orig.parent){}
-	virtual ~MqttNode(){};
+	MqttNode( string const name, MqttNode * parent): name(strdup(name.c_str())), parent(parent){}
+	MqttNode( string const name): name(strdup(name.c_str())), parent(NULL){}
+	MqttNode(const MqttNode & orig): name(strdup(orig.name)), parent(orig.parent){}
+	virtual ~MqttNode(){
+      if (name)
+         free(name);
+   };
 	/* child node asks parent node to subscribe to the sub path provided
 	   this ripples up the tree until it reaches the root */
 	virtual void subscribe(string const& path){
@@ -44,10 +49,10 @@ public:
    virtual void refresh()=0;
 	/* parent notifies child of a publish, sub path provided */
 	virtual void update(string const& path, string const & value)=0;
-   string const &getName() { return name; }
+   const char * getName() { return name; }
    void setParent(MqttNode * parent) { this->parent = parent;}
 protected:
-   string const name;
+   char * name;
    MqttNode * parent;
 
 };

@@ -27,15 +27,16 @@ public:
 	~MqttDirectory() {}
 
    void addNode(MqttNode * child) {
-      COUT_DEBUG( cout << "add child" << child->getName() << endl);
-      if (children[child->getName()])
-         delete children[child->getName()];
-      children[child->getName()] = child;
+      string name(child->getName());
+      COUT_DEBUG( cout << "add child" << name << endl);
+      if (children[name])
+         delete children[name];
+      children[name] = child;
    }
 	virtual void subscribe(string const& path) {
       // add our part of the path and call parent
       if (parent)
-         parent->subscribe(name + "/" + path);
+         parent->subscribe(string(name) + "/" + path);
    }
 	virtual void update(string const& path, string const & value) {
       MqttNode *  n;
@@ -81,7 +82,7 @@ public:
    }
 	virtual void publish(string const& path, string const & value) {
       if (parent)
-         parent->publish(name + "/" + path, value);
+         parent->publish(string(name) + "/" + path, value);
    }
    virtual void refresh(){
      for (auto const& x : children) {

@@ -53,7 +53,7 @@ void Dimmer::on() {
 		passthrough.disable();
 		seq.start(onSequence);
 	}
-	publish(name+"/state", "ON");
+	publish(string(name)+"/state", "ON");
 }
 
 void Dimmer::off() {
@@ -65,7 +65,7 @@ void Dimmer::off() {
 	laststate = false;
 	passthrough.disable();
 	seq.start(offSequence);
-	publish(name+"/state", "OFF");
+	publish(string(name)+"/state", "OFF");
 }
 
 bool Dimmer::isOn() {
@@ -125,7 +125,7 @@ void DimmerTracker::update(string const &path, string const &value) {
 
 void Dimmer::refresh(){
 	COUT_DEBUG(cout << "refresh " << name << endl);
-	subscribe(name + "/control");
-	subscribe(name + "/pulse");
-	publish(name+"/state", isOn()?"ON":"OFF");
+	subscribe(string(name) + "/control");
+	subscribe(string(name) + "/pulse");
+	publish(string(name)+"/state", isOn()?"ON":"OFF");
 }

@@ -60,7 +60,7 @@ void MotionSpot::activateState() {
 	force->write(state->getForce());
 
 	// mqtt notify
-	publish(name+"/state", state->getName());
+	publish(string(name)+"/state", state->getName());
 }
 
 void MotionSpot::notifyButton(int mode) {
@@ -119,6 +119,6 @@ void MotionSpot::update(string const& path, string const & value){
 
 void MotionSpot::refresh(){
 	cout << "refresh " << name << endl;
-	subscribe(name + "/control");
-	// publish(name+"/state", state->getName());
+	subscribe(string(name) + "/control");
+	publish(string(name)+"/state", state->getName());
 }

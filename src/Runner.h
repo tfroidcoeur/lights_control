@@ -11,13 +11,18 @@
 #include <list>
 
 #include "Actor.h"
+#include <assert.h>
 
 class Runner : public Actor {
 public:
 	Runner();
 	virtual ~Runner();
 
-	void addActor(Actor * actor) { actors.push_back(actor);};
+	void addActor(Actor * actor) { 
+		assert(actor);
+		if (actor)
+			actors.push_back(actor);
+	};
 	void removeActor(Actor * actor) { actors.remove(actor);};
 
 	void handle(){

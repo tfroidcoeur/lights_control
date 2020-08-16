@@ -58,13 +58,13 @@ void Teleruptor::restore() {
 void Teleruptor::on() {
 	COUT_DEBUG(cout << "teleruptor on " << endl);
 	out.write(1);
-	publish(name+"/state", ON);
+	publish(string(name)+"/state", ON);
 }
 
 void Teleruptor::off() {
 	COUT_DEBUG(cout << "teleruptor off " << endl);
 	out.write(0);
-	publish(name+"/state", OFF);
+	publish(string(name)+"/state", OFF);
 }
 
 bool Teleruptor::isOn() {
@@ -76,7 +76,7 @@ bool Teleruptor::isOn() {
 void Teleruptor::toggle() {
 	COUT_DEBUG(cout << "teleruptor toggle " << endl);
 	out.toggle();
-	publish(name+"/state", isOn() ? ON:OFF);
+	publish(string(name)+"/state", isOn() ? ON:OFF);
 }
 
 void Teleruptor::update(string const& path, string const & value){
@@ -89,6 +89,6 @@ void Teleruptor::update(string const& path, string const & value){
 
 void Teleruptor::refresh(){
 	COUT_DEBUG( cout << "refresh " << name << endl);
-	subscribe(name + "/control");
+	subscribe(string(name) + "/control");
 	// publish(name+"/state", isOn() ? ON:OFF);
 }
