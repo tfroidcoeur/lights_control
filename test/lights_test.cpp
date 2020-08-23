@@ -44,6 +44,7 @@
 
 #include "ButtonTest.h"
 #include "DebouncedInput.h"
+#include "DimmerTest.h"
 #include "Input.h"
 #include "MotionSpotTest.h"
 #include "ControllerTest.h"
@@ -209,12 +210,13 @@ main(int argc, char* argv[])
 		// Demonstrates the ability to use multiple test suites
 		//
 		Test::Suite ts;
-		ts.add(auto_ptr<Test::Suite>(new InPinTest));
-		ts.add(auto_ptr<Test::Suite>(new ButtonTest));
-		ts.add(auto_ptr<Test::Suite>(new MotionSpotTest));
-		ts.add(auto_ptr<Test::Suite>(new ControllerTest));
-		ts.add(auto_ptr<Test::Suite>(new SequencerTest));
-		ts.add(auto_ptr<Test::Suite>(new MqttDirectoryTest));
+		// ts.add(auto_ptr<Test::Suite>(new InPinTest));
+		// ts.add(auto_ptr<Test::Suite>(new ButtonTest));
+		// ts.add(auto_ptr<Test::Suite>(new MotionSpotTest));
+		// ts.add(auto_ptr<Test::Suite>(new ControllerTest));
+		// ts.add(auto_ptr<Test::Suite>(new SequencerTest));
+		// ts.add(auto_ptr<Test::Suite>(new MqttDirectoryTest));
+		ts.add(auto_ptr<Test::Suite>(new DimmerTest));
 
 		// Run the tests
 		//

@@ -14,7 +14,7 @@
 
 Dimmer::Dimmer(Input * in, OutPin * outpin, string name, MqttNode * parent) :
 		MqttNode(name, parent), laststate(false), out(*outpin),
-		passthrough(*in,*outpin), debounced(in, false), seq(*outpin), tracker(*in)
+		passthrough(*in,*outpin), debounced(in, false), seq(*outpin), tracker(*in, *this)
 {
 }
 
@@ -25,12 +25,14 @@ Dimmer::~Dimmer() {
  * TODO
  * wanneer hij af staat:
  * x <= 400ms == aan
- * 400ms < x <1000 ms lijkt geen effect (wschl super gedimd aan)
- * x >= 1000ms soft voor kinderkamer
+ * 400ms < x <900 ms lijkt geen effect (wschl super gedimd aan)
+ * x >= 900ms soft voor kinderkamer
 
  * wanneer hij aan staat:
- * x >=1000 ms dimmer threshold, dim =~ x-1000, richting switch
- * x < 1000 ms off
+ * x >=900 ms dimmer threshold, dim =~ x-900, richting switch
+ * x < 900 ms off
+ *
+ * minimum pulse is rond de 20ms
  */
 
 /* 1 sec on 100 ms off to turn the dimmer lights off */
@@ -39,8 +41,6 @@ SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
 		"200*1" "2000 * 0");
-
-SeqPattern * Dimmer::testSequence = NULL;
 
 void Dimmer::on() {
 	if (isBlocked()){
@@ -70,8 +70,7 @@ void Dimmer::off() {
 }
 
 bool Dimmer::isOn() {
-	/* worthless guess at possible state of the dimmer */
-	return laststate;
+	return this->tracker.isOn();
 }
 
 /* Actor */
@@ -116,11 +115,15 @@ void Dimmer::update(string const& path, string const & value){
 
 }
 
+void Dimmer::publishUpdate(){
+	publish(string(name)+"/state", isOn()?"ON":"OFF");
+}
+
 void Dimmer::refresh(){
 	COUT_DEBUG(cout << "refresh " << name << endl);
 	subscribe(string(name) + "/control");
 	subscribe(string(name) + "/pulse");
-	publish(string(name)+"/state", isOn()?"ON":"OFF");
+	publishUpdate();
 }
 
 void DimmerTracker::update(string const &path, string const &value) {
@@ -136,10 +139,28 @@ void DimmerTracker::update(string const &path, string const &value) {
 }
 
 void DimmerTracker::updateInput(int val) {
-		if (!val) {
-			// if we toggle from 1 to 0 in stable val
-			cout << "Dimmer " << " " << "pressed for " << millis() - press_started << "ms" << endl;
-		} else {
-			press_started = millis();
-		}
-	}
+  if (!val) {
+    // if we toggle from 1 to 0 in stable val
+    cout << "Dimmer "
+         << "pressed for " << millis() - press_started << "ms" << endl;
+	DimmerState* old = state;
+	state->pulse(millis() - press_started);
+	if (old != state) 
+		dimmer.publishUpdate();
+  } else {
+    press_started = millis();
+  }
+}
+
+void DimmerTracker::changeState(DimmerState &newstate) { state = &newstate; }
+
+void DimmerState_OFF::pulse(int duration) { tracker.changeState(tracker.ON); }
+
+void DimmerState_ON::pulse(int duration) {
+  if (duration < tracker.dimThreshOffMs)
+    tracker.changeState(tracker.OFF);
+}
+
+DimmerTracker::DimmerTracker(Input &in, Dimmer & dimmer, float dimSpeed, float dimThreshOnMs, float dimThreshOffMs) : 
+	dimSpeed(dimSpeed), dimThreshOnMs(dimThreshOnMs) ,dimThreshOffMs(dimThreshOffMs),
+	OFF(*new DimmerState_OFF(*this)), ON(*new DimmerState_ON(*this)), in(in), state(&OFF), dimmer(dimmer) {};

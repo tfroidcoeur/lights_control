@@ -54,7 +54,7 @@ void DebouncedInput::handle() {
 	if (debounce()) {
 		// state changed after debouncing
 		// call state change handler
-		COUT_DEBUG(cout << "dd input pin:" << in << " emit " << hex << &changed << dec << endl);
+		COUT_DEBUG(cout << "dd input pin:" << in << " emit " << hex << &changed << dec << " val: " << stableval << endl);
 		changed.emit(stableval);
 	}
 }
