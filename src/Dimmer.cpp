@@ -99,13 +99,29 @@ void Dimmer::update(string const& path, string const & value){
 		}
 	} else if (path == "pulse") {
 		int duration = std::atoi(value.c_str());
+		unsigned long t;
+
 		passthrough.disable();
 		cout << "pulse...";
 		out.write(0);
-		delay(500);
+
+		t = millis()+500;
+		while (millis() < t){
+			debounced.handle();
+			delay(1);
+		}
+
+		debounced.handle();
 		out.write(1);
-		delay(duration);
+		debounced.handle();
+		t = millis()+duration;
+		while (millis() < t){
+			debounced.handle();
+			delay(1);
+		}
+		debounced.handle();
 		out.write(0);
+		debounced.handle();
 		cout << "done" << endl;
 		passthrough.enable();
 	} else {
