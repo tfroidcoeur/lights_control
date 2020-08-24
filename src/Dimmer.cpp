@@ -40,7 +40,7 @@ SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
 		"100*0 1000*1 100*0 200*1 2000*0");
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
-		"200*1" "2000 * 0");
+		"200*1 2000*0");
 
 void Dimmer::on() {
 	if (isBlocked()){
