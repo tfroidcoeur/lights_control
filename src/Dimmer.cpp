@@ -13,12 +13,13 @@
 #include <string>
 
 Dimmer::Dimmer(Input * in, OutPin * outpin, string name, MqttNode * parent) :
-		MqttNode(name, parent), laststate(false), out(*outpin),
-		passthrough(*in,*outpin), debounced(in, false), seq(*outpin), tracker(*in, *this)
+		MqttNode(name, parent), out(*outpin), passthrough(*in,*outpin), 
+		debounced(outpin, false), seq(*outpin), tracker(*in, *this)
 {
 }
 
 Dimmer::~Dimmer() {
+	debounced.getChangeSignal().disconnect_all();
 }
 
 /*
@@ -50,7 +51,6 @@ void Dimmer::on() {
 
 	if (!isOn()) {
 		COUT_DEBUG( cout << "Starting dimmer on" << endl);
-		laststate = true;
 		passthrough.disable();
 		seq.start(onSequence);
 	}
@@ -63,7 +63,6 @@ void Dimmer::off() {
 		return;
 	}
 	COUT_DEBUG( cout << "Starting dimmer off"<< endl);
-	laststate = false;
 	passthrough.disable();
 	seq.start(offSequence);
 	publish(string(name)+"/state", "OFF");
@@ -152,7 +151,7 @@ void DimmerTracker::updateInput(int val) {
   }
 }
 
-void DimmerTracker::changeState(DimmerState &newstate) { state = &newstate; }
+void DimmerTracker::changeState(DimmerState * newstate) { state = newstate; }
 
 void DimmerState_OFF::pulse(int duration) { tracker.changeState(tracker.ON); }
 
@@ -163,4 +162,6 @@ void DimmerState_ON::pulse(int duration) {
 
 DimmerTracker::DimmerTracker(Input &in, Dimmer & dimmer, float dimSpeed, float dimThreshOnMs, float dimThreshOffMs) : 
 	dimSpeed(dimSpeed), dimThreshOnMs(dimThreshOnMs) ,dimThreshOffMs(dimThreshOffMs),
-	OFF(*new DimmerState_OFF(*this)), ON(*new DimmerState_ON(*this)), in(in), state(&OFF), dimmer(dimmer) {};
+	OFF(new DimmerState_OFF(*this)), ON(new DimmerState_ON(*this)), in(in), state(NULL), dimmer(dimmer) {
+		state = OFF;
+	};

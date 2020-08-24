@@ -8,9 +8,10 @@
 #ifndef OUTPIN_H_
 #define OUTPIN_H_
 
+#include "Input.h"
 #include "Actor.h"
 
-class OutPin : public Actor {
+class OutPin : public Actor, public Input {
 public:
 	OutPin(int id);
 	virtual ~OutPin();
@@ -18,6 +19,8 @@ public:
 	void toggle();
 
 	void write(int val);
+
+	/* InPin */
 	int read();
 
 	/* Actor */
@@ -31,5 +34,4 @@ private:
 	 * the current expected state. */
 	int state;
 };
-
 #endif /* OUTPIN_H_ */

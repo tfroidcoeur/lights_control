@@ -17,36 +17,13 @@
 #include "MqttNode.h"
 #include "sigslot.h"
 
-class DimmerState_OFF;
-class DimmerState_ON;
-class DimmerState;
-
-class DimmerTracker : public sigslot::has_slots<>{
-public:
-  DimmerTracker(Input &in, float dimSpeed=0.2, float dimThreshOnMs=400, float dimThreshOffMs=900);
-  void update(string const& path, string const & value);
-  void changeState(DimmerState& newstate);
-  bool isOn() {return state==(DimmerState *) &ON;};
-
-  /* percent per second*/
-  float dimSpeed;
-  /* millis to press button before dim kicks in for off and on state */
-  float dimThreshOnMs;
-  float dimThreshOffMs;
-
-  void updateInput(int val);
-
-  DimmerState_OFF &OFF;
-  DimmerState_ON &ON;
-private:
-  Input &in;
-  unsigned long press_started;
-  DimmerState * state;
-};
+class Dimmer;
+class DimmerTracker;
 
 class DimmerState {
 public:
 	DimmerState(DimmerTracker & tracker): tracker(tracker) {};
+    virtual ~DimmerState(){};
 	virtual void pulse(int duration)=0;
 protected:
 	DimmerTracker& tracker;
@@ -62,6 +39,35 @@ class DimmerState_ON: public DimmerState {
 public:
 	DimmerState_ON(DimmerTracker & tracker) : DimmerState(tracker){ };
 	virtual void pulse(int duration);
+};
+
+
+class DimmerTracker : public sigslot::has_slots<>{
+public:
+  DimmerTracker(Input &in, Dimmer & dimmer, float dimSpeed=0.2, float dimThreshOnMs=400, float dimThreshOffMs=900);
+  virtual ~DimmerTracker(){
+	  delete OFF;
+	  delete ON;
+  }
+  void update(string const& path, string const & value);
+  void changeState(DimmerState * newstate);
+  bool isOn() {return state== ON;};
+
+  /* percent per second*/
+  float dimSpeed;
+  /* millis to press button before dim kicks in for off and on state */
+  float dimThreshOnMs;
+  float dimThreshOffMs;
+
+  void updateInput(int val);
+
+  DimmerState_OFF *OFF;
+  DimmerState_ON *ON;
+private:
+  Input &in;
+  unsigned long press_started;
+  DimmerState * state;
+  Dimmer & dimmer;
 };
 
 class Dimmer: public Switchable, public Actor, public MqttNode {
@@ -82,9 +88,11 @@ public:
 	virtual void update(string const& path, string const & value);
 	virtual void refresh();
 
+
+	void publishUpdate();
+
 private:
 	bool isBlocked() { return seq.isRunning();}
-	bool laststate;
 	OutPin & out;
 	PassThrough passthrough;
 	DebouncedInput debounced;
