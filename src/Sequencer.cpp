@@ -81,7 +81,7 @@ void Sequencer::handle() {
 	SeqElement & step = pattern->elements[activeStep];
 
 	if ((unsigned long) millis() - this->startTime > step.duration) {
-		COUT_DEBUG(cout << "" << millis()<< this->startTime<< ((unsigned long) millis() - this->startTime) <<endl);
+		COUT_DEBUG(cout << " " << millis()<< " \t -  " << this->startTime<< " \t= " << ((unsigned long) millis() - this->startTime) <<endl);
 		SeqElement & elold = pattern->elements[activeStep];
 		COUT_DEBUG(cout << "executed step " );
 		printStep(elold);
