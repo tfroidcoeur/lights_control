@@ -156,8 +156,8 @@ void DimmerTracker::update(string const &path, string const &value) {
 void DimmerTracker::updateInput(int val) {
   if (!val) {
     // if we toggle from 1 to 0 in stable val
-    cout << "Dimmer "
-         << "pressed for " << millis() - press_started << "ms" << endl;
+    COUT_DEBUG(cout << "Dimmer "
+         << "pressed for " << millis() - press_started << "ms" << endl);
 	DimmerState* old = state;
 	state->pulse(millis() - press_started);
 	if (old != state) 
