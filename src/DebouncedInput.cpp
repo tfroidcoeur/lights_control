@@ -14,14 +14,14 @@
 #include "logging.h"
 using namespace std;
 
-int DebouncedInput::read() {
+bool DebouncedInput::read() {
 	return stableval;
 }
 
 int DebouncedInput::debounce() {
 	unsigned long now = millis();
-	int val = in->read();
-	int previousval = readval;
+	bool val = in->read();
+	bool previousval = readval;
 
 	// transfer the value
 	readval = val;

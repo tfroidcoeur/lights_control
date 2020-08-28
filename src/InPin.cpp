@@ -14,8 +14,8 @@
 #include "logging.h"
 using namespace std;
 
-int InPin::read() {
-	return digitalRead(id);
+bool InPin::read() {
+	return digitalRead(id) == HIGH;
 }
 
 InPin::InPin(int id): id(id){

@@ -38,7 +38,7 @@ void OutPin::write(int value) {
 	digitalWrite(this->id, value);
 }
 
-int OutPin::read() {
+bool OutPin::read() {
 	//return digitalRead(this->id);
 	return this->state;
 }

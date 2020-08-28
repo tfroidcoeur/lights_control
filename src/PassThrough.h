@@ -29,7 +29,7 @@ public:
 	}
 
 	// return the result of the passthrough
-	virtual int read(){ return val;};
+	virtual bool read(){ return val;};
 
 	virtual void handle(void){
 		val = out.read();
@@ -50,7 +50,7 @@ private:
 	Input & in;
 	OutPin & out;
 	bool enabled;
-	int val;
+	bool val;
 };
 
 #endif /* PASSTHROUGH_H_ */

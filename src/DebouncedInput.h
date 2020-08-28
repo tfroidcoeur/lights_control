@@ -7,12 +7,6 @@
 #include "Input.h"
 
 class DebouncedInput : public NotifiedInput {
-private:
-	uint32_t debouncetime;
-	Input * in;
-	unsigned long changetime;
-	int readval;
-	int stableval;
 public:
 	DebouncedInput(Input * in, bool owninput = false, uint32_t debouncetime=20);
 	Input * getRawInput() { return in;}
@@ -20,7 +14,7 @@ public:
 		if (owninput) delete in;
 	};
 	/* Input */
-	virtual int read();
+	virtual bool read();
 	/* NotifiedInput */
 	virtual sigslot::signal1<int> & getChangeSignal() {return changed;}
 
@@ -30,7 +24,13 @@ public:
 
 private:
 	int debounce();
+
+	Input * in;
 	sigslot::signal1<int> changed;
+	unsigned long changetime;
+	uint8_t debouncetime;
+	bool readval;
+	bool stableval;
 	bool owninput;
 };
 

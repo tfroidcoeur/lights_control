@@ -21,7 +21,7 @@ public:
 	void write(int val);
 
 	/* InPin */
-	int read();
+	bool read();
 
 	/* Actor */
 	void setup();
@@ -32,6 +32,6 @@ private:
 	/* DigitalRead is not always correct, so
 	 * we track the last recorded output value as
 	 * the current expected state. */
-	int state;
+	bool state;
 };
 #endif /* OUTPIN_H_ */

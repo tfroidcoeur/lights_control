@@ -11,7 +11,7 @@ public:
 	InPin(int id);
 
 	/* Input */
-	virtual int read();
+	virtual bool read();
 
 	/* Actor */
 	virtual void handle();
