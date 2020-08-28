@@ -24,6 +24,8 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	COUT_DEBUG(cout << "size of MqttRoot " << sizeof(MqttRoot) << endl);
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 	COUT_DEBUG(cout << "pins A" << endl);
+	COUT_DEBUG(cout << "size of signal " << sizeof(sigslot::signal0<>) << endl);
+
 	// inpinsA
 	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A0)));
 	inpinA.push_back(new DebouncedInput(new InPin(CONTROLLINO_A1)));
