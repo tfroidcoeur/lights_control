@@ -46,9 +46,14 @@ class ButtonMode {
 public:
 	ButtonMode(int delay=0, const char * name = "<anon>",
 			sigslot::signal0<> * pressed = NULL) :
-			name(name), delay(delay), pressed(pressed) {
+#ifdef DEBUG_MODE_NAME
+			name(name), 
+#endif
+			delay(delay), pressed(pressed) {
 	}
+#ifdef DEBUG_MODE_NAME
 	const char * name;
+#endif
 	unsigned long delay;
 	sigslot::signal0<> * pressed;
 
