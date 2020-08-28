@@ -55,7 +55,7 @@ public:
 		force(orig.force), indicator(orig.indicator), 
 		state(orig.state), blink(orig.blink) {
 	}
-	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, string name = string("anon"), MqttNode * parent = NULL);
+	MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, const char * name, MqttNode * parent = NULL);
 	void setup();
 	void handle();
 	void shortpressed();

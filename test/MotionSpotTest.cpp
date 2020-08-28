@@ -92,7 +92,7 @@ void MotionSpotTest::testLong(){
 void MotionSpotTest::setup(){
 	TestWithTime::setup();
 
-	actor = ms = new MotionSpot(ctrlpin, forcepin, indicatorpin);
+	actor = ms = new MotionSpot(ctrlpin, forcepin, indicatorpin,"testspot");
 	shortsig.connect(ms,&MotionSpot::shortpressed);
 	longsig.connect(ms,&MotionSpot::longpressed);
 

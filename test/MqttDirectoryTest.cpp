@@ -17,7 +17,7 @@ MqttDirectoryTest::~MqttDirectoryTest() {}
 class TestMqttNode : public MqttNode {
 
 public:
-  TestMqttNode(string name) : MqttNode(name, NULL) {}
+  TestMqttNode(string name) : MqttNode(name.c_str(), NULL) {}
   ~TestMqttNode() {}
   /* child node asks parent node to subscribe to the sub path provided
      this ripples up the tree until it reaches the root */

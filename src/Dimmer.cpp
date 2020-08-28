@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 
-Dimmer::Dimmer(Input * in, OutPin * outpin, string name, MqttNode * parent) :
+Dimmer::Dimmer(Input * in, OutPin * outpin, const char * name, MqttNode * parent) :
 		MqttNode(name, parent), out(*outpin), passthrough(*in,*outpin), 
 		debounced(outpin, false), seq(*outpin), tracker(*in, *this)
 {

@@ -72,7 +72,7 @@ private:
 
 class Dimmer: public Switchable, public Actor, public MqttNode {
 public:
-	Dimmer(Input * in, OutPin * outpin, string name, MqttNode * parent = NULL) ;
+	Dimmer(Input * in, OutPin * outpin, const char * name, MqttNode * parent = NULL) ;
 	virtual ~Dimmer();
 
 	/* Switchable */

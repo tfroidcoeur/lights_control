@@ -22,7 +22,7 @@ using namespace std;
 class MqttDirectory: public MqttNode{
 public:
    // MqttNode
-	MqttDirectory( string const name, MqttNode * parent):
+	MqttDirectory( const char * name, MqttNode * parent):
       MqttNode(name, parent) {}
 	~MqttDirectory() {}
 

@@ -20,8 +20,8 @@ class Teleruptor: public Actor,
 		public Stashable,
 		public MqttNode {
 public:
-	Teleruptor(NotifiedInput * inpin, OutPin * outpin, string name, MqttNode * parent = NULL);
-	Teleruptor(sigslot::signal0<> & sig, OutPin * outpin, string name, MqttNode * parent = NULL);
+	Teleruptor(NotifiedInput * inpin, OutPin * outpin, const char* name, MqttNode * parent = NULL);
+	Teleruptor(sigslot::signal0<> & sig, OutPin * outpin, const char* name, MqttNode * parent = NULL);
 	virtual ~Teleruptor();
 	virtual void handle(void);
 	virtual void setup(void);

@@ -75,7 +75,7 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 	COUT_DEBUG(cout << "huis" << endl);
 	// Mqtt directories
-	huis = new MqttDirectory(string("home"), &mqtt);
+	huis = new MqttDirectory("home", &mqtt);
 	mqtt.setChild(huis);
 
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);

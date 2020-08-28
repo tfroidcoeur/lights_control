@@ -16,11 +16,11 @@ using namespace std;
 string const Teleruptor::ON = "ON";
 string const Teleruptor::OFF = "OFF";
 
-Teleruptor::Teleruptor(NotifiedInput * inpin , OutPin * outpin, string name, MqttNode * parent):
+Teleruptor::Teleruptor(NotifiedInput * inpin , OutPin * outpin, const char * name, MqttNode * parent):
 		MqttNode(name, parent), out(*outpin), savedstate(false) {
 	inpin->getChangeSignal().connect(this, &Teleruptor::notifyInPin);
 }
-Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin * outpin, string name, MqttNode * parent):
+Teleruptor::Teleruptor( sigslot::signal0<> & sig, OutPin * outpin, const char * name, MqttNode * parent):
 		MqttNode(name, parent), out(*outpin), savedstate(false) {
 	sig.connect(this, &Teleruptor::toggle);
 }

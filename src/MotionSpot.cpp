@@ -21,7 +21,7 @@ MotionSpot::~MotionSpot() {
 //				&MotionSpotState::Auto), blink(indicator) {
 //}
 
-MotionSpot::MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, string name, MqttNode * parent):
+MotionSpot::MotionSpot(OutPin & ctrl, OutPin & force, OutPin & indicator, const char * name, MqttNode * parent):
 		MqttNode(name, parent), ctrl(&ctrl), force(&force), indicator(&indicator), state(
 				&MotionSpotState::Auto), blink(indicator) {
 //	cout << "mspto " << hex << this <<endl;

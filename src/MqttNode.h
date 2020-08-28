@@ -27,12 +27,10 @@ using namespace std;
    */
 class MqttNode {
 public:
-	MqttNode( string const name, MqttNode * parent): name(strdup(name.c_str())), parent(parent){}
-	MqttNode( string const name): name(strdup(name.c_str())), parent(NULL){}
-	MqttNode(const MqttNode & orig): name(strdup(orig.name)), parent(orig.parent){}
+	MqttNode( const char *name, MqttNode * parent): name(name), parent(parent){}
+	MqttNode( const char *name): name(name), parent(NULL){}
+	MqttNode(const MqttNode & orig): name(orig.name), parent(orig.parent){}
 	virtual ~MqttNode(){
-      if (name)
-         free(name);
    };
 	/* child node asks parent node to subscribe to the sub path provided
 	   this ripples up the tree until it reaches the root */
@@ -52,7 +50,7 @@ public:
    const char * getName() { return name; }
    void setParent(MqttNode * parent) { this->parent = parent;}
 protected:
-   char * name;
+   const char * name;
    MqttNode * parent;
 
 };
