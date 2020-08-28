@@ -43,7 +43,7 @@ int DebouncedInput::debounce() {
 }
 
 DebouncedInput::DebouncedInput(Input *in, bool owninput, uint32_t debouncetime): 
-	debouncetime(debouncetime), in(in), owninput(owninput){
+	 in(in), debouncetime(debouncetime), owninput(owninput){
 	// if someone is pressing a button during boot, it
 	// will be dd and then reported as a buttonpush
 	readval = stableval = 0;
