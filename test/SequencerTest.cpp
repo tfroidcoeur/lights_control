@@ -34,7 +34,7 @@ void SequencerTest::tear_down(){
 void SequencerTest::testSequence() {
 	SeqPattern * pat = Sequencer::createPattern("100*1 1000*0 10*1");
 	//initial value
-	p.write(111);
+	p.write(0);
 
 	seq->start(pat);
 
@@ -63,7 +63,7 @@ void SequencerTest::testSequence() {
 	// 1111
 	advanceTimeAbit(2,1);
 
-	TEST_ASSERT(p.read() == 111);
+	TEST_ASSERT(p.read() == 0);
 	delete pat;
 }
 

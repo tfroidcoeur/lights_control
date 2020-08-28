@@ -146,6 +146,7 @@ private:
 		t+=22;
 		p.handle();
 		TEST_ASSERT(notified==2);
+		delete pin;
 	}
 };
 

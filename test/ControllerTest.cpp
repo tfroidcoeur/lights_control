@@ -195,24 +195,27 @@ void ControllerTest::testGlobalButton() {
 	// the dimmer off sequence should have started
 	// 100 ms off
 	TEST_ASSERT(!digitalRead(dimdomout));
-
 	// dimmer passthrough should not work
 	digitalWrite(dimdom,1);
 	TEST_ASSERT(!digitalRead(dimdomout));
-
 	advanceTimeAbit(101);
+
 	// dimmer off sequence should have progressed
 	// 1 second of on
 	TEST_ASSERT(digitalRead(dimdomout));
-
 	advanceTimeAbit(1001);
+
 	// dimmer should do 100 ms off
 	TEST_ASSERT(!digitalRead(dimdomout));
-
 	advanceTimeAbit(101);
-	TEST_ASSERT(digitalRead(dimdomout));
 
+	// dimmer should do 200 ms on
+	TEST_ASSERT(digitalRead(dimdomout));
 	advanceTimeAbit(201);
+
+	// dimmer should do 2000 ms off
+	TEST_ASSERT(!digitalRead(dimdomout));
+	advanceTimeAbit(2001);
 
 	// dimmer passthrough should work again
 	digitalWrite(dimdom,1);
