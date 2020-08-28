@@ -15,16 +15,10 @@
 class SimpleButton: public Button {
 public:
 	SimpleButton(int shortdelay = 500, int longdelay = 1500) :
-			Button(), shortdelay(shortdelay), longdelay(longdelay) {
+			Button() {
 
 		addMode(ButtonMode(shortdelay, "short", &shortpress));
 		addMode(ButtonMode(longdelay, "long", &longpress));
-	}
-
-	SimpleButton(const SimpleButton & orig) :
-			Button(), shortdelay(orig.shortdelay), longdelay(orig.longdelay) {
-		addMode(ButtonMode(orig.shortdelay, "short", &shortpress));
-		addMode(ButtonMode(orig.longdelay, "long", &longpress));
 	}
 
 	virtual ~SimpleButton() {
@@ -33,9 +27,6 @@ public:
 	}
 	sigslot::signal0<> shortpress;
 	sigslot::signal0<> longpress;
-private:
-	const int shortdelay;
-	const int longdelay;
 };
 
 #endif /* SIMPLEBUTTON_H_ */
