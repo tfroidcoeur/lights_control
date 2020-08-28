@@ -93,7 +93,7 @@ public:
 	}
 
 	void addMode(const ButtonMode mode) {
-		modes.insert(mode);
+		modes.push_back(mode);
 		curmode = modes.begin();
 	}
 
@@ -108,11 +108,12 @@ public:
 
 	virtual void handle();
 
+protected:
+	std::vector<ButtonMode> modes;
 private:
 	void emit(const ButtonMode & mode) const;
 
-	std::set<ButtonMode> modes;
-	std::set<ButtonMode>::iterator curmode;
+	std::vector<ButtonMode>::iterator curmode;
 	unsigned long started;
 	bool pending = true;
 };

@@ -87,17 +87,17 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	huis->addNode(teleruptorCA2);
 	teleruptorCC3 = new Teleruptor(inpinA[3], relay[3], "CA3", huis);
 	huis->addNode(teleruptorCC3);
-	teleruptorCA4 = new Teleruptor(buttonCA4.shortpress, relay[4], "CA4", huis);
+	teleruptorCA4 = new Teleruptor(buttonCA4.getShortSignal(), relay[4], "CA4", huis);
 	huis->addNode(teleruptorCA4);
 	teleruptorDM1 = new Teleruptor(inpinA[5], relay[5], "DM1", huis);
 	huis->addNode(teleruptorDM1);
-	teleruptorCA6 = new Teleruptor(buttonCA6.shortpress, relay[6], "CA6", huis);
+	teleruptorCA6 = new Teleruptor(buttonCA6.getShortSignal(), relay[6], "CA6", huis);
 	huis->addNode(teleruptorCA6);
-	teleruptorCA7 = new Teleruptor(buttonCA7.shortpress, relay[7], "CA7", huis);
+	teleruptorCA7 = new Teleruptor(buttonCA7.getShortSignal(), relay[7], "CA7", huis);
 	huis->addNode(teleruptorCA7);
-	teleruptorCA8 = new Teleruptor(buttonCA8.shortpress, relay[8], "CA8", huis);
+	teleruptorCA8 = new Teleruptor(buttonCA8.getShortSignal(), relay[8], "CA8", huis);
 	huis->addNode(teleruptorCA8);
-	teleruptorDM2 = new Teleruptor(buttonDM2.shortpress, relay[9], "DM2", huis);
+	teleruptorDM2 = new Teleruptor(buttonDM2.getShortSignal(), relay[9], "DM2", huis);
 	huis->addNode(teleruptorDM2);
 
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
@@ -168,13 +168,13 @@ void Controller::setupLivingGlobal(){
 	living_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2, &Teleruptor::off));
 
 	buttonCA4.attach(inpinA[4]->getChangeSignal());
-	buttonCA4.longpress.connect(&living_off_actions, &ActionList::doit);
+	buttonCA4.getLongSignal().connect(&living_off_actions, &ActionList::doit);
 
 	buttonCA6.attach(inpinA[6]->getChangeSignal());
-	buttonCA6.longpress.connect(&living_off_actions, &ActionList::doit);
+	buttonCA6.getLongSignal().connect(&living_off_actions, &ActionList::doit);
 
 	buttonDM2.attach(inpinA[9]->getChangeSignal());
-	buttonDM2.longpress.connect(&living_off_actions, &ActionList::doit);
+	buttonDM2.getLongSignal().connect(&living_off_actions, &ActionList::doit);
 }
 
 void Controller::setupBureau(){
@@ -182,9 +182,9 @@ void Controller::setupBureau(){
 	bureau_off_actions.append(new FunAction<Teleruptor>(teleruptorCA8, &Teleruptor::off));
 
 	buttonCA7.attach(inpinA[7]->getChangeSignal());
-	buttonCA7.longpress.connect(&bureau_off_actions, &ActionList::doit);
+	buttonCA7.getLongSignal().connect(&bureau_off_actions, &ActionList::doit);
 	buttonCA8.attach(inpinA[8]->getChangeSignal());
-	buttonCA8.longpress.connect(&bureau_off_actions, &ActionList::doit);
+	buttonCA8.getLongSignal().connect(&bureau_off_actions, &ActionList::doit);
 }
 
 void Controller::setupGlobal(){
@@ -207,7 +207,7 @@ void Controller::setupGlobal(){
 	global_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2, &Teleruptor::save));
 	global_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2, &Teleruptor::off));
 
-	buttonAA8.longpress.connect(&global_off_actions, &ActionList::doit);
+	buttonAA8.getLongSignal().connect(&global_off_actions, &ActionList::doit);
 }
 
 void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butshort, sigslot::signal0<> * butlong) {
@@ -217,12 +217,12 @@ void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butsh
 
 void Controller::setupMotionSpots() {
 	buttonAA8.attach(inpinInt[1]->getChangeSignal());
-	connectMotionSpot(*spotAA8, &buttonAA8.shortpress,NULL);
+	connectMotionSpot(*spotAA8, &buttonAA8.getShortSignal(),NULL);
 	spotAA8->setup();
 	r.addActor(spotAA8);
 
 	buttonCC2.attach(inpinInt[0]->getChangeSignal());
-	connectMotionSpot(*spotCC2, &buttonCC2.longpress, NULL);
+	connectMotionSpot(*spotCC2, &buttonCC2.getLongSignal(), NULL);
 	spotCC2->setup();
 	r.addActor(spotCC2);
 }
@@ -245,7 +245,7 @@ void Controller::setup() {
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 	COUT_DEBUG(cout << "Connect CC2" << endl);
 	// connect the unused short press of CC2 to control the lamp CC3
-	buttonCC2.shortpress.connect(teleruptorCC3, &Teleruptor::pressed);
+	buttonCC2.getShortSignal().connect(teleruptorCC3, &Teleruptor::pressed);
 
 	COUT_DEBUG( cout << "Add actors" << endl);
 	r.addActor(&mqtt);
