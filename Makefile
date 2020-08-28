@@ -21,19 +21,18 @@ AR=avr-gcc-ar
 AVRDUDE=avrdude
 VERSION=$(shell git describe --tags)
 
-#INCLUDES=-I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/cores/arduino" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/variants/Controllino_maxi" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/Ethernet/src" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SoftwareSerial/src" -I"/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SPI/src" -I"/home/fraco/.arduinocdt/libraries/ArduinoSTL/1.0.5/src"
-#INCLUDES=-I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/cores/arduino" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/variants/Controllino_maxi" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/Ethernet/src" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SoftwareSerial/src" -I"/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SPI/src" -I"/home/fraco/.arduinocdt/libraries/ArduinoSTL/1.0.5/src"
 INCLUDES=-I"$(CORELIB)/cores/arduino" \
 		 -I"$(ETHERNETLIB)/src" \
 		 -I"$(CORELIB)/libraries/SoftwareSerial/src" \
 		 -I"$(CONTROLLINOLIB)" \
 		 -I"$(CORELIB)/libraries/SPI/src" \
 		 -I"$(ARDUINOSTL)/src" \
-		 -I"$(NTPCLIENT)" \
 		 -I"$(LIBRARIES)/sigslot" \
 		 -I"$(LIBRARIES)/mqtt/src" \
 		 -I"$(LIBRARIES)/mqtt/src/lwmqtt"\
 		 -I"$(MEMFREELIB)"
+
+		#  -I"$(NTPCLIENT)" \
 
 DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"F_CPU=16000000L" \
@@ -166,7 +165,6 @@ LIBRARIES_OBJS = \
 	$(BUILD)/lib/ArduinoSTL/src/abi/abi.cpp.o \
 	$(BUILD)/lib/ArduinoSTL/src/del_opvs.cpp.o \
 	$(BUILD)/lib/ArduinoSTL/src/string.cpp.o \
-	$(BUILD)/lib/ntpclient/NTPClient.cpp.o \
 	$(BUILD)/lib/mqtt/src/MQTTClient.cpp.o \
 	$(BUILD)/lib/mqtt/lwmqtt/client.o \
 	$(BUILD)/lib/mqtt/lwmqtt/helpers.o \
@@ -174,6 +172,7 @@ LIBRARIES_OBJS = \
 	$(BUILD)/lib/mqtt/lwmqtt/string.o \
 	$(BUILD)/lib/memoryfree/MemoryFree.o
 
+	# $(BUILD)/lib/ntpclient/NTPClient.cpp.o \
 
 -include $(LIBRARIES_OBJS:.o=.d)
 

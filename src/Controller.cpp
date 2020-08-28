@@ -4,7 +4,6 @@
  *  Created on: Mar 25, 2018
  *      Author: fraco
  */
-
 #include "Controller.h"
 
 #include <Controllino.h>  /* Usage of CONTROLLINO library allows you to use CONTROLLINO_xx aliases in your sketch. */
@@ -22,6 +21,7 @@ Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(50
 	COUT_DEBUG(cout << "size of SimpleButton " << sizeof(SimpleButton) << endl);
 	COUT_DEBUG(cout << "size of Teleruptor " << sizeof(Teleruptor) << endl);
 	COUT_DEBUG(cout << "size of FunAction<Teleruptor> " << sizeof(FunAction<Teleruptor>) << endl);
+	COUT_DEBUG(cout << "size of MqttRoot " << sizeof(MqttRoot) << endl);
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 	COUT_DEBUG(cout << "pins A" << endl);
 	// inpinsA
