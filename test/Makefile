@@ -8,7 +8,7 @@ CXXFLAGS =	-O0 -g -Wall -fmessage-length=0 -std=c++0x -Wno-deprecated-declaratio
 SRCS = $(wildcard *.cpp)
 
 MAIN_SRC += $(wildcard $(MAIN_DIR)/*.cpp)
-MAIN_SRC :=$(filter-out ../lights/lights.cpp,$(MAIN_SRC))
+MAIN_SRC :=$(filter-out $(MAIN_DIR)/lights.cpp,$(MAIN_SRC))
 SRCS += $(MAIN_SRC)
 CXXFLAGS += -I $(MAIN_DIR)
 
