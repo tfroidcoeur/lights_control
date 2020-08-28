@@ -12,6 +12,8 @@ MQTTLIB=$(LIBRARIES)/mqtt
 MEMFREELIB=$(LIBRARIES)/memoryfree
 BUILD=build
 
+CONTROLLINO_FLAVOR?=maxi
+
 OBJCOPY=avr-objcopy
 GCC=avr-gcc
 GPP=avr-g++
@@ -22,7 +24,6 @@ VERSION=$(shell git describe --tags)
 #INCLUDES=-I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/cores/arduino" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/variants/Controllino_maxi" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/Ethernet/src" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SoftwareSerial/src" -I"/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SPI/src" -I"/home/fraco/.arduinocdt/libraries/ArduinoSTL/1.0.5/src"
 #INCLUDES=-I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/cores/arduino" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/variants/Controllino_maxi" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/Ethernet/src" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SoftwareSerial/src" -I"/home/fraco/.arduinocdt/libraries/CONTROLLINO_Library" -I"/home/fraco/.arduinocdt/packages/CONTROLLINO_Boards/hardware/avr/2.0.1/libraries/SPI/src" -I"/home/fraco/.arduinocdt/libraries/ArduinoSTL/1.0.5/src"
 INCLUDES=-I"$(CORELIB)/cores/arduino" \
-		 -I"$(BUILD)/avr/variants/Controllino_maxi/" \
 		 -I"$(ETHERNETLIB)/src" \
 		 -I"$(CORELIB)/libraries/SoftwareSerial/src" \
 		 -I"$(CONTROLLINOLIB)" \
@@ -44,6 +45,7 @@ DEFINES=-D"SIGSLOT_PURE_ISO" \
 		-D"USE_NET" \
 		-D"VERSION=\"$(VERSION)\""
 
+INCLUDES+=-I"$(BUILD)/avr/variants/Controllino_$(CONTROLLINO_FLAVOR)/"
 
 FLAGS=-c -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560
 CPPFLAGS=-std=gnu++11 -fpermissive -fno-exceptions -fno-threadsafe-statics $(FLAGS)
@@ -55,7 +57,7 @@ TARGETS = \
 
 all: $(TARGETS)
 
-flash: $(BUILD)/lights.hex
+flash: $(TARGETS) 
 	$(AVRDUDE) -v -patmega2560 -cwiring -P/dev/ttyACM0 -b115200 -D -Uflash:w:$(BUILD)/lights.hex:i
 
 PROJECT_OBJS = \
