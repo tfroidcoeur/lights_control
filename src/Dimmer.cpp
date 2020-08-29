@@ -17,7 +17,7 @@ Dimmer::Dimmer(Input *in, OutPin *outpin, const char *name, MqttNode *parent,
                float dimSpeed, float dimThreshOnMs,
                float dimThreshOffMs)
     : MqttNode(name, parent), out(*outpin), passthrough(*in, *outpin),
-      debounced(outpin, false, 500), seq(*outpin), tracker(*in, *this, dimSpeed, dimThreshOnMs, dimThreshOffMs) {}
+      debounced(outpin, false, 15, 500), seq(*outpin), tracker(*in, *this, dimSpeed, dimThreshOnMs, dimThreshOffMs) {}
 
 Dimmer::~Dimmer() {
 	debounced.getChangeSignal().disconnect_all();
