@@ -143,14 +143,18 @@ void Dimmer::publishUpdate() {
 	char levelStr[10];
     publish(string(name) + "/state", isOn() ? "ON" : "OFF");
 
-	snprintf(levelStr, 10, "%3.2f", getLevel() * 100);
-    publish(string(name) + "dimlevel", string(levelStr));
+	snprintf(levelStr, 10, "%d.%02d", int(getLevel() * 100), int((getLevel() * 10000)) % 100);
+    COUT_DEBUG(cout << "report dimlevel " << getLevel() <<  " as " << levelStr << endl);
+    publish(string(name) + "/dimlevel", string(levelStr));
 }
 
 void Dimmer::refresh(){
 	COUT_DEBUG(cout << "refresh " << name << endl);
 	subscribe(string(name) + "/control");
 	subscribe(string(name) + "/pulse");
+	subscribe(string(name) + "/dimSpeed");
+	subscribe(string(name) + "/dimThreshOn");
+	subscribe(string(name) + "/dimThreshOff");
 	publishUpdate();
 }
 
@@ -159,10 +163,13 @@ void DimmerTracker::update(string const &path, string const &value) {
 
   if (path == "dimSpeed") {
     dimSpeed = std::atof(value.c_str());
+	COUT_DEBUG(cout << "dimSpeed: " << dimSpeed << endl);
   } else if (path == "dimThreshOff") {
     dimThreshOffMs = std::atof(value.c_str());
+	COUT_DEBUG(cout << "dimThreshOffMs: " << dimThreshOffMs << endl);
   } else if (path == "dimThreshOn") {
     dimThreshOnMs = std::atof(value.c_str());
+	COUT_DEBUG(cout << "dimThreshOnMs: " << dimThreshOnMs << endl);
   }
 }
 
@@ -171,10 +178,8 @@ void DimmerTracker::updateInput(int val) {
     // if we toggle from 1 to 0 in stable val
     COUT_DEBUG(cout << "Dimmer "
          << "pressed for " << millis() - press_started << "ms" << endl);
-	DimmerState* old = state;
 	state->pulse(millis() - press_started);
-	if (old != state) 
-		dimmer.publishUpdate();
+	dimmer.publishUpdate();
   } else if (val && !lastval) {
     // toggle from 0 to 1
     press_started = millis();

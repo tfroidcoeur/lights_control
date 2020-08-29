@@ -62,6 +62,16 @@ public:
   float calcNewDimLevel(unsigned long duration);
 
   /* percent per second*/
+  /* speed/min |    min    |     1     |     2     |     3     |     4     |     5     |     6     |     7     |    max    |     
+       min     |           |           |           |           |           |           |           |           |           |
+       1       |           |           |           |           |           |           |           |           |           |
+       2       |           |           |           |           |           |           |           |           |           |
+       3       |           |           |           |           |           |           |           |           |           |
+       4       |           |           |           |           |           |           |           |           |           |
+       5       |           |   0.28    |           |           |           |           |           |           |           |
+       6       |           |           |           |           |           |           |           |           |           |
+       max     |           |           |           |           |           |           |           |           |           |
+  */
   float dimSpeed;
   /* millis to press button before dim kicks in for off and on state */
   float dimThreshOnMs;
@@ -86,7 +96,7 @@ private:
 class Dimmer: public Switchable, public Actor, public MqttNode {
 public:
 	Dimmer(Input * in, OutPin * outpin, const char * name, MqttNode * parent = NULL,
-               float dimSpeed = 0.2, float dimThreshOnMs = 900,
+               float dimSpeed = 0.28, float dimThreshOnMs = 900,
                float dimThreshOffMs = 400) ;
 	virtual ~Dimmer();
 
