@@ -51,10 +51,10 @@ public:
 	virtual void handle();
 
 	/* API */
-	void start(struct SeqPattern * pattern);
-	void stop(bool restore);
-	void stop() {
-		stop(true);
+	void start(SeqPattern * pattern);
+	SeqPattern * stop(bool restore);
+	SeqPattern * stop() {
+		return stop(true);
 	}
 	bool isRunning();
 	static SeqPattern * createPattern(std::string pat);
