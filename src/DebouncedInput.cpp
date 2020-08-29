@@ -42,12 +42,12 @@ int DebouncedInput::debounce() {
 	return false;
 }
 
-DebouncedInput::DebouncedInput(Input *in, bool owninput, uint32_t debouncetime): 
-	 in(in), debouncetime(debouncetime), owninput(owninput){
+DebouncedInput::DebouncedInput(Input *in, bool owninput, uint32_t debouncetime, uint16_t repeatTimeHighMs): 
+	 in(in), repeatTimeHighMs(repeatTimeHighMs), debouncetime(debouncetime), owninput(owninput){
 	// if someone is pressing a button during boot, it
 	// will be dd and then reported as a buttonpush
 	readval = stableval = 0;
-	changetime = millis();
+	lastreport = changetime = millis();
 }
 
 void DebouncedInput::handle() {
@@ -55,6 +55,11 @@ void DebouncedInput::handle() {
 		// state changed after debouncing
 		// call state change handler
 		COUT_DEBUG(cout << "dd input pin:" << in << " emit " << hex << &changed << dec << " val: " << stableval << endl);
+		lastreport=millis();
+		changed.emit(stableval);
+	} else if (stableval && repeatTimeHighMs && (millis()-lastreport > repeatTimeHighMs)){
+		// report stable high every repeatTimeHighMs
+		lastreport=millis();
 		changed.emit(stableval);
 	}
 }

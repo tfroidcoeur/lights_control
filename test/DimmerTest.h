@@ -27,7 +27,8 @@ private:
 	Dimmer * testdimmer;
 	void testOn();
 	void testOff();
-	void sendPulse(int ms=600);
+	void testDim();
+	void sendPulse(int ms=350);
 
 };
 

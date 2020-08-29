@@ -9,14 +9,15 @@
 // #define DEBUG
 #include "DebouncedInput.h"
 #include "logging.h"
+#include <algorithm>
 #include <iostream>
 #include <string>
 
-Dimmer::Dimmer(Input * in, OutPin * outpin, const char * name, MqttNode * parent) :
-		MqttNode(name, parent), out(*outpin), passthrough(*in,*outpin), 
-		debounced(outpin, false), seq(*outpin), tracker(*in, *this)
-{
-}
+Dimmer::Dimmer(Input *in, OutPin *outpin, const char *name, MqttNode *parent,
+               float dimSpeed, float dimThreshOnMs,
+               float dimThreshOffMs)
+    : MqttNode(name, parent), out(*outpin), passthrough(*in, *outpin),
+      debounced(outpin, false, 300), seq(*outpin), tracker(*in, *this, dimSpeed, dimThreshOnMs, dimThreshOffMs) {}
 
 Dimmer::~Dimmer() {
 	debounced.getChangeSignal().disconnect_all();
@@ -27,7 +28,8 @@ Dimmer::~Dimmer() {
  * wanneer hij af staat:
  * x <= 400ms == aan
  * 400ms < x <900 ms lijkt geen effect (wschl super gedimd aan)
- * x >= 900ms soft voor kinderkamer
+ * x >= 900ms soft voor kinderkamer (wschl al bij 400)
+ * rond 400 doet ie raar: 395 < x < 405 brandt het licht maar lijkt hij toch in off state
 
  * wanneer hij aan staat:
  * x >=900 ms dimmer threshold, dim =~ x-900, richting switch
@@ -69,7 +71,14 @@ void Dimmer::off() {
 }
 
 bool Dimmer::isOn() {
-	return this->tracker.isOn();
+	return tracker.isOn();
+}
+
+float Dimmer::getLevel() {
+	if (!tracker.isOn()) {
+		return 0.0f;
+	}
+	return tracker.getDimLevel();
 }
 
 /* Actor */
@@ -130,8 +139,12 @@ void Dimmer::update(string const& path, string const & value){
 
 }
 
-void Dimmer::publishUpdate(){
-	publish(string(name)+"/state", isOn()?"ON":"OFF");
+void Dimmer::publishUpdate() {
+	char levelStr[10];
+    publish(string(name) + "/state", isOn() ? "ON" : "OFF");
+
+	snprintf(levelStr, 10, "%3.2f", getLevel() * 100);
+    publish(string(name) + "dimlevel", string(levelStr));
 }
 
 void Dimmer::refresh(){
@@ -154,7 +167,7 @@ void DimmerTracker::update(string const &path, string const &value) {
 }
 
 void DimmerTracker::updateInput(int val) {
-  if (!val) {
+  if (!val && lastval) {
     // if we toggle from 1 to 0 in stable val
     COUT_DEBUG(cout << "Dimmer "
          << "pressed for " << millis() - press_started << "ms" << endl);
@@ -162,22 +175,48 @@ void DimmerTracker::updateInput(int val) {
 	state->pulse(millis() - press_started);
 	if (old != state) 
 		dimmer.publishUpdate();
-  } else {
+  } else if (val && !lastval) {
+    // toggle from 0 to 1
     press_started = millis();
+  } else if (val) {
+    // debouncedinput is repeating the stable high, update
   }
+  lastval=val;
+}
+
+float DimmerTracker::calcNewDimLevel(unsigned long duration){
+	float thresh = isOn()?dimThreshOnMs:dimThreshOffMs;
+	float newlevel = dimlevel + (dimDirUp ? 1 : -1) * dimSpeed * ((duration - thresh) / 1000.0);
+    newlevel = min(max(newlevel, 0.0f), 1.0f);
+	return newlevel;
 }
 
 void DimmerTracker::changeState(DimmerState * newstate) { state = newstate; }
 
-void DimmerState_OFF::pulse(int duration) { tracker.changeState(tracker.ON); }
-
-void DimmerState_ON::pulse(int duration) {
-  if (duration < tracker.dimThreshOffMs)
-    tracker.changeState(tracker.OFF);
+void DimmerState_OFF::pulse(int duration) {
+  // TODO soft on
+  // TODO shady behaviour around threshold
+  tracker.dimDirUp = true;
+  if (duration > tracker.dimThreshOffMs) {
+    tracker.dimlevel = tracker.calcNewDimLevel(duration);
+  }
+  tracker.changeState(tracker.ON);
 }
 
-DimmerTracker::DimmerTracker(Input &in, Dimmer & dimmer, float dimSpeed, float dimThreshOnMs, float dimThreshOffMs) : 
-	dimSpeed(dimSpeed), dimThreshOnMs(dimThreshOnMs) ,dimThreshOffMs(dimThreshOffMs),
-	OFF(new DimmerState_OFF(*this)), ON(new DimmerState_ON(*this)), in(in), state(NULL), dimmer(dimmer) {
-		state = OFF;
-	};
+void DimmerState_ON::pulse(int duration) {
+  if (duration > tracker.dimThreshOnMs) {
+    tracker.dimlevel = tracker.calcNewDimLevel(duration);
+    tracker.dimDirUp = !tracker.dimDirUp;
+  } else {
+    tracker.changeState(tracker.OFF);
+  }
+}
+
+DimmerTracker::DimmerTracker(Input &in, Dimmer &dimmer, float dimSpeed,
+                             float dimThreshOnMs, float dimThreshOffMs)
+    : dimSpeed(dimSpeed), dimThreshOnMs(dimThreshOnMs),
+      dimThreshOffMs(dimThreshOffMs), dimlevel(0), dimDirUp(true),
+      OFF(new DimmerState_OFF(*this)), ON(new DimmerState_ON(*this)), in(in),
+      state(NULL), dimmer(dimmer), lastval(false) {
+  state = OFF;
+};
