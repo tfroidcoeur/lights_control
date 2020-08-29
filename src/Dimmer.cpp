@@ -6,7 +6,7 @@
  */
 
 #include "Dimmer.h"
-// #define DEBUG
+#define DEBUG
 #include "DebouncedInput.h"
 #include "logging.h"
 #include <algorithm>
@@ -17,7 +17,7 @@ Dimmer::Dimmer(Input *in, OutPin *outpin, const char *name, MqttNode *parent,
                float dimSpeed, float dimThreshOnMs,
                float dimThreshOffMs)
     : MqttNode(name, parent), out(*outpin), passthrough(*in, *outpin),
-      debounced(outpin, false, 300), seq(*outpin), tracker(*in, *this, dimSpeed, dimThreshOnMs, dimThreshOffMs) {}
+      debounced(outpin, false, 500), seq(*outpin), tracker(*in, *this, dimSpeed, dimThreshOnMs, dimThreshOffMs) {}
 
 Dimmer::~Dimmer() {
 	debounced.getChangeSignal().disconnect_all();
@@ -38,12 +38,14 @@ Dimmer::~Dimmer() {
  * minimum pulse is rond de 20ms
  */
 
-/* 1 sec on 100 ms off to turn the dimmer lights off */
+/* long pulse then short to turn the dimmer lights off 
+   long pulse will turn the lights on in either state
+   short pulse turns it off in on state */
 SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
-		"100*0 1000*1 100*0 200*1 2000*0");
+		"50*0 1000*1 100*0 200*1 2000*0");
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
-		"200*1 2000*0");
+		"50*0 200*1 2000*0");
 
 void Dimmer::on() {
 	if (isBlocked()){
@@ -139,13 +141,16 @@ void Dimmer::update(string const& path, string const & value){
 
 }
 
-void Dimmer::publishUpdate() {
+void Dimmer::publishDimLevel(float lvl){
 	char levelStr[10];
-    publish(string(name) + "/state", isOn() ? "ON" : "OFF");
-
-	snprintf(levelStr, 10, "%d.%02d", int(getLevel() * 100), int((getLevel() * 10000)) % 100);
-    COUT_DEBUG(cout << "report dimlevel " << getLevel() <<  " as " << levelStr << endl);
+	snprintf(levelStr, 10, "%d", int(lvl * 100));
+    COUT_DEBUG(cout << "report dimlevel " << lvl <<  " as " << levelStr << endl);
     publish(string(name) + "/dimlevel", string(levelStr));
+}
+
+void Dimmer::publishUpdate() {
+    publish(string(name) + "/state", isOn() ? "ON" : "OFF");
+	publishDimLevel(getLevel());
 }
 
 void Dimmer::refresh(){
@@ -185,6 +190,7 @@ void DimmerTracker::updateInput(int val) {
     press_started = millis();
   } else if (val) {
     // debouncedinput is repeating the stable high, update
+	dimmer.publishDimLevel(calcNewDimLevel(millis()-press_started));
   }
   lastval=val;
 }
@@ -192,6 +198,8 @@ void DimmerTracker::updateInput(int val) {
 float DimmerTracker::calcNewDimLevel(unsigned long duration){
 	float thresh = isOn()?dimThreshOnMs:dimThreshOffMs;
 	float newlevel = dimlevel + (dimDirUp ? 1 : -1) * dimSpeed * ((duration - thresh) / 1000.0);
+	if (duration < thresh) return dimlevel; 
+	COUT_DEBUG(cout << "calc lvl: base: " << dimlevel << " dirup: " << dimDirUp << " duration: " << duration << endl);
     newlevel = min(max(newlevel, 0.0f), 1.0f);
 	return newlevel;
 }

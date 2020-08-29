@@ -115,6 +115,7 @@ public:
 
 	float getLevel();
 	void publishUpdate();
+	void publishDimLevel(float lvl);
 
 private:
 	bool isBlocked() { return seq.isRunning();}
