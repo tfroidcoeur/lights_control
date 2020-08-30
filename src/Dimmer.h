@@ -136,15 +136,16 @@ private:
 	DebouncedInput debounced;
 	Sequencer seq;
 	DimmerTracker tracker;
+  bool controlling;
+  bool targeton;
+  bool synced;
+  float targetlvl;
+
 	static SeqPattern * onSequence;
 	static SeqPattern * offSequence;
   static SeqPattern * dimDirSequence;
   static SeqPattern * stopSequence;
   static SeqPattern * syncSequence;
-  bool controlling;
-  bool targeton;
-  bool synced;
-  float targetlvl;
 };
 
 #endif /* DIMMER_H_ */
