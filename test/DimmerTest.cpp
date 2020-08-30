@@ -22,7 +22,13 @@ int DimmerTest::PulseDurationMs = 600;
 void DimmerTest::setup() {
 	actor=testdimmer = new Dimmer(&in, &out, "testdimmer", NULL, 0.2, 900, 400);
 	TestWithTime::setup();
-	testdimmer->setup();;
+	testdimmer->setup();
+
+	// skip the sync step
+	testdimmer->on();
+	advanceTimeAbit(10000);
+	testdimmer->off();
+	advanceTimeAbit(10000);
 }
 
 void DimmerTest::tear_down() {
@@ -60,6 +66,16 @@ void DimmerTest::testDim() {
 	// turn it on
 	sendPulse(390);
 	TEST_ASSERT(testdimmer->isOn());
+
+	// dim up 5 second = 100%
+	sendPulse(5900);
+	TEST_ASSERT(testdimmer->isOn());
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 1.0, 0.005);
+
+	// dim down 5 second = 0%
+	sendPulse(5900);
+	TEST_ASSERT(testdimmer->isOn());
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.0, 0.005);
 
 	// dim up 1 second = 20%
 	sendPulse(1900);
@@ -109,7 +125,7 @@ void DimmerTest::testDim() {
 void DimmerTest::testDimCtrl() {
 	advanceTimeAbit();
 	testdimmer->on();
-	advanceTimeAbit(1000);
+	advanceTimeAbit(6000);
 	testdimmer->dimCtrl(0.5);
 	advanceTimeAbit(5000);
 	TEST_ASSERT(testdimmer->isOn());

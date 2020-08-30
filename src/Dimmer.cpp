@@ -23,7 +23,7 @@ Dimmer::Dimmer(Input *in, OutPin *outpin, const char *name, MqttNode *parent,
     : MqttNode(name, parent), out(*outpin), passthrough(*in, *outpin),
       debounced(outpin, false, 15, 250), seq(*outpin),
       tracker(*this, dimSpeed, dimThreshOnMs, dimThreshOffMs),
-      controlling(false), targetlvl(0.0) {}
+      controlling(false), synced(false), targetlvl(0.0) {}
 
 Dimmer::~Dimmer() {
 	debounced.getChangeSignal().disconnect_all();
@@ -48,28 +48,28 @@ Dimmer::~Dimmer() {
    long pulse will turn the lights on in either state
    short pulse turns it off in on state */
 SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
-		"20*0 1000*1 20*0 200*1 2000*0");
+		"50*0 1000*1 50*0 500*1 5000*0");
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
-		"20*0 200*1 2000*0");
+		"50*0 500*1 5000*0");
 /* change dim direction by dimming just minimum */
 SeqPattern * Dimmer::dimDirSequence = Sequencer::createPattern(
-		"20*0 920*1 20*0");
+		"50*0 950*1 50*0");
 /* stop any controls */
 SeqPattern * Dimmer::stopSequence = Sequencer::createPattern(
 		"50*0");
 /* start dim*/
 SeqPattern * Dimmer::startSequence = Sequencer::createPattern(
 		"50*0 1*1");
-
-/* sync dimmer */
+/* sync dimmer == reliably turn it on + dim to 100% */
 SeqPattern * Dimmer::syncSequence = Sequencer::createPattern(
-		"50*0 1000*1 100*0 200*1 100*0 5000*1 100*0 200*1");
+		"50*0 1000*1 50*0 200*1 50*0 200*1 50*0 5000*1 20*0");
 
 void Dimmer::on() {
 	targeton = true;
 	if (!controlling) targetlvl=tracker.dimlevel;
 	controlling= true;
+	checkSynced();
 }
 
 void Dimmer::off() {
@@ -105,22 +105,27 @@ float Dimmer::getLevel() {
 	return tracker.getDimLevel();
 }
 
+bool Dimmer::targetStateReached(){
+	return isOn() == targeton && (!targeton || std::abs(int(1000*(tracker.getDimLevel() - targetlvl))) < 5 );
+}
 /* Actor */
 void Dimmer::handle() {
 	if (!seq.isRunning()) {
 		 if (controlling) {
-			COUT_DEBUG(cout << "Controlling dimlevel target: " << targetlvl << " current: " << tracker.getDimLevel()  <<endl );
-			COUT_DEBUG(cout << "fabs diff: " << std::abs(int(1000*(tracker.getDimLevel() - targetlvl))) << endl);
-			if (isOn() != targeton){ 
-				COUT_DEBUG(cout << "target on: " << targeton << " is now: " << isOn() << endl);
-				if (targeton) 
-					_on(); 
-				else 
-					_off();
-			} else if (std::abs(int(1000*(tracker.getDimLevel() - targetlvl))) < 5){
+			COUT_DEBUG(float curlvl = tracker.getDimLevel()); 
+			COUT_DEBUG(cout << "Controlling dimlevel target: " << targetlvl << " current: " << curlvl  << endl );
+			COUT_DEBUG(cout << "fabs diff: " << std::abs(int(1000*(curlvl - targetlvl))) << endl);
+			if (targetStateReached()){
 				COUT_DEBUG(cout << "target reached" << endl);
 				controlling = false;
 				seq.start(stopSequence);
+			} else if (isOn() != targeton){ 
+				COUT_DEBUG(cout << "target on: " << targeton << " is now: " << isOn() << endl);
+				if (targeton) 
+					_on(); 
+				else {
+					_off();
+				}
 			} else if ((targetlvl > tracker.getDimLevel()) != tracker.dimDirUp) {
 				// change dim direction
 				COUT_DEBUG(cout << "toggle dim direction " << tracker.dimDirUp<< endl);
@@ -130,7 +135,7 @@ void Dimmer::handle() {
 				if (!out.read()) {
 					COUT_DEBUG(cout << "start dim dir: " << tracker.dimDirUp << endl);
 					passthrough.disable();
-					seq.start(startSequence);
+					out.write(1);
 				}
 			}
 		} else {
@@ -148,8 +153,6 @@ void Dimmer::setup() {
 	seq.setup();
 	debounced.setup();
 	debounced.getChangeSignal().connect(&tracker, &DimmerTracker::updateInput);
-	passthrough.disable();
-	seq.start(syncSequence);
 }
 
 void Dimmer::dimCtrl(float lvl) {
@@ -248,6 +251,7 @@ void DimmerTracker::updateInput(int val) {
 	state->pulse(millis() - press_started);
 	pressOngoing = false;
 	dimmer.publishUpdate();
+	dimmer.checkSynced();
   } else if (val && !lastval) {
     // toggle from 0 to 1
     press_started = millis();

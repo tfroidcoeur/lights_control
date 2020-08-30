@@ -117,10 +117,20 @@ public:
   void dimCtrl(float lvl);
 	void publishUpdate();
 	void publishDimLevel(float lvl);
+  void checkSynced(){
+    if (!synced) {
+      passthrough.disable();
+      seq.start(syncSequence);
+      synced = true;
+      targetlvl=1.0f;
+      controlling=false;
+    }
+  };
 
 private:
 	void _on();
 	void _off();
+  bool targetStateReached();
 	OutPin & out;
 	PassThrough passthrough;
 	DebouncedInput debounced;
@@ -134,6 +144,7 @@ private:
   static SeqPattern * syncSequence;
   bool controlling;
   bool targeton;
+  bool synced;
   float targetlvl;
 };
 
