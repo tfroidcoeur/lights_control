@@ -29,6 +29,7 @@ private:
 	void testOff();
 	void testDim();
 	void sendPulse(int ms=350);
+	void testDimCtrl();
 
 };
 

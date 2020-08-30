@@ -11,6 +11,7 @@ DimmerTest::DimmerTest() : out(CONTROLLINO_D0) {
 	TEST_ADD(DimmerTest::testOn)
 	TEST_ADD(DimmerTest::testOff)
 	TEST_ADD(DimmerTest::testDim)
+	TEST_ADD(DimmerTest::testDimCtrl)
 }
 
 DimmerTest::~DimmerTest() {
@@ -103,4 +104,33 @@ void DimmerTest::testDim() {
 	sendPulse(1900);
 	TEST_ASSERT(testdimmer->isOn());
 	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.6, 0.001);
+}
+
+void DimmerTest::testDimCtrl() {
+	advanceTimeAbit();
+	testdimmer->on();
+	advanceTimeAbit(1000);
+	testdimmer->dimCtrl(0.5);
+	advanceTimeAbit(5000);
+	TEST_ASSERT(testdimmer->isOn());
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.5, 0.005);
+	testdimmer->dimCtrl(0.6);
+	advanceTimeAbit(5000);
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.6, 0.005);
+	testdimmer->dimCtrl(0.6);
+	advanceTimeAbit(5000);
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.6, 0.005);
+	testdimmer->dimCtrl(0.2);
+	advanceTimeAbit(5000);
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.2, 0.005);
+	testdimmer->dimCtrl(1.0);
+	advanceTimeAbit(5000);
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 1.0, 0.005);
+
+	// don't allow enough time to fully reach the target
+	testdimmer->dimCtrl(0.1);
+	advanceTimeAbit(3000);
+	testdimmer->dimCtrl(0.9);
+	advanceTimeAbit(5000);
+	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.9, 0.005);
 }

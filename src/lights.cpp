@@ -73,9 +73,9 @@ void setup() {
 	set_dst(eu_dst);
 #endif
 
-	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
+	cout << "free: " << freeMemory() <<endl;
 
-	COUT_DEBUG(cout << "setup done" << endl);
+	cout << "setup done" << endl;
 }
 
 #ifdef DEBUG
