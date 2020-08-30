@@ -58,6 +58,13 @@ SeqPattern * Dimmer::dimDirSequence = Sequencer::createPattern(
 /* stop any controls */
 SeqPattern * Dimmer::stopSequence = Sequencer::createPattern(
 		"50*0");
+/* start dim*/
+SeqPattern * Dimmer::startSequence = Sequencer::createPattern(
+		"50*0 1*1");
+
+/* sync dimmer */
+SeqPattern * Dimmer::syncSequence = Sequencer::createPattern(
+		"50*0 1000*1 100*0 200*1 100*0 5000*1 100*0 200*1");
 
 void Dimmer::on() {
 	targeton = true;
@@ -123,7 +130,7 @@ void Dimmer::handle() {
 				if (!out.read()) {
 					COUT_DEBUG(cout << "start dim dir: " << tracker.dimDirUp << endl);
 					passthrough.disable();
-					out.write(1);
+					seq.start(startSequence);
 				}
 			}
 		} else {
@@ -141,6 +148,8 @@ void Dimmer::setup() {
 	seq.setup();
 	debounced.setup();
 	debounced.getChangeSignal().connect(&tracker, &DimmerTracker::updateInput);
+	passthrough.disable();
+	seq.start(syncSequence);
 }
 
 void Dimmer::dimCtrl(float lvl) {
