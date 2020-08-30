@@ -39,6 +39,6 @@ void OutPin::write(int value) {
 }
 
 bool OutPin::read() {
-	//return digitalRead(this->id);
+	COUT_DEBUG( cout << "read " << this->state << " from pin " << id << endl);
 	return this->state;
 }
