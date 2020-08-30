@@ -12,12 +12,18 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+// min an max are defined as macros in Arduino.h
+// clashing with cmath
+#undef min
+#undef max
+#include <cmath>
 
 Dimmer::Dimmer(Input *in, OutPin *outpin, const char *name, MqttNode *parent,
-               float dimSpeed, float dimThreshOnMs,
-               float dimThreshOffMs)
+               float dimSpeed, float dimThreshOnMs, float dimThreshOffMs)
     : MqttNode(name, parent), out(*outpin), passthrough(*in, *outpin),
-      debounced(outpin, false, 15, 500), seq(*outpin), tracker(*in, *this, dimSpeed, dimThreshOnMs, dimThreshOffMs) {}
+      debounced(outpin, false, 15, 250), seq(*outpin),
+      tracker(*this, dimSpeed, dimThreshOnMs, dimThreshOffMs),
+      controlling(false), targetlvl(0.0) {}
 
 Dimmer::~Dimmer() {
 	debounced.getChangeSignal().disconnect_all();
@@ -42,17 +48,30 @@ Dimmer::~Dimmer() {
    long pulse will turn the lights on in either state
    short pulse turns it off in on state */
 SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
-		"50*0 1000*1 100*0 200*1 2000*0");
+		"20*0 1000*1 20*0 200*1 2000*0");
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
-		"50*0 200*1 2000*0");
+		"20*0 200*1 2000*0");
+/* change dim direction by dimming just minimum */
+SeqPattern * Dimmer::dimDirSequence = Sequencer::createPattern(
+		"20*0 920*1 20*0");
+/* stop any controls */
+SeqPattern * Dimmer::stopSequence = Sequencer::createPattern(
+		"50*0");
 
 void Dimmer::on() {
-	if (isBlocked()){
-		COUT_DEBUG( cout << "Dimmer blocked" << endl);
-		return;
-	}
+	targeton = true;
+	if (!controlling) targetlvl=tracker.dimlevel;
+	controlling= true;
+}
 
+void Dimmer::off() {
+	targeton = false;
+	if (!controlling) targetlvl=tracker.dimlevel;
+	controlling = true;
+}
+
+void Dimmer::_on() {
 	if (!isOn()) {
 		COUT_DEBUG( cout << "Starting dimmer on" << endl);
 		passthrough.disable();
@@ -61,11 +80,7 @@ void Dimmer::on() {
 	publish(string(name)+"/state", "ON");
 }
 
-void Dimmer::off() {
-	if (isBlocked()){
-		COUT_DEBUG( cout << "Dimmer blocked" << endl);
-		return;
-	}
+void Dimmer::_off() {
 	COUT_DEBUG( cout << "Starting dimmer off"<< endl);
 	passthrough.disable();
 	seq.start(offSequence);
@@ -86,9 +101,37 @@ float Dimmer::getLevel() {
 /* Actor */
 void Dimmer::handle() {
 	if (!seq.isRunning()) {
-		passthrough.enable();
-		passthrough.handle();
+		 if (controlling) {
+			COUT_DEBUG(cout << "Controlling dimlevel target: " << targetlvl << " current: " << tracker.getDimLevel()  <<endl );
+			COUT_DEBUG(cout << "fabs diff: " << std::abs(int(1000*(tracker.getDimLevel() - targetlvl))) << endl);
+			if (isOn() != targeton){ 
+				COUT_DEBUG(cout << "target on: " << targeton << " is now: " << isOn() << endl);
+				if (targeton) 
+					_on(); 
+				else 
+					_off();
+			} else if (std::abs(int(1000*(tracker.getDimLevel() - targetlvl))) < 5){
+				COUT_DEBUG(cout << "target reached" << endl);
+				controlling = false;
+				seq.start(stopSequence);
+			} else if ((targetlvl > tracker.getDimLevel()) != tracker.dimDirUp) {
+				// change dim direction
+				COUT_DEBUG(cout << "toggle dim direction " << tracker.dimDirUp<< endl);
+				passthrough.disable();
+				seq.start(dimDirSequence);
+			} else {
+				if (!out.read()) {
+					COUT_DEBUG(cout << "start dim dir: " << tracker.dimDirUp << endl);
+					passthrough.disable();
+					out.write(1);
+				}
+			}
+		} else {
+			passthrough.enable();
+			passthrough.handle();
+		} 
 	}
+
 	seq.handle();
 	debounced.handle();
 }
@@ -100,13 +143,23 @@ void Dimmer::setup() {
 	debounced.getChangeSignal().connect(&tracker, &DimmerTracker::updateInput);
 }
 
+void Dimmer::dimCtrl(float lvl) {
+		controlling=true;
+		targeton=true;
+		targetlvl=lvl;
+}
+
 void Dimmer::update(string const& path, string const & value){
 	COUT_DEBUG(cout << "update " << name << " " << path << " " <<value <<endl);
 	if (path == "control") {
-		if (value == "ON") {
-			this->on();
-		} else if (value == "OFF") {
-			this->off();
+		if (value == "ON" || (!isOn() && value == "100")) {
+			on();
+		} else if (value == "OFF" || (isOn() && value == "0")) {
+			off();
+		} else {
+			float lvlf = std::atof(value.c_str())/100.0;
+			lvlf=std::min(std::max(lvlf,0.0f),100.0f);
+			dimCtrl(lvlf);
 		}
 	} else if (path == "pulse") {
 		int duration = std::atoi(value.c_str());
@@ -184,10 +237,12 @@ void DimmerTracker::updateInput(int val) {
     COUT_DEBUG(cout << "Dimmer "
          << "pressed for " << millis() - press_started << "ms" << endl);
 	state->pulse(millis() - press_started);
+	pressOngoing = false;
 	dimmer.publishUpdate();
   } else if (val && !lastval) {
     // toggle from 0 to 1
     press_started = millis();
+	pressOngoing = true;
   } else if (val) {
     // debouncedinput is repeating the stable high, update
 	dimmer.publishDimLevel(calcNewDimLevel(millis()-press_started));
@@ -199,8 +254,8 @@ float DimmerTracker::calcNewDimLevel(unsigned long duration){
 	float thresh = isOn()?dimThreshOnMs:dimThreshOffMs;
 	float newlevel = dimlevel + (dimDirUp ? 1 : -1) * dimSpeed * ((duration - thresh) / 1000.0);
 	if (duration < thresh) return dimlevel; 
-	COUT_DEBUG(cout << "calc lvl: base: " << dimlevel << " dirup: " << dimDirUp << " duration: " << duration << endl);
     newlevel = min(max(newlevel, 0.0f), 1.0f);
+	COUT_DEBUG(cout << "calc lvl: base: " << dimlevel << " dirup: " << dimDirUp << " duration: " << duration << " == " << newlevel << endl);
 	return newlevel;
 }
 
@@ -209,6 +264,7 @@ void DimmerTracker::changeState(DimmerState * newstate) { state = newstate; }
 void DimmerState_OFF::pulse(int duration) {
   // TODO soft on
   // TODO shady behaviour around threshold
+  COUT_DEBUG(cout << "OFF:pulse " << duration << endl);
   tracker.dimDirUp = true;
   if (duration > tracker.dimThreshOffMs) {
     tracker.dimlevel = tracker.calcNewDimLevel(duration);
@@ -217,6 +273,7 @@ void DimmerState_OFF::pulse(int duration) {
 }
 
 void DimmerState_ON::pulse(int duration) {
+  COUT_DEBUG(cout << "ON:pulse " << duration << endl);
   if (duration > tracker.dimThreshOnMs) {
     tracker.dimlevel = tracker.calcNewDimLevel(duration);
     tracker.dimDirUp = !tracker.dimDirUp;
@@ -225,11 +282,12 @@ void DimmerState_ON::pulse(int duration) {
   }
 }
 
-DimmerTracker::DimmerTracker(Input &in, Dimmer &dimmer, float dimSpeed,
+DimmerTracker::DimmerTracker(Dimmer &dimmer, float dimSpeed,
                              float dimThreshOnMs, float dimThreshOffMs)
     : dimSpeed(dimSpeed), dimThreshOnMs(dimThreshOnMs),
       dimThreshOffMs(dimThreshOffMs), dimlevel(0), dimDirUp(true),
-      OFF(new DimmerState_OFF(*this)), ON(new DimmerState_ON(*this)), in(in),
-      state(NULL), dimmer(dimmer), lastval(false) {
+      pressOngoing(false), OFF(new DimmerState_OFF(*this)),
+      ON(new DimmerState_ON(*this)), state(NULL), dimmer(dimmer),
+      lastval(false) {
   state = OFF;
 };

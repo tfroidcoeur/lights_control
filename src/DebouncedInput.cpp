@@ -27,12 +27,12 @@ int DebouncedInput::debounce() {
 	readval = val;
 
 	unsigned long elapsed = now - changetime;
-//	COUT_DEBUG(cout << "pin: " << in << " elapsed " << elapsed << endl);
+	COUT_DEBUG(cout << "pin: " << in << " elapsed " << elapsed << endl);
 
 	if (previousval != val) {
 		// if changed from last read, reset the d timer
 		changetime = now;
-		COUT_DEBUG(cout << "debouncing input pin:" << in << endl);
+		COUT_DEBUG(cout << "debouncing input pin:" << in << " val " << val << " dt: " << debouncetime << endl);
 	} else if (val != stableval && elapsed > debouncetime) {
 		// new stable value
 		COUT_DEBUG(cout << "dd input pin:" << in << " to value " << val << endl);
