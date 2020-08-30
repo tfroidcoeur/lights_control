@@ -48,22 +48,19 @@ Dimmer::~Dimmer() {
    long pulse will turn the lights on in either state
    short pulse turns it off in on state */
 SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
-		"50*0 1000*1 50*0 500*1 5000*0");
+		"100*0 1000*1 100*0 100*1 5000*0");
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
-		"50*0 500*1 5000*0");
+		"100*0 100*1 5000*0");
 /* change dim direction by dimming just minimum */
 SeqPattern * Dimmer::dimDirSequence = Sequencer::createPattern(
-		"50*0 950*1 50*0");
+		"100*0 950*1 100*0");
 /* stop any controls */
 SeqPattern * Dimmer::stopSequence = Sequencer::createPattern(
-		"50*0");
-/* start dim*/
-SeqPattern * Dimmer::startSequence = Sequencer::createPattern(
-		"50*0 1*1");
+		"100*0");
 /* sync dimmer == reliably turn it on + dim to 100% */
 SeqPattern * Dimmer::syncSequence = Sequencer::createPattern(
-		"50*0 1000*1 50*0 200*1 50*0 200*1 50*0 5000*1 20*0");
+		"100*0 1000*1 100*0 100*1 5000*0 100*1 100*0 5000*1 100*0");
 
 void Dimmer::on() {
 	targeton = true;

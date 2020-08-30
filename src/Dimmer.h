@@ -140,7 +140,6 @@ private:
 	static SeqPattern * offSequence;
   static SeqPattern * dimDirSequence;
   static SeqPattern * stopSequence;
-  static SeqPattern * startSequence;
   static SeqPattern * syncSequence;
   bool controlling;
   bool targeton;
