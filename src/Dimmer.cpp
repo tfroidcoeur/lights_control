@@ -6,7 +6,7 @@
  */
 
 #include "Dimmer.h"
-// #define DEBUG
+#define DEBUG
 #include "DebouncedInput.h"
 #include "logging.h"
 #include <algorithm>
@@ -47,20 +47,36 @@ Dimmer::~Dimmer() {
 /* long pulse then short to turn the dimmer lights off 
    long pulse will turn the lights on in either state
    short pulse turns it off in on state */
-SeqPattern * Dimmer::offSequence = Sequencer::createPattern(
-		"100*0 1000*1 100*0 100*1 5000*0");
+SeqPattern *Dimmer::offSequence =
+    new SeqPattern(1, new SeqElement[6]{{100, false},
+                                        {1000, true},
+                                        {100, false},
+                                        {100, true},
+                                        {900, false},
+                                        {0, false}});
 /* just pulse once. Beware: this will turn them off if they are on */
-SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
-		"100*0 100*1 5000*0");
+SeqPattern *Dimmer::onSequence = new SeqPattern(
+    1, new SeqElement[4]{{100, false}, {100, true}, {500, false}, {0, false}});
 /* change dim direction by dimming just minimum */
-SeqPattern * Dimmer::dimDirSequence = Sequencer::createPattern(
-		"100*0 1000*1 100*0");
+SeqPattern *Dimmer::dimDirSequence = new SeqPattern(
+    1, new SeqElement[4]{{100, false}, {1000, true}, {500, false}, {0, false}});
 /* stop any controls */
-SeqPattern * Dimmer::stopSequence = Sequencer::createPattern(
-		"100*0");
+SeqPattern *Dimmer::stopSequence =
+    new SeqPattern(1, new SeqElement[4]{{500, false}, {0, false}});
 /* sync dimmer == reliably turn it on + dim to 100% */
-SeqPattern * Dimmer::syncSequence = Sequencer::createPattern(
-		"100*0 1000*1 100*0 100*1 5000*0 100*1 100*0 5000*1 100*0");
+SeqPattern *Dimmer::syncSequence =
+    new SeqPattern(1, new SeqElement[12]{{100, false},
+                                         {1000, true}, // on or dim slightly
+                                         {100, false}, 
+                                         {100, true}, // off
+                                         {900, false}, 
+                                         {100, true}, // on again
+                                         {100, false},
+                                         {1000, true}, // change dim direction to down
+                                         {100, false},
+                                         {5000, true}, // dim off 
+                                         {500, false},
+                                         {0, false}});
 
 void Dimmer::on() {
 	targeton = true;
