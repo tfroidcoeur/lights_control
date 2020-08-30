@@ -26,6 +26,8 @@ void ControllerTest::setup(){
 	actor=new Controller();
 	pinReset();
 	actor->setup();
+
+	// skip the dimmer init
 }
 
 void ControllerTest::tear_down(){
@@ -151,7 +153,8 @@ void ControllerTest::testDimmers() {
 		digitalWrite(*it,1);
 	}
 
-	advanceTimeAbit(100);
+	// long time to wait, because the dimmers go through the sync sequence
+	advanceTimeAbit(20000);
 
 	// outputs should be high
 	for (it=outpins.begin(); it!=outpins.end(); it++) {
@@ -181,6 +184,12 @@ void ControllerTest::testGlobalButton() {
 		CONTROLLINO_R9,
 	});
 
+	// we need to go through the initial sync sequence of the dimmers
+	digitalWrite(dimdom,1);
+	advanceTimeAbit(100);
+	digitalWrite(pin,0);
+	advanceTimeAbit(20000);
+
 	// trigger global control
 	digitalWrite(pin,1);
 	advanceTimeAbit(1501);
@@ -197,25 +206,12 @@ void ControllerTest::testGlobalButton() {
 	TEST_ASSERT(!digitalRead(dimdomout));
 	// dimmer passthrough should not work
 	digitalWrite(dimdom,1);
-	TEST_ASSERT(!digitalRead(dimdomout));
-	advanceTimeAbit(101);
-
-	// dimmer off sequence should have progressed
-	// 1 second of on
-	TEST_ASSERT(digitalRead(dimdomout));
-	advanceTimeAbit(1001);
-
-	// dimmer should do 100 ms off
-	TEST_ASSERT(!digitalRead(dimdomout));
-	advanceTimeAbit(101);
-
-	// dimmer should do 200 ms on
-	TEST_ASSERT(digitalRead(dimdomout));
-	advanceTimeAbit(201);
-
-	// dimmer should do 2000 ms off
-	TEST_ASSERT(!digitalRead(dimdomout));
-	advanceTimeAbit(2001);
+	advanceTimeAbit(1);
+	if (digitalRead(dimdomout)) {
+		digitalWrite(dimdom,0);
+		TEST_ASSERT(!digitalRead(dimdomout));
+	}
+	advanceTimeAbit(20000);
 
 	// dimmer passthrough should work again
 	digitalWrite(dimdom,1);
