@@ -58,7 +58,7 @@ public:
   void update(string const& path, string const & value);
   void changeState(DimmerState * newstate);
   bool isOn() {return state== ON;};
-  float getDimLevel() { return dimlevel;}
+  float getDimLevel() { return calcNewDimLevel(pressOngoing?(millis()-press_started):0);}
   float calcNewDimLevel(unsigned long duration);
 
   /* percent per second*/
@@ -80,6 +80,7 @@ public:
   /* dimmer level state, kept here */
   float dimlevel;
   bool dimDirUp;
+  bool pressOngoing;
 
   void updateInput(int val);
 
@@ -114,11 +115,14 @@ public:
 	virtual void refresh();
 
 	float getLevel();
+  void dimCtrl(float lvl);
 	void publishUpdate();
 	void publishDimLevel(float lvl);
 
 private:
-	bool isBlocked() { return seq.isRunning();}
+	bool isBlocked() { return seq.isRunning() || controlling;}
+	void _on();
+	void _off();
 	OutPin & out;
 	PassThrough passthrough;
 	DebouncedInput debounced;
@@ -126,7 +130,11 @@ private:
 	DimmerTracker tracker;
 	static SeqPattern * onSequence;
 	static SeqPattern * offSequence;
-
+  static SeqPattern * dimDirSequence;
+  static SeqPattern * stopSequence;
+  bool controlling;
+  bool targeton;
+  float targetlvl;
 };
 
 #endif /* DIMMER_H_ */
