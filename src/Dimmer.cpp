@@ -6,7 +6,7 @@
  */
 
 #include "Dimmer.h"
-#define DEBUG
+// #define DEBUG
 #include "DebouncedInput.h"
 #include "logging.h"
 #include <algorithm>
@@ -54,7 +54,7 @@ SeqPattern * Dimmer::onSequence = Sequencer::createPattern(
 		"100*0 100*1 5000*0");
 /* change dim direction by dimming just minimum */
 SeqPattern * Dimmer::dimDirSequence = Sequencer::createPattern(
-		"100*0 950*1 100*0");
+		"100*0 1000*1 100*0");
 /* stop any controls */
 SeqPattern * Dimmer::stopSequence = Sequencer::createPattern(
 		"100*0");
@@ -110,8 +110,8 @@ void Dimmer::handle() {
 	if (!seq.isRunning()) {
 		 if (controlling) {
 			COUT_DEBUG(float curlvl = tracker.getDimLevel()); 
-			COUT_DEBUG(cout << "Controlling dimlevel target: " << targetlvl << " current: " << curlvl  << endl );
-			COUT_DEBUG(cout << "fabs diff: " << std::abs(int(1000*(curlvl - targetlvl))) << endl);
+			// COUT_DEBUG(cout << "Controlling dimlevel target: " << targetlvl << " current: " << curlvl );
+			// COUT_DEBUG(cout << " fabs diff: " << std::abs(int(1000*(curlvl - targetlvl))) << endl);
 			if (targetStateReached()){
 				COUT_DEBUG(cout << "target reached" << endl);
 				controlling = false;
@@ -246,6 +246,7 @@ void DimmerTracker::updateInput(int val) {
     COUT_DEBUG(cout << "Dimmer "
          << "pressed for " << millis() - press_started << "ms" << endl);
 	state->pulse(millis() - press_started);
+	COUT_DEBUG(cout << string(isOn()?"on":"off") << " dir " << string(dimDirUp?"up":"down") << " lvl: " << getDimLevel() << endl);
 	pressOngoing = false;
 	dimmer.publishUpdate();
 	dimmer.checkSynced();
@@ -265,7 +266,7 @@ float DimmerTracker::calcNewDimLevel(unsigned long duration){
 	float newlevel = dimlevel + (dimDirUp ? 1 : -1) * dimSpeed * ((duration - thresh) / 1000.0);
 	if (duration < thresh) return dimlevel; 
     newlevel = min(max(newlevel, 0.0f), 1.0f);
-	COUT_DEBUG(cout << "calc lvl: base: " << dimlevel << " dirup: " << dimDirUp << " duration: " << duration << " == " << newlevel << endl);
+	// COUT_DEBUG(cout << "calc lvl: base: " << dimlevel << " dirup: " << dimDirUp << " duration: " << duration << " == " << newlevel << endl);
 	return newlevel;
 }
 
