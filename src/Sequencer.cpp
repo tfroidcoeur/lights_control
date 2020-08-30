@@ -69,9 +69,10 @@ void Sequencer::activate() {
 	SeqElement & el = pattern->elements[activeStep];
 	COUT_DEBUG(cout << "next step ");
 	printStep(el);
-	if (el.value == -1) {
+	if (!el.value && el.duration==0) {
 		endPattern(el.value);
 	} else {
+		COUT_DEBUG(cout << "write: " << el.value << endl);
 		out->write(el.value);
 	}
 }
@@ -122,7 +123,7 @@ SeqPattern * Sequencer::createPattern(std::string pat){
 		is2 >> el.value ;
 		elements.push_back(el);
 	}
-	SeqElement el = {0,-1};
+	SeqElement el = {0, false};
 	elements.push_back(el);
 
 	result->elements = new SeqElement[elements.size()];

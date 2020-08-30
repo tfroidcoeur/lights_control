@@ -74,14 +74,14 @@ void MotionSpot::notifyButton(int mode) {
 }
 
 /* blink patterns of the led */
-SeqPattern offpattern(3, new SeqElement[3]  { { 300, 1 }, { 300, 0 }, { 0, -1 } });
+SeqPattern offpattern(3, new SeqElement[3]  { { 300, true }, { 300, false }, { 0, false } });
 
-SeqPattern autopattern(0, new SeqElement[3]  { { 1000, 1 }, { 1000, 0 }, { 0, -1 } });
+SeqPattern autopattern(0, new SeqElement[3]  { { 1000, true }, { 1000, false }, { 0, false } });
 
-// infinite repeat of very very long ON time
-// it is even very unlikely that the ULONG_MAX will be detected, as we need
+// infinite repeat of long ON time
+// it is even very unlikely that the UINT16_MAX will be detected, as we need
 // to sample millis() exactly at the max before wrap around
-SeqPattern onpattern(-1, new SeqElement[2] { { ULONG_MAX, 1 }, { 0, -1 } });
+SeqPattern onpattern(-1, new SeqElement[2] { { UINT16_MAX, true }, { 0, false } });
 
 /* state changes on short or long button press*/
 

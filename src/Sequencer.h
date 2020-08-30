@@ -18,8 +18,8 @@
  * value: value to set on the pin
  */
 struct SeqElement {
-	unsigned long duration;
-	int value;
+	uint16_t duration;
+	bool value;
 };
 
 /**
