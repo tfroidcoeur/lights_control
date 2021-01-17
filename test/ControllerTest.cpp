@@ -5,6 +5,7 @@
  *      Author: fraco
  */
 
+#include <vector>
 #include "ControllerTest.h"
 #include "Controllino.h"
 #include <cpptest-suite.h>
@@ -23,7 +24,7 @@ ControllerTest::~ControllerTest() {
 
 void ControllerTest::setup(){
 	TestWithTime::setup();
-	actor=new Controller();
+	actor=createController();
 	pinReset();
 	actor->setup();
 

@@ -52,16 +52,16 @@ CFLAGS=-std=gnu11 -fno-fat-lto-objects $(FLAGS)
 ASFLAGS=-c -x assembler-with-cpp -flto -MMD -mmcu=atmega2560
 
 TARGETS = \
-	$(BUILD)/lights.hex
+	$(BUILD)/lights1.hex \
+	$(BUILD)/lights2.hex
 
 all: $(TARGETS)
 
 flash: $(TARGETS) 
 	$(AVRDUDE) -v -patmega2560 -cwiring -P/dev/ttyACM0 -b115200 -D -Uflash:w:$(BUILD)/lights.hex:i
 
-PROJECT_OBJS = \
+COMMON_OBJS = \
 	$(BUILD)/src/Button.cpp.o \
-	$(BUILD)/src/Controller.cpp.o \
 	$(BUILD)/src/Dimmer.cpp.o \
 	$(BUILD)/src/InPin.cpp.o \
 	$(BUILD)/src/DebouncedInput.cpp.o \
@@ -73,6 +73,12 @@ PROJECT_OBJS = \
 	$(BUILD)/src/lights.cpp.o \
 	$(BUILD)/src/MqttDirectory.cpp.o \
 	$(BUILD)/src/MqttRoot.cpp.o
+
+PROJECT_OBJS = \
+	$(BUILD)/src/Controller1.cpp.o \
+	$(BUILD)/src/Controller2.cpp.o \
+	$(COMMON_OBJS)
+
 
 -include $(PROJECT_OBJS:.o=.d)
 
@@ -181,11 +187,11 @@ CONTROLLINO_BOARDS=$(BUILD)/avr/variants/Controllino_mega/pins_arduino.h
 $(CONTROLLINO_BOARDS):
 	unzip -u -d $(BUILD) $(CONTROLLINOLIB)/Boards/ControllinoHW.zip
 
-$(BUILD)/lights.hex: $(BUILD)/lights.elf
-	$(OBJCOPY) -O ihex -R .eeprom  "$(BUILD)/lights.elf" "$(BUILD)/lights.hex"
+$(BUILD)/%.hex: $(BUILD)/%.elf
+	$(OBJCOPY) -O ihex -R .eeprom  $< $@ 
 
-$(BUILD)/lights.elf: $(PROJECT_OBJS) $(LIBRARIES_OBJS) $(BUILD)/core.a
-	$(GCC) -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu=atmega2560  -o "$(BUILD)/lights.elf" $(PROJECT_OBJS) $(LIBRARIES_OBJS) "$(BUILD)/core.a" "-L." -lm
+$(BUILD)/lights%.elf: $(BUILD)/src/Controller%.cpp.o $(PROJECT_OBJS) $(COMMON_OBJS) $(LIBRARIES_OBJS) $(BUILD)/core.a
+	$(GCC) -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu=atmega2560  -o $@ $< $(COMMON_OBJS) $(LIBRARIES_OBJS) "$(BUILD)/core.a" "-L." -lm
 
 $(BUILD)/core.a: $(PLATFORM_CORE_OBJS) $(PLATFORM_VARIANT_OBJS)
 	$(AR) rcs  "$(BUILD)/core.a" $?

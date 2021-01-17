@@ -7,8 +7,9 @@
 #include <stdio.h>
 #include <utility/w5100.h>
 #include <MemoryFree.h>
+#include "logging.h"
 
-static Controller * controller;
+static Actor * controller;
 
 #ifdef USE_NET
 // Enter a MAC address and IP address for your controller below.
@@ -50,7 +51,7 @@ void setup() {
 	COUT_DEBUG(cout << "size of Controller " << sizeof(Controller) << endl);
 	COUT_DEBUG(cout << "Lights version " << VERSION << endl);
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl;)
-	controller = new Controller();
+	controller = createController();
 	controller->setup();
 	COUT_DEBUG(cout << "controller setup done" << endl);
 
