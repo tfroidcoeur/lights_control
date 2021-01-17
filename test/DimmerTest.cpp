@@ -147,6 +147,6 @@ void DimmerTest::testDimCtrl() {
 	testdimmer->dimCtrl(0.1);
 	advanceTimeAbit(3000);
 	testdimmer->dimCtrl(0.9);
-	advanceTimeAbit(5000);
+	advanceTimeAbit(8000);
 	TEST_ASSERT_DELTA(testdimmer->getLevel(), 0.9, 0.005);
 }

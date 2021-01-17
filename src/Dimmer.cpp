@@ -126,8 +126,8 @@ void Dimmer::handle() {
 	if (!seq.isRunning()) {
 		 if (controlling) {
 			COUT_DEBUG(float curlvl = tracker.getDimLevel()); 
-			// COUT_DEBUG(cout << "Controlling dimlevel target: " << targetlvl << " current: " << curlvl );
-			// COUT_DEBUG(cout << " fabs diff: " << std::abs(int(1000*(curlvl - targetlvl))) << endl);
+			COUT_DEBUG(cout << "Controlling dimlevel target: " << targetlvl << " current: " << curlvl );
+			COUT_DEBUG(cout << " fabs diff: " << std::abs(int(1000*(curlvl - targetlvl))) << endl);
 			if (targetStateReached()){
 				COUT_DEBUG(cout << "target reached" << endl);
 				controlling = false;
