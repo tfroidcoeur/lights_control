@@ -1,33 +1,18 @@
 #include <Controllino.h>  /* Usage of CONTROLLINO library allows you to use CONTROLLINO_xx aliases in your sketch. */
 #include <HardwareSerial.h>
-#include "Controller.h"
-#include "Ethernet.h"
 #include <time.h>
 #include <util/eu_dst.h>
 #include <stdio.h>
-#include <utility/w5100.h>
 #include <MemoryFree.h>
+
+#include "Controller.h"
 #include "logging.h"
+#include "net.h"
 
 static Actor * controller;
 
 #ifdef USE_NET
-// Enter a MAC address and IP address for your controller below.
-// The IP address will be dependent on your local network:
-byte mac[] = {
-  0xA8, 0x61, 0x0A, 0x01, 0xFE, 0xED
-};
-#ifdef FROIDCOEUR_GW
-IPAddress ip(10, 0, 0, 230);
-IPAddress gw(10, 0, 0, 1);
-IPAddress dns(10, 0, 0, 1);
-IPAddress netmask(255, 255, 255, 0);
-#else
-IPAddress ip(192, 168, 0, 57);
-IPAddress gw(192, 168, 0, 1);
-IPAddress dns(8, 8, 8, 8);
-IPAddress netmask(255, 255, 255, 0);
-#endif
+Net net;
 #endif
 
 #ifdef USE_NTP
@@ -56,15 +41,7 @@ void setup() {
 	COUT_DEBUG(cout << "controller setup done" << endl);
 
 #ifdef USE_NET
-	Ethernet.begin(mac, ip, dns, gw, netmask);
-	// Ethernet.begin(mac);
-	// crazy chip: 500 = 50ms
-	// and w the ##$@$ do you wait for UDP to succeed
-	// TODO make sure the crazy chip does send the UDP packet,
-	// check what normal times are for this process
-	W5100.setRetransmissionTime(500);
-	W5100.setRetransmissionCount(1);
-	COUT_DEBUG(cout << "net setup done" << endl);
+	net.setup();
 #endif
 #ifdef USE_NTP
 	ntpclient.begin();
@@ -97,7 +74,7 @@ void checkTimeSpent(int maxtime, char * where) {
 void loop() {
 	checkTimeSpent(50, "start");
 #ifdef USE_NET
-	Ethernet.maintain();
+	net.handle();
 	checkTimeSpent(10, "DHCP");
 #endif
 #ifdef DEBUG

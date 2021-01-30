@@ -77,6 +77,7 @@ COMMON_OBJS = \
 PROJECT_OBJS = \
 	$(BUILD)/src/Controller1.cpp.o \
 	$(BUILD)/src/Controller2.cpp.o \
+	$(BUILD)/src/net1.cpp.o \
 	$(COMMON_OBJS)
 
 
@@ -190,8 +191,11 @@ $(CONTROLLINO_BOARDS):
 $(BUILD)/%.hex: $(BUILD)/%.elf
 	$(OBJCOPY) -O ihex -R .eeprom  $< $@ 
 
-$(BUILD)/lights%.elf: $(BUILD)/src/Controller%.cpp.o $(PROJECT_OBJS) $(COMMON_OBJS) $(LIBRARIES_OBJS) $(BUILD)/core.a
-	$(GCC) -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu=atmega2560  -o $@ $< $(COMMON_OBJS) $(LIBRARIES_OBJS) "$(BUILD)/core.a" "-L." -lm
+$(BUILD)/project%.a: $(BUILD)/src/net%.cpp.o $(BUILD)/src/Controller%.cpp.o 
+	$(AR) rcs  $@ $^
+
+$(BUILD)/lights%.elf: $(BUILD)/project%.a $(PROJECT_OBJS) $(COMMON_OBJS) $(LIBRARIES_OBJS) $(BUILD)/core.a
+	$(GCC) -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu=atmega2560  -o $@ $(COMMON_OBJS) $(LIBRARIES_OBJS) "$(BUILD)/core.a" $< "-L." -lm
 
 $(BUILD)/core.a: $(PLATFORM_CORE_OBJS) $(PLATFORM_VARIANT_OBJS)
 	$(AR) rcs  "$(BUILD)/core.a" $?

@@ -10,6 +10,7 @@ SRCS = $(wildcard *.cpp)
 MAIN_SRC += $(wildcard $(MAIN_DIR)/*.cpp)
 MAIN_SRC :=$(filter-out $(MAIN_DIR)/lights.cpp,$(MAIN_SRC))
 MAIN_SRC :=$(filter-out $(MAIN_DIR)/Controller2.cpp,$(MAIN_SRC))
+MAIN_SRC :=$(filter-out $(MAIN_DIR)/net%.cpp,$(MAIN_SRC))
 SRCS += $(MAIN_SRC)
 CXXFLAGS += -I $(MAIN_DIR)
 
