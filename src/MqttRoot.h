@@ -21,7 +21,7 @@ class MqttHandler {
 class MqttRoot: public MqttNode, public Actor, public MqttHandler{
 public:
    // MqttNode
-	MqttRoot();
+	MqttRoot(string name="Controllino");
 	~MqttRoot(){};
 
    // Actor
@@ -35,13 +35,14 @@ public:
    }
 
    void handle() {
+      string vpath=string("home/")+name+"/version";
       if (!mqttclient.connected()){
          if (millis() - lastConnectAttempt > connectRetryTime) {
-            mqttclient.connect("Controllino");
+            mqttclient.connect(name.c_str());
             lastConnectAttempt=millis();
             if (mqttclient.connected()) {
                Serial.println("connected mqt");
-               publish("home/version",string(VERSION));
+               publish(vpath,string(VERSION));
                refresh();
             }
          }
@@ -88,6 +89,7 @@ public:
       }
   }
 private:
+   string name;
    MqttNode * child;
    MQTTClient mqttclient;
    EthernetClient net;

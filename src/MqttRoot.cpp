@@ -12,7 +12,7 @@ void MqttRoot::__messageReceived(String &topic, String &payload) {
         r->messageReceived(topic, payload);
 };
 
-MqttRoot::MqttRoot() : MqttNode("<root>") {
+MqttRoot::MqttRoot(string name) : MqttNode("<root>"),name(name) {
   lastConnectAttempt = millis() - connectRetryTime;
   r = this;
 };

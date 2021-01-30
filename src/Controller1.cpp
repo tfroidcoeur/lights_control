@@ -81,7 +81,7 @@ private:
 	// MqttDirectories
 	MqttDirectory * huis;
 };
-Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(500,2000), buttonCA8(500,2000), buttonDM2(500,2000){
+Controller::Controller(): buttonCA4(500,2000), buttonCA6(500,2000), buttonCA7(500,2000), buttonCA8(500,2000), buttonDM2(500,2000), mqtt("Controllino1"){
 	// create pins
 
 	COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);

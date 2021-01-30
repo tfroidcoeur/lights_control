@@ -62,6 +62,7 @@ void MqttDirectoryTest::testUpdate() {
   TEST_ASSERT_EQUALS("hello child1", child1.lastupval);
   TEST_ASSERT_EQUALS("hello child2",child2.lastupval);
 
+  dir.update("mydir", "");
 }
 
 void MqttDirectoryTest::testPublish() {
