@@ -165,18 +165,20 @@ Controller::Controller(): buttonAA1(500,2000), buttonAA2(500,2000), buttonAA3(50
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 	COUT_DEBUG(cout << "dimmers" << endl);
 	// Dimmers (passthrough)
-	dimmerAA1 = new Dimmer(inpinA[0]->getRawInput(), outpinD[1], "AA1", huis);
+	dimmerAA1 = new Dimmer(inpinA[1]->getRawInput(), outpinD[1], "AA1", huis);
 	huis->addNode(dimmerAA1);
-	dimmerAA3 = new Dimmer(inpinA[0]->getRawInput(), outpinD[3], "AA3", huis);
+	dimmerAA3 = new Dimmer(inpinA[3]->getRawInput(), outpinD[3], "AA3", huis);
 	huis->addNode(dimmerAA3);
-	dimmerAA6 = new Dimmer(inpinA[0]->getRawInput(), outpinD[6], "AA6", huis);
+	dimmerAA6 = new Dimmer(inpinA[6]->getRawInput(), outpinD[6], "AA6", huis);
 	huis->addNode(dimmerAA6);
 
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 	COUT_DEBUG(cout << "spots" << endl);
-	// create spots
+	// create spot
+	// there is no LED indicator connected for the spot
+	// but we must currently pass a pin for it
 	spotEC2 = new MotionSpot(*outpinD[7], *outpinD[8],
-					*outpinD[9], "EC2", huis);
+					*outpinD[10], "EC2", huis);
 	huis->addNode(spotEC2);
 	COUT_DEBUG(cout << "free: " << freeMemory() <<endl);
 }
@@ -236,8 +238,8 @@ void Controller::connectMotionSpot(MotionSpot & spot, sigslot::signal0<> * butsh
 }
 
 void Controller::setupMotionSpots() {
-	buttonEC2.attach(inpinInt[1]->getChangeSignal());
-	connectMotionSpot(*spotEC2, &buttonAA8.getShortSignal(),NULL);
+	buttonEC2.attach(inpinA[7]->getChangeSignal());
+	connectMotionSpot(*spotEC2, &buttonEC2.getShortSignal(),NULL);
 	spotEC2->setup();
 	r.addActor(spotEC2);
 }
