@@ -9,12 +9,12 @@
 
 std::ostream & operator<<(std::ostream& os, const ButtonMode& m) {
 #ifdef DEBUG_MODE_NAME
-  const char *name = m.name ? m.name : "NULL"
+  const char *name = m.name ? m.name : "NULL";
 #else // ifdef DEBUG_MODE_NAME
   const char *name = "unknown";
 #endif // ifdef DEBUG_MODE_NAME
-                     return os << "mode " << name << "(" << m.delay << ","
-                               << static_cast<void *>(m.pressed) << ")";
+  return os << "mode " << name << "(" << m.delay << "," <<
+         static_cast<void *>(m.pressed) << ")";
 }
 
 void Button::emit(const ButtonMode& mode) const {

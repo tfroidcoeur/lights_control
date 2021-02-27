@@ -205,6 +205,9 @@ $(BUILD)/core.a: $(PLATFORM_CORE_OBJS) $(PLATFORM_VARIANT_OBJS)
 uncrustify:
 	find test src -name "*.cpp" -or -name "*.h" |xargs uncrustify --replace --no-backup -c uncrustify/uncrustify.cfg
 
+lint:
+	cppcheck -q --language=c++ test src 
+
 clean:
 	-$(RMDIR) $(BUILD)
 
