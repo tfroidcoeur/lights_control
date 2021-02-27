@@ -57,7 +57,7 @@ TARGETS = \
 
 all: $(TARGETS)
 
-flash: $(TARGETS) 
+flash: $(TARGETS)
 	$(AVRDUDE) -v -patmega2560 -cwiring -P/dev/ttyACM0 -b115200 -D -Uflash:w:$(BUILD)/lights.hex:i
 
 COMMON_OBJS = \
@@ -189,9 +189,9 @@ $(CONTROLLINO_BOARDS):
 	unzip -u -d $(BUILD) $(CONTROLLINOLIB)/Boards/ControllinoHW.zip
 
 $(BUILD)/%.hex: $(BUILD)/%.elf
-	$(OBJCOPY) -O ihex -R .eeprom  $< $@ 
+	$(OBJCOPY) -O ihex -R .eeprom  $< $@
 
-$(BUILD)/project%.a: $(BUILD)/src/net%.cpp.o $(BUILD)/src/Controller%.cpp.o 
+$(BUILD)/project%.a: $(BUILD)/src/net%.cpp.o $(BUILD)/src/Controller%.cpp.o
 	$(AR) rcs  $@ $^
 
 $(BUILD)/lights%.elf: $(BUILD)/project%.a $(PROJECT_OBJS) $(COMMON_OBJS) $(LIBRARIES_OBJS) $(BUILD)/core.a
@@ -199,6 +199,11 @@ $(BUILD)/lights%.elf: $(BUILD)/project%.a $(PROJECT_OBJS) $(COMMON_OBJS) $(LIBRA
 
 $(BUILD)/core.a: $(PLATFORM_CORE_OBJS) $(PLATFORM_VARIANT_OBJS)
 	$(AR) rcs  "$(BUILD)/core.a" $?
+
+.PHONY: uncrustify
+
+uncrustify:
+	find test src -name "*.cpp" -or -name "*.h" |xargs uncrustify --replace --no-backup -c uncrustify/uncrustify.cfg
 
 clean:
 	-$(RMDIR) $(BUILD)

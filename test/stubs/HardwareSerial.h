@@ -9,7 +9,4 @@
 #define STUBS_HARDWARESERIAL_H_
 
 
-
-
-
 #endif /* STUBS_HARDWARESERIAL_H_ */

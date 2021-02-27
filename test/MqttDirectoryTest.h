@@ -10,16 +10,19 @@
 #include "Controllino.h"
 
 
-class MqttDirectoryTest: public Test::Suite{
+class MqttDirectoryTest : public Test::Suite {
 public:
-	MqttDirectoryTest();
-	virtual ~MqttDirectoryTest();
-	void testPublish();
-	void testUpdate();
-	void testSubscribe();
+
+  MqttDirectoryTest();
+  virtual ~MqttDirectoryTest();
+  void testPublish();
+  void testUpdate();
+  void testSubscribe();
+
 protected:
-	void setup();
-	void tear_down();
+
+  void setup();
+  void tear_down();
 };
 
 #endif /* MQTTDIRECTORYTEST_H_ */

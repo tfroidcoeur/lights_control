@@ -13,25 +13,29 @@
 
 class OutPin : public Actor, public Input {
 public:
-	OutPin(int id);
-	virtual ~OutPin();
-	/* toggle the output to the opposite state */
-	void toggle();
 
-	void write(int val);
+  OutPin(int id);
+  virtual ~OutPin();
 
-	/* InPin */
-	bool read();
+  /* toggle the output to the opposite state */
+  void toggle();
 
-	/* Actor */
-	void setup();
-	void handle(){};
+  void write(int val);
+
+  /* InPin */
+  bool read();
+
+  /* Actor */
+  void setup();
+  void handle() {}
 
 private:
-	int id;
-	/* DigitalRead is not always correct, so
-	 * we track the last recorded output value as
-	 * the current expected state. */
-	bool state;
+
+  int id;
+
+  /* DigitalRead is not always correct, so
+   * we track the last recorded output value as
+   * the current expected state. */
+  bool state;
 };
 #endif /* OUTPIN_H_ */

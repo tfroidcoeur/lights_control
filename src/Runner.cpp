@@ -8,11 +8,9 @@
 #include "Runner.h"
 
 Runner::Runner() {
-	// TODO Auto-generated constructor stub
-
+  // TODO Auto-generated constructor stub
 }
 
 Runner::~Runner() {
-	actors.clear();
+  actors.clear();
 }
-

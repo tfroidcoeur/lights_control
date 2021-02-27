@@ -13,17 +13,25 @@
 
 class TestWithTime {
 public:
-	TestWithTime();
-	virtual ~TestWithTime();
-	void advanceTimeAbit(int delay=100, int inc=10);
+
+  TestWithTime();
+  virtual ~TestWithTime();
+  void advanceTimeAbit(int delay = 100,
+                       int inc   = 10);
+
 protected:
-	virtual void setup();
-	virtual void tear_down();
+
+  virtual void setup();
+  virtual void tear_down();
+
 protected:
-	Time * time;
-	Time * orig;
+
+  Time *time;
+  Time *orig;
+
 protected:
-	Actor * actor;
+
+  Actor *actor;
 };
 
 #endif /* TESTWITHTIME_H_ */

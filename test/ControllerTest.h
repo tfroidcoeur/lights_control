@@ -11,19 +11,21 @@
 #include <cpptest-suite.h>
 #include "TestWithTime.h"
 
-class ControllerTest: public Test::Suite, public TestWithTime {
+class ControllerTest : public Test::Suite, public TestWithTime {
 public:
-	ControllerTest();
-	virtual ~ControllerTest();
 
-	virtual void setup();
-	virtual void tear_down();
+  ControllerTest();
+  virtual ~ControllerTest();
+
+  virtual void setup();
+  virtual void tear_down();
 
 private:
-	void testTeleruptors();
-	void testMotionSpot();
-	void testDimmers();
-	void testGlobalButton();
+
+  void testTeleruptors();
+  void testMotionSpot();
+  void testDimmers();
+  void testGlobalButton();
 };
 
 #endif /* CONTROLLERTEST_H_ */

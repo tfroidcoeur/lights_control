@@ -6,18 +6,20 @@
 
 class InPin : public Actor, public Input {
 private:
-	int id;
+
+  int id;
+
 public:
-	InPin(int id);
 
-	/* Input */
-	virtual bool read();
+  InPin(int id);
 
-	/* Actor */
-	virtual void handle();
-	virtual void setup();
+  /* Input */
+  virtual bool read();
+
+  /* Actor */
+  virtual void handle();
+  virtual void setup();
 };
-
 
 
 #endif /* INPIN_H_ */

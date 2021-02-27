@@ -19,26 +19,37 @@ class Time;
 
 class Button;
 
-class ButtonTest : public Test::Suite, public sigslot::has_slots<>, public TestWithTime {
+class ButtonTest : public Test::Suite, public sigslot::has_slots<>,
+                   public TestWithTime {
 public:
-	ButtonTest();
-	virtual ~ButtonTest();
-protected:
-	void setup();
-	void tear_down();
-private:
-	Button * testbutton;
-	sigslot::signal0<> press1;
-	int press1count=0;
-	void notifyPress1(){press1count++; /* cout << "pressed 1 (" << press1count <<")" << endl; */};
-	sigslot::signal0<> press2;
-	void notifyPress2(){press2count++; /* cout << "pressed 2 (" << press2count <<")" << endl; */};
-	int press2count=0;
-	void pressShortTest();
-	void pressShortTestMany();
-	void pressTimeoutTest();
-	void pressLongTest();
 
+  ButtonTest();
+  virtual ~ButtonTest();
+
+protected:
+
+  void setup();
+  void tear_down();
+
+private:
+
+  Button *testbutton;
+  sigslot::signal0<>press1;
+  int press1count = 0;
+  void notifyPress1() {
+    press1count++; /* cout << "pressed 1 (" << press1count <<")" << endl; */
+  }
+
+  sigslot::signal0<>press2;
+  void notifyPress2() {
+    press2count++; /* cout << "pressed 2 (" << press2count <<")" << endl; */
+  }
+
+  int press2count = 0;
+  void pressShortTest();
+  void pressShortTestMany();
+  void pressTimeoutTest();
+  void pressLongTest();
 };
 
 #endif /* BUTTONTEST_H_ */

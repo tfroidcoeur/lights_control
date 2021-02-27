@@ -10,14 +10,17 @@
 
 class Switchable {
 public:
-	Switchable(){};
-	virtual ~Switchable(){};
-	virtual void on()=0;
-	virtual void off()=0;
-	virtual bool isOn()=0;
-	virtual void toggle() {
-		if (isOn()) off(); else on();
-	}
+
+  Switchable() {}
+
+  virtual ~Switchable() {}
+
+  virtual void on()   = 0;
+  virtual void off()  = 0;
+  virtual bool isOn() = 0;
+  virtual void toggle() {
+    if (isOn()) off(); else on();
+  }
 };
 
 #endif /* SWITCHABLE_H_ */

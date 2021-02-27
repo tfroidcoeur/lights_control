@@ -1,11 +1,14 @@
 /*
  * Button.h
  *
- * A button will monitor a pin (debounced output). It will define different modes, based on the duration of the pulse.
+ * A button will monitor a pin (debounced output). It will define different
+ * modes, based on the duration of the pulse.
  * Each mode has a delay parameter. The button will emit an event with a mode if
- * the button was pressed for a duration of < mode.delay. It will emit the mode with the smallest delay value where
+ * the button was pressed for a duration of < mode.delay. It will emit the mode
+ * with the smallest delay value where
  * press duration < mode.delay.
- * If the button is pressed for a duration > any mode.delay, the mode with the largest mode.delay is emitted.
+ * If the button is pressed for a duration > any mode.delay, the mode with the
+ * largest mode.delay is emitted.
  *
  * example:
  *   mode1 delay=100
@@ -17,7 +20,8 @@
  *      100 and 400 --> mode 2
  *      400 and 1000 --> mode 3
  *
- *   after 1000 ms, mode 3 will be emitted anyways, even if button still pressed.
+ *   after 1000 ms, mode 3 will be emitted anyways, even if button still
+ * pressed.
  *
  *  Created on: Dec 17, 2017
  *      Author: fraco
@@ -36,7 +40,8 @@
 
 #include "InPin.h"
 #include "sigslot.h"
-//#define DEBUG
+
+// #define DEBUG
 #include "logging.h"
 
 class Button;
@@ -44,78 +49,89 @@ using namespace std;
 
 class ButtonMode {
 public:
-	ButtonMode(int delay=0, const char * name = "<anon>",
-			sigslot::signal0<> * pressed = NULL) :
-#ifdef DEBUG_MODE_NAME
-			name(name), 
-#endif
-			delay(delay), pressed(pressed) {
-	}
-#ifdef DEBUG_MODE_NAME
-	const char * name;
-#endif
-	unsigned long delay;
-	sigslot::signal0<> * pressed;
 
-	bool operator <( const ButtonMode & other) const {
-		return this->delay < other.delay;
-	}
+  ButtonMode(int delay = 0, const char *name = "<anon>",
+             sigslot::signal0<> *pressed     = NULL) :
+#ifdef DEBUG_MODE_NAME
+    name(name),
+#endif // ifdef DEBUG_MODE_NAME
+    delay(delay), pressed(pressed) {}
 
+#ifdef DEBUG_MODE_NAME
+  const char *name;
+#endif // ifdef DEBUG_MODE_NAME
+  unsigned long delay;
+  sigslot::signal0<> *pressed;
+
+  bool operator<(const ButtonMode& other) const {
+    return this->delay < other.delay;
+  }
 };
-std::ostream &operator<<(std::ostream &os, const ButtonMode & m);
+std::ostream& operator<<(std::ostream    & os,
+                         const ButtonMode& m);
 
-class Button: public sigslot::has_slots<>, public Actor {
+class Button : public sigslot::has_slots<>, public Actor {
 public:
-	Button() : started(0), pending(false) {
-		curmode = modes.begin();
-//		cout << "create but " << hex << this << dec<< endl;
-	}
 
-	Button(const Button & orig) : Button() {
-		// copy the modes
-		modes = orig.modes;
+  Button() : started(0), pending(false) {
+    curmode = modes.begin();
 
-		// reset the curmode
-		curmode=modes.begin();
-//		cout << "copy but " << hex << &orig << dec << endl;
-	}
+    //		cout << "create but " << hex << this << dec<< endl;
+  }
 
-	Button(NotifiedInput & p)  : started(0), pending(false) {
-//		COUT_DEBUG(cout << " attach but " << hex << this << " to " << &p << dec << endl);
-		curmode = modes.begin();
-		p.getChangeSignal().connect(this, &Button::pinChanged);
-//		COUT_DEBUG(cout << "create but " << hex << this << dec << endl);
-	}
+  Button(const Button& orig) : Button() {
+    // copy the modes
+    modes = orig.modes;
 
-	void attach(sigslot::signal1<int> & sig) {
-		sig.connect(this, &Button::pinChanged);
-//		COUT_DEBUG(cout << " attach but " << hex << this << " to " << dec << &sig << endl);
-	}
+    // reset the curmode
+    curmode = modes.begin();
 
-	void addMode(const ButtonMode mode) {
-		modes.push_back(mode);
-		curmode = modes.begin();
-	}
+    //		cout << "copy but " << hex << &orig << dec << endl;
+  }
 
-	virtual ~Button() {
-//		cout << "delete but " << hex << this << dec << endl;
-		modes.clear();
-	}
+  Button(NotifiedInput& p)  : started(0), pending(false) {
+    //		COUT_DEBUG(cout << " attach but " << hex << this << " to " << &p
+    // << dec << endl);
+    curmode = modes.begin();
+    p.getChangeSignal().connect(this, &Button::pinChanged);
 
-	void pinChanged(int value);
+    //		COUT_DEBUG(cout << "create but " << hex << this << dec << endl);
+  }
 
-	virtual void setup() { }
+  void attach(sigslot::signal1<int>& sig) {
+    sig.connect(this, &Button::pinChanged);
 
-	virtual void handle();
+    //		COUT_DEBUG(cout << " attach but " << hex << this << " to " <<
+    // dec << &sig << endl);
+  }
+
+  void addMode(const ButtonMode mode) {
+    modes.push_back(mode);
+    curmode = modes.begin();
+  }
+
+  virtual ~Button() {
+    //		cout << "delete but " << hex << this << dec << endl;
+    modes.clear();
+  }
+
+  void         pinChanged(int value);
+
+  virtual void setup() {}
+
+  virtual void handle();
 
 protected:
-	std::vector<ButtonMode> modes;
-private:
-	void emit(const ButtonMode & mode) const;
 
-	std::vector<ButtonMode>::iterator curmode;
-	unsigned long started;
-	bool pending = true;
+  std::vector<ButtonMode>modes;
+
+private:
+
+  void emit(const ButtonMode& mode) const;
+
+  std::vector<ButtonMode>::iterator curmode;
+  unsigned long started;
+  bool pending = true;
 };
 
 #endif /* BUTTON_H_ */

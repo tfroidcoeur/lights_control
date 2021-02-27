@@ -9,7 +9,4 @@
 #define STUBS_AVR_IO_H_
 
 
-
-
-
 #endif /* STUBS_AVR_IO_H_ */

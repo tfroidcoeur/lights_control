@@ -9,7 +9,4 @@
 #define STUBS_SPI_H_
 
 
-
-
-
 #endif /* STUBS_SPI_H_ */
