@@ -17,19 +17,24 @@
 #include "Controllino.h"
 
 
-class SequencerTest: public Test::Suite,
-		public sigslot::has_slots<>,
-		public TestWithTime{
+class SequencerTest : public Test::Suite,
+                      public sigslot::has_slots<>,
+                      public TestWithTime {
 public:
-	SequencerTest();
-	virtual ~SequencerTest();
-	void testSequence();
+
+  SequencerTest();
+  virtual ~SequencerTest();
+  void testSequence();
+
 protected:
-	void setup();
-	void tear_down();
+
+  void setup();
+  void tear_down();
+
 private:
-	OutPin p;
-	Sequencer * seq;
+
+  OutPin p;
+  Sequencer *seq;
 };
 
 #endif /* SEQUENCERTEST_H_ */

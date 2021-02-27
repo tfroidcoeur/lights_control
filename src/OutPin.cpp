@@ -10,35 +10,35 @@
 #include <Arduino.h>
 #include <ArduinoSTL.h>
 #include "OutPin.h"
-//#define DEBUG
+
+// #define DEBUG
 #include "logging.h"
 using namespace std;
 
 OutPin::OutPin(int id) {
-	this->id = id;
-	this->state=0;
+  this->id    = id;
+  this->state = 0;
 }
 
 void OutPin::setup() {
-	pinMode(this->id, OUTPUT);
-	this->state=digitalRead(this->id);
-	COUT_DEBUG( cout << "initialized output pin " <<  this->id << endl);
+  pinMode(this->id, OUTPUT);
+  this->state = digitalRead(this->id);
+  COUT_DEBUG(cout << "initialized output pin " <<  this->id << endl);
 }
 
-OutPin::~OutPin() {
-}
+OutPin::~OutPin() {}
 
 void OutPin::toggle() {
-	write(!read());
+  write(!read());
 }
 
 void OutPin::write(int value) {
-	COUT_DEBUG( cout << "write " << value << " to pin " << id << endl);
-	this->state=value;
-	digitalWrite(this->id, value);
+  COUT_DEBUG(cout << "write " << value << " to pin " << id << endl);
+  this->state = value;
+  digitalWrite(this->id, value);
 }
 
 bool OutPin::read() {
-	COUT_DEBUG( cout << "read " << this->state << " from pin " << id << endl);
-	return this->state;
+  COUT_DEBUG(cout << "read " << this->state << " from pin " << id << endl);
+  return this->state;
 }

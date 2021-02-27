@@ -13,15 +13,18 @@
  */
 class Actor {
 public:
-	virtual ~Actor(){};
-	/**
-	 * method called regularly in the loop
-	 */
-	virtual void handle()=0;
-	/**
-	 * setup function
-	 */
-	virtual void setup()=0;
+
+  virtual ~Actor() {}
+
+  /**
+   * method called regularly in the loop
+   */
+  virtual void handle() = 0;
+
+  /**
+   * setup function
+   */
+  virtual void setup() = 0;
 };
 
 #endif /* ACTOR_H_ */

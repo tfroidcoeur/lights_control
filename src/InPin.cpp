@@ -9,22 +9,21 @@
 #include "Arduino.h"
 #include "ArduinoSTL.h"
 #include "InPin.h"
-//#define DEBUG
+
+// #define DEBUG
 #undef DEBUG
 #include "logging.h"
 using namespace std;
 
 bool InPin::read() {
-	return digitalRead(id) == HIGH;
+  return digitalRead(id) == HIGH;
 }
 
-InPin::InPin(int id): id(id){
-}
+InPin::InPin(int id) : id(id) {}
 
 void InPin::setup() {
-	pinMode(this->id, INPUT);
-	COUT_DEBUG(cout << "initialized input pin " << id << endl);
+  pinMode(this->id, INPUT);
+  COUT_DEBUG(cout << "initialized input pin " << id << endl);
 }
 
-void InPin::handle() {
-}
+void InPin::handle() {}

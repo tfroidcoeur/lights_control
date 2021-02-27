@@ -10,21 +10,41 @@
 
 class Time {
 public:
-	Time();
-	virtual ~Time();
-	unsigned long millis();
-	Time operator++(int);     // Postfix increment operator.
-	Time& operator+=(int rhs);
-	bool operator<(unsigned long rhs) {return ms < rhs;};
-	bool operator>(unsigned long rhs){return ms > rhs;};
-	bool operator==(unsigned long rhs){return ms == rhs;};
-	bool operator<(int rhs) { return rhs >0 && ms<(unsigned long)rhs;};
-	bool operator>(int rhs){ return rhs >=0 && ms>(unsigned long)rhs;};
-	bool operator==(int rhs) { return rhs >=0 && ms==(unsigned long)rhs;};
+
+  Time();
+  virtual ~Time();
+  unsigned long millis();
+  Time          operator++(int); // Postfix increment operator.
+  Time        & operator+=(int rhs);
+  bool          operator<(unsigned long rhs) {
+    return ms < rhs;
+  }
+
+  bool operator>(unsigned long rhs) {
+    return ms > rhs;
+  }
+
+  bool operator==(unsigned long rhs) {
+    return ms == rhs;
+  }
+
+  bool operator<(int rhs) {
+    return rhs > 0 && ms < (unsigned long)rhs;
+  }
+
+  bool operator>(int rhs) {
+    return rhs >= 0 && ms > (unsigned long)rhs;
+  }
+
+  bool operator==(int rhs) {
+    return rhs >= 0 && ms == (unsigned long)rhs;
+  }
+
 private:
-	unsigned long ms;
+
+  unsigned long ms;
 };
-Time * getTheTime();
-void setTheTime(Time * t);
+Time* getTheTime();
+void  setTheTime(Time *t);
 
 #endif /* STUBS_TIME_H_ */

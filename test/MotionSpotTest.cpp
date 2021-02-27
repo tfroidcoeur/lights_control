@@ -14,98 +14,95 @@
 #include <cpptest-assert.h>
 
 
-MotionSpotTest::~MotionSpotTest() { }
+MotionSpotTest::~MotionSpotTest() {}
 
-void MotionSpotTest::testBasic(){
-	// starts in mode auto
+void MotionSpotTest::testBasic() {
+  // starts in mode auto
 
-	ms->handle();
-	TEST_ASSERT(ctrlpin.read());
-	TEST_ASSERT(!forcepin.read());
+  ms->handle();
+  TEST_ASSERT(ctrlpin.read());
+  TEST_ASSERT(!forcepin.read());
 
-	// short push to mode forced
-	shortsig.emit();
-	(*time)++;
-	ms->handle();
+  // short push to mode forced
+  shortsig.emit();
+  (*time)++;
+  ms->handle();
 
-	TEST_ASSERT(forcepin.read());
+  TEST_ASSERT(forcepin.read());
 
-	// short push to off
-	shortsig.emit();
-	(*time)++;
-	ms->handle();
-	TEST_ASSERT(!ctrlpin.read());
-	TEST_ASSERT(!forcepin.read());
+  // short push to off
+  shortsig.emit();
+  (*time)++;
+  ms->handle();
+  TEST_ASSERT(!ctrlpin.read());
+  TEST_ASSERT(!forcepin.read());
 
-	// back to auto
-	shortsig.emit();
-	(*time)++;
-	ms->handle();
+  // back to auto
+  shortsig.emit();
+  (*time)++;
+  ms->handle();
 
-	TEST_ASSERT(ctrlpin.read());
+  TEST_ASSERT(ctrlpin.read());
 }
 
-void MotionSpotTest::testLong(){
+void MotionSpotTest::testLong() {
+  // start in Auto
+  ms->handle();
+  TEST_ASSERT(ctrlpin.read());
+  TEST_ASSERT(!forcepin.read());
 
-	// start in Auto
-	ms->handle();
-	TEST_ASSERT(ctrlpin.read());
-	TEST_ASSERT(!forcepin.read());
+  longsig.emit();
+  (*time)++;
+  ms->handle();
 
-	longsig.emit();
-	(*time)++;
-	ms->handle();
+  // goes to forced
 
-	// goes to forced
+  TEST_ASSERT(forcepin.read());
 
-	TEST_ASSERT(forcepin.read());
+  shortsig.emit();
+  (*time)++;
+  ms->handle();
 
-	shortsig.emit();
-	(*time)++;
-	ms->handle();
+  // goes to off
+  TEST_ASSERT(!ctrlpin.read());
+  TEST_ASSERT(!forcepin.read());
 
-	// goes to off
-	TEST_ASSERT(!ctrlpin.read());
-	TEST_ASSERT(!forcepin.read());
+  // goes to forced
+  longsig.emit();
+  (*time)++;
+  ms->handle();
 
-	// goes to forced
-	longsig.emit();
-	(*time)++;
-	ms->handle();
+  TEST_ASSERT(forcepin.read());
 
-	TEST_ASSERT(forcepin.read());
+  longsig.emit();
+  (*time)++;
+  ms->handle();
 
-	longsig.emit();
-	(*time)++;
-	ms->handle();
-
-	// off again
-	TEST_ASSERT(!ctrlpin.read());
-	TEST_ASSERT(!forcepin.read());
-	ms->handle();
-	(*time)+=100000;
-	TEST_ASSERT(!ctrlpin.read());
-	TEST_ASSERT(!forcepin.read());
-
+  // off again
+  TEST_ASSERT(!ctrlpin.read());
+  TEST_ASSERT(!forcepin.read());
+  ms->handle();
+  (*time) += 100000;
+  TEST_ASSERT(!ctrlpin.read());
+  TEST_ASSERT(!forcepin.read());
 }
 
-void MotionSpotTest::setup(){
-	TestWithTime::setup();
+void MotionSpotTest::setup() {
+  TestWithTime::setup();
 
-	actor = ms = new MotionSpot(ctrlpin, forcepin, indicatorpin,"testspot");
-	shortsig.connect(ms,&MotionSpot::shortpressed);
-	longsig.connect(ms,&MotionSpot::longpressed);
+  actor = ms = new MotionSpot(ctrlpin, forcepin, indicatorpin, "testspot");
+  shortsig.connect(ms, &MotionSpot::shortpressed);
+  longsig.connect(ms, &MotionSpot::longpressed);
 
-	pinReset();
+  pinReset();
 
-	ms->setup();
-	ms->handle();
-
+  ms->setup();
+  ms->handle();
 }
 
-void MotionSpotTest::tear_down(){
-	TestWithTime::tear_down();
+void MotionSpotTest::tear_down() {
+  TestWithTime::tear_down();
 
-	delete ms;
-	actor = ms = NULL;
+  delete ms;
+  actor = ms = NULL;
 }

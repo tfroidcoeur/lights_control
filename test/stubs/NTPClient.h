@@ -7,27 +7,43 @@
 #include "Udp.h"
 
 #ifndef NTPCLIENT_H_
-#define NTPCLIENT_H_
+# define NTPCLIENT_H_
 class NTPClient {
-  public:
-    NTPClient(UDP& udp);
-    NTPClient(UDP& udp, long timeOffset);
-    NTPClient(UDP& udp, const char* poolServerName);
-    NTPClient(UDP& udp, const char* poolServerName, long timeOffset);
-    NTPClient(UDP& udp, const char* poolServerName, long timeOffset, unsigned long updateInterval) {};
-    void begin() {};
+public:
 
-//    void begin(int port);
+  NTPClient(UDP& udp);
+  NTPClient(UDP& udp,
+            long timeOffset);
+  NTPClient(UDP       & udp,
+            const char *poolServerName);
+  NTPClient(UDP       & udp,
+            const char *poolServerName,
+            long        timeOffset);
+  NTPClient(UDP         & udp,
+            const char   *poolServerName,
+            long          timeOffset,
+            unsigned long updateInterval) {}
 
-//    bool update();
+  void begin() {}
 
-//    bool forceUpdate();
+  //    void begin(int port);
 
-    bool checkUpdate(){return true;};
-    bool checkSend(){return true;};
-    String getFormattedTime() const { return "test string";};
+  //    bool update();
+
+  //    bool forceUpdate();
+
+  bool checkUpdate() {
+    return true;
+  }
+
+  bool checkSend() {
+    return true;
+  }
+
+  String getFormattedTime() const {
+    return "test string";
+  }
 };
-
 
 
 #endif /* NTPCLIENT_H_ */

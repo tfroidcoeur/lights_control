@@ -10,10 +10,13 @@
 
 class Stashable {
 public:
-	Stashable(){};
-	virtual ~Stashable(){};
-	virtual void save()=0;
-	virtual void restore()=0;
+
+  Stashable() {}
+
+  virtual ~Stashable() {}
+
+  virtual void save()    = 0;
+  virtual void restore() = 0;
 };
 
 #endif /* STASHABLE_H_ */

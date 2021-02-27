@@ -13,24 +13,29 @@ class Time;
 
 class Dimmer;
 
-class DimmerTest : public Test::Suite, public sigslot::has_slots<>, public TestWithTime {
+class DimmerTest : public Test::Suite, public sigslot::has_slots<>,
+                   public TestWithTime {
 public:
-	DimmerTest();
-	virtual ~DimmerTest();
-	static int PulseDurationMs;
-protected:
-	void setup();
-	void tear_down();
-private:
-	TestInput in;
-	OutPin out;
-	Dimmer * testdimmer;
-	void testOn();
-	void testOff();
-	void testDim();
-	void sendPulse(int ms=350);
-	void testDimCtrl();
 
+  DimmerTest();
+  virtual ~DimmerTest();
+  static int PulseDurationMs;
+
+protected:
+
+  void setup();
+  void tear_down();
+
+private:
+
+  TestInput in;
+  OutPin    out;
+  Dimmer   *testdimmer;
+  void testOn();
+  void testOff();
+  void testDim();
+  void sendPulse(int ms = 350);
+  void testDimCtrl();
 };
 
 #endif /* DIMMERTEST_H_ */

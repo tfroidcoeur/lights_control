@@ -9,7 +9,4 @@
 #define STUBS_PGMSPACE_H_
 
 
-
-
-
 #endif /* STUBS_PGMSPACE_H_ */

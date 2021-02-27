@@ -9,7 +9,4 @@
 #define STUBS_AVR_EEPROM_H_
 
 
-
-
-
 #endif /* STUBS_AVR_EEPROM_H_ */

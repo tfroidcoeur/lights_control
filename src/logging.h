@@ -12,11 +12,11 @@ using namespace std;
 #undef COUT_INFO
 #undef COUT_WARN
 #ifdef DEBUG
-#define COUT_DEBUG(a) a
-#define COUT_INFO(a) a
-#define COUT_WARN(a) a
-#else
-#define COUT_DEBUG(a)
-#define COUT_INFO(a) a
-#define COUT_WARN(a) a
-#endif
+# define COUT_DEBUG(a) a
+# define COUT_INFO(a) a
+# define COUT_WARN(a) a
+#else // ifdef DEBUG
+# define COUT_DEBUG(a)
+# define COUT_INFO(a) a
+# define COUT_WARN(a) a
+#endif // ifdef DEBUG
