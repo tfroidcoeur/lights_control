@@ -38,7 +38,8 @@ SeqPattern * Sequencer::stop(bool restore) {
       out->write(0);
     }
   }
-  pattern = nullptr;
+  pat_next = nullptr;
+  pattern  = nullptr;
   return old;
 }
 
@@ -48,8 +49,14 @@ void Sequencer::endPattern(int value) {
 
   if (repeatcount == 0) {
     COUT_DEBUG(Serial.println("stop repeat"));
-    stop();
-    return;
+
+    if (pat_next && *pat_next) {
+      pattern = *pat_next;
+      pat_next++;
+    } else {
+      stop();
+      return;
+    }
   }
 
   COUT_DEBUG(Serial.print("remaining repeatcount "));
@@ -98,7 +105,7 @@ void Sequencer::handle() {
   }
 }
 
-void Sequencer::start(SeqPattern *pattern) {
+void Sequencer::_start(SeqPattern *pattern) {
   this->pattern = pattern;
   startTime     = millis();
   activeStep    = 0;
@@ -106,6 +113,19 @@ void Sequencer::start(SeqPattern *pattern) {
   repeatcount   = pattern->repeatcount;
   activate();
   handle();
+}
+
+void Sequencer::start(SeqPattern *pattern) {
+  pat_next = NULL;
+  _start(pattern);
+}
+
+void Sequencer::startSeries(SeqPattern **series) {
+  if (!series || !*series) return;
+
+  pattern  = *series;
+  pat_next = ++series;
+  _start(pattern);
 }
 
 /* create a pattern from a string
