@@ -50,6 +50,7 @@
 #include "MotionSpotTest.h"
 #include "ControllerTest.h"
 #include "SequencerTest.h"
+#include "StaircaseTest.h"
 #include "MqttDirectoryTest.h"
 
 class MotionSpotTest;
@@ -223,6 +224,7 @@ main(int argc, char *argv[])
     ts.add(auto_ptr<Test::Suite>(new SequencerTest));
     ts.add(auto_ptr<Test::Suite>(new MqttDirectoryTest));
     ts.add(auto_ptr<Test::Suite>(new DimmerTest));
+    ts.add(auto_ptr<Test::Suite>(new StaircaseTest));
 
     // Run the tests
     //
