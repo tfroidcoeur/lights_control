@@ -18,7 +18,7 @@
  * value: value to set on the pin
  */
 struct SeqElement {
-  uint16_t duration;
+  uint32_t duration;
   bool     value;
 };
 
