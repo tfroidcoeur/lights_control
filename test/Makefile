@@ -44,6 +44,7 @@ depends:= $(patsubst %.o,%.d,$(OBJS))
 
 $(TARGET): $(OBJS) $(depends)
 	$(CXX) -o $(TARGET) $(OBJS) $(LIBS) $(CXXFLAGS)
+	chmod a+x ${TARGET}
 
 
 clean:
