@@ -11,6 +11,7 @@
 #include "Actor.h"
 #include "OutPin.h"
 #include <string>
+#include <stdint.h>
 
 /**
  * individual seq element
@@ -56,6 +57,9 @@ public:
 
   /* API */
   void         start(SeqPattern *pattern);
+
+  /* start multiple patterns, terminated by NULL pointer */
+  void         startSeries(SeqPattern **pattern);
   SeqPattern * stop(bool restore);
   SeqPattern * stop() {
     return stop(true);
@@ -73,8 +77,10 @@ private:
   unsigned long startTime;
   int activeStep;
   int repeatcount;
+  SeqPattern **pat_next;
   void endPattern(int value);
   void printStep(struct SeqElement& step);
+  void _start(SeqPattern *pattern);
 };
 
 #endif /* SEQUENCER_H_ */

@@ -66,6 +66,7 @@ COMMON_OBJS = \
 	$(BUILD)/src/InPin.cpp.o \
 	$(BUILD)/src/DebouncedInput.cpp.o \
 	$(BUILD)/src/MotionSpot.cpp.o \
+	$(BUILD)/src/Staircase.cpp.o \
 	$(BUILD)/src/OutPin.cpp.o \
 	$(BUILD)/src/Runner.cpp.o \
 	$(BUILD)/src/Sequencer.cpp.o \
@@ -206,7 +207,7 @@ uncrustify:
 	find test src -name "*.cpp" -or -name "*.h" |xargs uncrustify --replace --no-backup -c uncrustify/uncrustify.cfg
 
 lint:
-	cppcheck -q --language=c++ test src 
+	cppcheck -q --language=c++ test src
 
 clean:
 	-$(RMDIR) $(BUILD)
