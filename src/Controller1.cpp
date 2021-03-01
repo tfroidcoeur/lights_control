@@ -19,6 +19,7 @@
 #include "MotionSpot.h"
 #include "OutPin.h"
 #include "Runner.h"
+#include "Staircase.h"
 #include "sigslot.h"
 #include "SimpleButton.h"
 #include "Teleruptor.h"
@@ -53,7 +54,6 @@ private:
 
   // Teleruptors
   Teleruptor *teleruptorCA2;
-  Teleruptor *teleruptorCC3;
   Teleruptor *teleruptorDM1;
   Teleruptor *teleruptorCA4;
   Teleruptor *teleruptorCA6;
@@ -61,7 +61,10 @@ private:
   Teleruptor *teleruptorCA8;
   Teleruptor *teleruptorDM2;
 
+  Staircase *staircaseCA3;
+
   // buttons
+  SimpleButton buttonCA3;
   SimpleButton buttonCA4;
   SimpleButton buttonCA6;
   SimpleButton buttonCA7;
@@ -87,7 +90,9 @@ private:
   // MqttDirectories
   MqttDirectory *huis;
 };
-Controller::Controller() : buttonCA4(500, 2000), buttonCA6(500, 2000), buttonCA7(
+Controller::Controller() : buttonCA3(500, 2000), buttonCA4(500, 2000), buttonCA6(
+    500,
+    2000), buttonCA7(
     500,
     2000), buttonCA8(500, 2000), buttonDM2(500, 2000), mqtt("Controllino1") {
   // create pins
@@ -166,8 +171,8 @@ Controller::Controller() : buttonCA4(500, 2000), buttonCA6(500, 2000), buttonCA7
   // Teleruptors
   teleruptorCA2 = new Teleruptor(inpinA[2], relay[2], "CA2", huis);
   huis->addNode(teleruptorCA2);
-  teleruptorCC3 = new Teleruptor(inpinA[3], relay[3], "CA3", huis);
-  huis->addNode(teleruptorCC3);
+  staircaseCA3 = new Staircase(buttonCA3.getShortSignal(), relay[3], "CA3", huis);
+  huis->addNode(staircaseCA3);
   teleruptorCA4 =
     new Teleruptor(buttonCA4.getShortSignal(), relay[4], "CA4", huis);
   huis->addNode(teleruptorCA4);
@@ -232,7 +237,7 @@ Controller::~Controller() {
   delete huis;
 
   delete teleruptorCA2;
-  delete teleruptorCC3;
+  delete staircaseCA3;
   delete teleruptorCA4;
   delete teleruptorDM1;
   delete teleruptorCA6;
@@ -267,6 +272,8 @@ void Controller::setupLivingGlobal() {
   living_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2,
                                                       &Teleruptor::off));
 
+  buttonCA3.attach(inpinA[3]->getChangeSignal());
+
   buttonCA4.attach(inpinA[4]->getChangeSignal());
   buttonCA4.getLongSignal().connect(&living_off_actions, &ActionList::doit);
 
@@ -296,10 +303,11 @@ void Controller::setupGlobal() {
                                                       &Teleruptor::save));
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA2,
                                                       &Teleruptor::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC3,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC3,
-                                                      &Teleruptor::off));
+
+  // global_off_actions.append(new FunAction<Staircase>(staircaseCA3,
+  //                                                     &Staircase::save));
+  global_off_actions.append(new FunAction<Staircase>(staircaseCA3,
+                                                     &Staircase::off));
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorDM1,
                                                       &Teleruptor::save));
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorDM1,
@@ -367,8 +375,10 @@ void Controller::setup() {
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "Connect CC2" << endl);
 
-  // connect the unused short press of CC2 to control the lamp CC3
-  buttonCC2.getShortSignal().connect(teleruptorCC3, &Teleruptor::pressed);
+  // connect the unused short press of CC2 to control the lamp CA3
+  buttonCC2.getShortSignal().connect(staircaseCA3, &Staircase::shortpressed);
+  buttonCA3.getShortSignal().connect(staircaseCA3, &Staircase::shortpressed);
+  buttonCA3.getLongSignal().connect(staircaseCA3, &Staircase::longpressed);
 
   COUT_DEBUG(cout << "Add actors" << endl);
   r.addActor(&mqtt);
@@ -392,7 +402,7 @@ void Controller::setup() {
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "Add actors teleruptors" << endl);
   r.addActor(teleruptorCA2);
-  r.addActor(teleruptorCC3);
+  r.addActor(staircaseCA3);
   r.addActor(teleruptorCA4);
   r.addActor(teleruptorDM1);
   r.addActor(teleruptorCA6);
@@ -407,6 +417,7 @@ void Controller::setup() {
 
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "Add actors buttons" << endl);
+  r.addActor(&buttonCA3);
   r.addActor(&buttonCA4);
   r.addActor(&buttonCA6);
   r.addActor(&buttonCA7);
