@@ -40,6 +40,7 @@ SeqPattern * Sequencer::stop(bool restore) {
   }
   pat_next = nullptr;
   pattern  = nullptr;
+  done.emit();
   return old;
 }
 

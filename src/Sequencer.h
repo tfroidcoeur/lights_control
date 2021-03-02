@@ -10,6 +10,7 @@
 
 #include "Actor.h"
 #include "OutPin.h"
+#include "sigslot.h"
 #include <string>
 #include <stdint.h>
 
@@ -44,7 +45,7 @@ public:
  * TODO: nicer to move functionality to BlinkPattern and provide an
  * Outpin to the start function - maybe
  */
-class Sequencer : public Actor {
+class Sequencer :  public Actor {
 public:
 
   Sequencer(OutPin& pin);
@@ -67,6 +68,7 @@ public:
 
   bool               isRunning();
   static SeqPattern* createPattern(std::string pat);
+  sigslot::signal0<> done;
 
 private:
 
