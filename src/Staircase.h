@@ -34,6 +34,7 @@ public:
             const char         *name,
             MqttNode           *parent = NULL);
   void         shortpressed();
+  void         sequencedone();
   void         longpressed();
 
   /* Switchable */
