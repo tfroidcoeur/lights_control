@@ -102,6 +102,10 @@ void Dimmer::off() {
 
   if (!controlling) targetlvl = tracker.dimlevel;
   controlling = true;
+
+  /* force the off sequence, just in case we lost sync */
+  if (seq.isRunning()) seq.stop();
+  _off();
 }
 
 void Dimmer::_on() {
