@@ -50,6 +50,7 @@ Staircase::Staircase(OutPin    & pin,
                      MqttNode   *parent) :
   MqttNode(name, parent), outpin(&pin), seq(pin)  {
   //	cout << "mspto " << hex << this <<endl;
+  seq.done.connect(this, &Staircase::sequencedone);
 }
 
 Staircase::Staircase(sigslot::signal0<>& shortsig,
@@ -81,6 +82,7 @@ void Staircase::start(SeqPattern& c) {
   *p++ = NULL;
 
   seq.startSeries(pat);
+  publishUpdate();
 }
 
 void Staircase::shortpressed() {
@@ -91,6 +93,10 @@ void Staircase::longpressed() {
   start(longLight);
 }
 
+void Staircase::sequencedone() {
+  publishUpdate();
+}
+
 void Staircase::on() {
   if (!isOn()) start(normalLight);
 }
@@ -99,6 +105,7 @@ void Staircase::off() {
   if (isOn()) {
     seq.stop();
     outpin->write(0);
+    publishUpdate();
   }
 }
 
