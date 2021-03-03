@@ -6,7 +6,7 @@
  */
 
 #include "Dimmer.h"
-#define DEBUG
+#undef DEBUG
 #include "DebouncedInput.h"
 #include "logging.h"
 #include <algorithm>
