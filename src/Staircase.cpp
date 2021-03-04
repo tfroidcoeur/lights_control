@@ -59,6 +59,7 @@ Staircase::Staircase(sigslot::signal0<>& shortsig,
                      MqttNode           *parent) :
   MqttNode(name, parent), outpin(outpin), seq(*outpin) {
   shortsig.connect(this, &Staircase::shortpressed);
+  seq.done.connect(this, &Staircase::sequencedone);
 }
 
 void Staircase::handle() {
