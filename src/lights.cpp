@@ -105,8 +105,9 @@ void loop() {
   checkTimeSpent(50, "ntp receive");
 #endif // ifdef USE_NTP
 
-#ifdef DEBUG
+#ifdef BIGDEBUG
 # ifdef USE_NET
+#  include "Ethernet.h"
 
   if (millis() - lastRefreshTime >= REFRESH_INTERVAL)
   {
