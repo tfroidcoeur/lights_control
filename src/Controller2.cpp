@@ -21,6 +21,7 @@
 #include "Runner.h"
 #include "sigslot.h"
 #include "SimpleButton.h"
+#include "Staircase.h"
 #include "Teleruptor.h"
 
 class Controller : public Actor {
@@ -51,24 +52,26 @@ private:
   ActionList living_off_actions;
   ActionList global_off_actions;
 
+  // Staircase
+  Staircase *staircaseAA7;
+  Staircase *staircaseCA4;
+
   // Teleruptors
   Teleruptor *teleruptorAA2;
   Teleruptor *teleruptorAA5;
+  Teleruptor *teleruptorCC1;
   Teleruptor *teleruptorBH2;
   Teleruptor *teleruptorEA;
   Teleruptor *teleruptorEB;
 
   // buttons
-  SimpleButton buttonAA1;
+  SimpleButton buttonEAEB;
   SimpleButton buttonAA2;
-  SimpleButton buttonAA3;
-  SimpleButton buttonAA5;
-  SimpleButton buttonAA6;
-  SimpleButton buttonAA8;
-  SimpleButton buttonBH2;
-  SimpleButton buttonEA;
-  SimpleButton buttonEB;
   SimpleButton buttonEC2;
+  SimpleButton buttonAA5;
+  SimpleButton buttonAA7;
+  SimpleButton buttonBH2;
+  SimpleButton buttonCA4;
 
 
   // spots
@@ -86,12 +89,10 @@ private:
   MqttDirectory *huis;
 };
 
-Controller::Controller() : buttonAA1(500, 2000), buttonAA2(500, 2000), buttonAA3(
-    500,
-    2000), buttonAA5(500, 2000),
-  buttonAA6(500, 2000), buttonAA8(500, 4000), buttonEA(500, 2000), buttonEB(500,
-                                                                            2000),
-  buttonEC2(500, 2000), mqtt("Controllino2") {
+Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000), 
+buttonEC2( 500, 2000), buttonAA5(500, 2000), buttonAA7(500, 2000), 
+buttonBH2(500, 2000), buttonCA4(500, 4000),
+mqtt("Controllino2") {
   // create pins
 
   COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);
@@ -165,20 +166,39 @@ Controller::Controller() : buttonAA1(500, 2000), buttonAA2(500, 2000), buttonAA3
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "teleruptors" << endl);
 
+  // Buttons
+  buttonEAEB.attach(inpinA[0]->getChangeSignal());
+  buttonAA2.attach(inpinA[2]->getChangeSignal());
+  buttonEC2.attach(inpinA[4]->getChangeSignal());
+  buttonAA5.attach(inpinA[5]->getChangeSignal());
+  buttonAA7.attach(inpinA[7]->getChangeSignal());
+  buttonCA4.attach(inpinInt[0]->getChangeSignal());
+
   // Teleruptors
-  teleruptorAA2 = new Teleruptor(inpinA[2], outpinD[2], "AA2", huis);
-  huis->addNode(teleruptorAA2);
-  teleruptorAA5 = new Teleruptor(inpinA[5], outpinD[5], "AA5", huis);
-  huis->addNode(teleruptorAA5);
-  teleruptorBH2 = new Teleruptor(inpinA[9], outpinD[9], "BH2", huis);
-  huis->addNode(teleruptorBH2);
   teleruptorEA = new Teleruptor(inpinA[0], outpinD[0], "EA", huis);
   huis->addNode(teleruptorEA);
-  teleruptorEB = new Teleruptor(inpinA[4], outpinD[4], "EB", huis);
-  huis->addNode(teleruptorEB);
+  teleruptorAA2 = new Teleruptor(inpinA[2], relay[2], "AA2", huis);
+  huis->addNode(teleruptorAA2);
+  teleruptorAA5 = new Teleruptor(inpinA[5], relay[5], "AA5", huis);
+  huis->addNode(teleruptorAA5);
+  teleruptorCC1 = new Teleruptor(inpinA[8], outpinD[8], "CC1", huis);
+  huis->addNode(teleruptorCC1);
+  teleruptorBH2 = new Teleruptor(inpinA[9], outpinD[9], "BH2", huis);
+  huis->addNode(teleruptorBH2);
 
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "dimmers" << endl);
+
+  // Staircases
+  staircaseCA4 = new Staircase(buttonCA4.getShortSignal(), outpinD[10], "CA4", huis);
+  huis->addNode(staircaseCA4);
+  buttonCA4.getShortSignal().connect(staircaseCA4, &Staircase::shortpressed);
+  buttonCA4.getLongSignal().connect(staircaseCA4, &Staircase::longpressed);
+
+  staircaseAA7 = new Staircase(buttonAA7.getShortSignal(), relay[7], "AA7", huis);
+  huis->addNode(staircaseAA7);
+  buttonAA7.getShortSignal().connect(staircaseAA7, &Staircase::shortpressed);
+  buttonAA7.getLongSignal().connect(staircaseAA7, &Staircase::longpressed);
 
   // Dimmers (passthrough)
   dimmerAA1 = new Dimmer(inpinA[1]->getRawInput(), outpinD[1], "AA1", huis);
@@ -187,15 +207,15 @@ Controller::Controller() : buttonAA1(500, 2000), buttonAA2(500, 2000), buttonAA3
   huis->addNode(dimmerAA3);
   dimmerAA6 = new Dimmer(inpinA[6]->getRawInput(), outpinD[6], "AA6", huis);
   huis->addNode(dimmerAA6);
-
+  
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "spots" << endl);
 
   // create spot
   // there is no LED indicator connected for the spot
   // but we must currently pass a pin for it
-  spotEC2 = new MotionSpot(*outpinD[7], *outpinD[8],
-                           *outpinD[10], "EC2", huis);
+  spotEC2 = new MotionSpot(*outpinD[4], *outpinD[5],
+                           *outpinD[7], "EC2", huis);
   huis->addNode(spotEC2);
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
 }
@@ -225,9 +245,12 @@ Controller::~Controller() {
 
   delete teleruptorAA2;
   delete teleruptorAA5;
+  delete teleruptorCC1;
   delete teleruptorBH2;
   delete teleruptorEA;
   delete teleruptorEB;
+  delete staircaseCA4;
+  delete staircaseAA7;
 
   delete spotEC2;
 
@@ -237,30 +260,39 @@ Controller::~Controller() {
 }
 
 void Controller::setupGlobal() {
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEA,
+                                                      &Teleruptor::save));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEA,
+                                                      &Teleruptor::off));
+  global_off_actions.append(new FunAction<Dimmer>(dimmerAA1, &Dimmer::off));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEB,
+                                                      &Teleruptor::save));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEB,
+                                                      &Teleruptor::off));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA2,
+                                                      &Teleruptor::save));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA2,
+                                                      &Teleruptor::off));
   global_off_actions.append(new FunAction<Dimmer>(dimmerAA3, &Dimmer::off));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA5,
+                                                      &Teleruptor::save));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA5,
+                                                      &Teleruptor::off));
   global_off_actions.append(new FunAction<Dimmer>(dimmerAA6, &Dimmer::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEA,
+  global_off_actions.append(new FunAction<Staircase>(staircaseAA7,
+                                                     &Staircase::off));
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC1,
                                                       &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEA,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEB,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEB,
+  global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC1,
                                                       &Teleruptor::off));
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorBH2,
                                                       &Teleruptor::save));
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorBH2,
                                                       &Teleruptor::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA2,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA2,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA5,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA5,
-                                                      &Teleruptor::off));
+  global_off_actions.append(new FunAction<Staircase>(staircaseAA7,
+                                                     &Staircase::off));
 
-  buttonAA8.getLongSignal().connect(&global_off_actions, &ActionList::doit);
+  buttonBH2.getLongSignal().connect(&global_off_actions, &ActionList::doit);
 }
 
 void Controller::connectMotionSpot(MotionSpot        & spot,
@@ -323,14 +355,11 @@ void Controller::setup() {
 
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "Add actors buttons" << endl);
-  r.addActor(&buttonAA1);
   r.addActor(&buttonAA2);
-  r.addActor(&buttonAA3);
   r.addActor(&buttonAA5);
-  r.addActor(&buttonAA6);
-  r.addActor(&buttonAA8);
-  r.addActor(&buttonEA);
-  r.addActor(&buttonEB);
+  r.addActor(&buttonCA4);
+  r.addActor(&buttonEAEB);
+  r.addActor(&buttonAA7);
   r.addActor(&buttonEC2);
   r.addActor(&buttonBH2);
 
