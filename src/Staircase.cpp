@@ -86,8 +86,17 @@ void Staircase::start(SeqPattern& c) {
   publishUpdate();
 }
 
+void Staircase::stop() {
+  if (isOn()) {
+    seq.stop();
+    outpin->write(0);
+    publishUpdate();
+  }
+}
+
 void Staircase::shortpressed() {
-  start(normalLight);
+  if (isOn()) stop();
+  else start(normalLight);
 }
 
 void Staircase::longpressed() {
@@ -104,9 +113,7 @@ void Staircase::on() {
 
 void Staircase::off() {
   if (isOn()) {
-    seq.stop();
-    outpin->write(0);
-    publishUpdate();
+    stop();
   }
 }
 

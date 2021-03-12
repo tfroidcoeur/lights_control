@@ -61,6 +61,7 @@ private:
   Sequencer   seq;
   SeqPattern *pat[3];
   void start(SeqPattern& c);
+  void stop();
   void publishUpdate();
 };
 
