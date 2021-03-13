@@ -193,13 +193,12 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   COUT_DEBUG(cout << "dimmers" << endl);
 
   // Staircases
-  staircaseCA1 = new Staircase(
-    buttonCA1.getShortSignal(), outpinD[10], "CA1", huis);
+  staircaseCA1 = new Staircase(*outpinD[10], "CA1", huis);
   huis->addNode(staircaseCA1);
   buttonCA1.getShortSignal().connect(staircaseCA1, &Staircase::shortpressed);
   buttonCA1.getLongSignal().connect(staircaseCA1, &Staircase::longpressed);
 
-  staircaseAA7 = new Staircase(buttonAA7.getShortSignal(), relay[7], "AA7", huis);
+  staircaseAA7 = new Staircase(*relay[7], "AA7", huis);
   huis->addNode(staircaseAA7);
   buttonAA7.getShortSignal().connect(staircaseAA7, &Staircase::shortpressed);
   buttonAA7.getLongSignal().connect(staircaseAA7, &Staircase::longpressed);
