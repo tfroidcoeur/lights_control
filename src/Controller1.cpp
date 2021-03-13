@@ -171,7 +171,7 @@ Controller::Controller() : buttonCA3(500, 2000), buttonCA4(500, 2000), buttonCA6
   // Teleruptors
   teleruptorCA2 = new Teleruptor(inpinA[2], relay[2], "CA2", huis);
   huis->addNode(teleruptorCA2);
-  staircaseCA3 = new Staircase(buttonCA3.getShortSignal(), relay[3], "CA3", huis);
+  staircaseCA3 = new Staircase(*relay[3], "CA3", huis);
   huis->addNode(staircaseCA3);
   teleruptorCA4 =
     new Teleruptor(buttonCA4.getShortSignal(), relay[4], "CA4", huis);
