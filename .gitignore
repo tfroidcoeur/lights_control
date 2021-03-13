@@ -4,3 +4,4 @@ build
 *.d
 .clangd
 .clangd
+.cache
