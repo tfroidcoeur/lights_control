@@ -12,11 +12,11 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+
+// #define DEBUG
 #include "logging.h"
-#include <iostream>
 #include <vector>
 using namespace std;
-
 
 Sequencer::Sequencer(OutPin& out) :
   out(&out), origvalue(0), pattern(nullptr), startTime(0), activeStep(0) {}
