@@ -7,8 +7,10 @@
 #include <limits.h>
 
 // #define DEBUG
-#undef DEBUG
+
+// #undef DEBUG
 #include "logging.h"
+using namespace std;
 
 #define SECOND 1000L
 #define MINUTE (60 * SECOND)
@@ -95,15 +97,19 @@ void Staircase::stop() {
 }
 
 void Staircase::shortpressed() {
+  COUT_DEBUG(cout << "staircase short press " << (isOn() ? "ON" : "OFF") << endl);
+
   if (isOn()) stop();
   else start(normalLight);
 }
 
 void Staircase::longpressed() {
+  COUT_DEBUG(cout << "staircase long press " << (isOn() ? "ON" : "OFF") << endl);
   start(longLight);
 }
 
 void Staircase::sequencedone() {
+  COUT_DEBUG(cout << "staircase seq done" << (isOn() ? "ON" : "OFF") << endl);
   publishUpdate();
 }
 
