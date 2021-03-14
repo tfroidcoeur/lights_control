@@ -30,6 +30,10 @@ Dimmer::~Dimmer() {
   debounced.getChangeSignal().disconnect_all();
 }
 
+#define PULSE_WAIT 50
+#define PULSE_SHORT 50
+#define PULSE_DIMTHRESH 900
+
 /*
  * TODO
  * wanneer hij af staat:
@@ -50,42 +54,47 @@ Dimmer::~Dimmer() {
    long pulse will turn the lights on in either state
    short pulse turns it off in on state */
 SeqPattern *Dimmer::offSequence =
-  new SeqPattern(1, new SeqElement[6] { { 100, false },
-                   { 1000, true },
-                   { 100, false },
-                   { 100, true },
+  new SeqPattern(1, new SeqElement[6] { { PULSE_WAIT, false },
+                   { PULSE_DIMTHRESH, true },
+                   { PULSE_WAIT, false },
+                   { PULSE_SHORT, true },
                    { 900, false },
                    { 0, false } });
 
 /* just pulse once. Beware: this will turn them off if they are on */
 SeqPattern *Dimmer::onSequence = new SeqPattern(
   1,
-  new SeqElement[4] { { 100, false }, { 100, true }, { 500, false },
+  new SeqElement[4] { { PULSE_WAIT, false }, { PULSE_SHORT, true }, { 500,
+                                                                      false },
     { 0, false } });
 
 /* change dim direction by dimming just minimum */
 SeqPattern *Dimmer::dimDirSequence = new SeqPattern(
   1,
-  new SeqElement[4] { { 100, false }, { 1000, true }, { 500, false },
+  new SeqElement[4] { { PULSE_WAIT, false }, { PULSE_DIMTHRESH, true }, { 500,
+                                                                          false },
     { 0, false } });
 
 /* stop any controls */
 SeqPattern *Dimmer::stopSequence =
-  new SeqPattern(1, new SeqElement[2] { { 500, false }, { 0, false } });
+  new SeqPattern(1, new SeqElement[2] { { PULSE_WAIT, false }, { 0, false } });
 
 /* sync dimmer == reliably turn it on + dim to 100% */
 SeqPattern *Dimmer::syncSequence =
-  new SeqPattern(1, new SeqElement[12] { { 100, false },
-                   { 1000, true }, // on or dim slightly
+  new SeqPattern(1, new SeqElement[12] { { PULSE_WAIT, false },
+                   { PULSE_DIMTHRESH, true }, // on or dim
+                                              // slightly
                    { 1000, false },
-                   { 100, true },  // off
+                   { PULSE_SHORT, true },     // off
                    { 900, false },
-                   { 100, true },  // on again
+                   { PULSE_SHORT, true },     // on again
                    { 1000, false },
-                   { 1000, true }, // change dim direction
-                                   // to down
+                   { PULSE_DIMTHRESH, true }, // change
+                                              // dim
+                                              // direction
+                                              // to down
                    { 1000, false },
-                   { 5000, true }, // dim off
+                   { 5000, true },            // dim off
                    { 500, false },
                    { 0, false } });
 
@@ -217,7 +226,7 @@ void Dimmer::update(string const& path, string const& value) {
     unsigned long t;
 
     passthrough.disable();
-    cout << "pulse...";
+    COUT_DEBUG(cout << "pulse...");
     out.write(0);
 
     t = millis() + 500;
@@ -239,7 +248,7 @@ void Dimmer::update(string const& path, string const& value) {
     debounced.handle();
     out.write(0);
     debounced.handle();
-    cout << "done" << endl;
+    COUT_DEBUG(cout << "done" << endl);
     passthrough.enable();
   } else {
     tracker.update(path, value);
