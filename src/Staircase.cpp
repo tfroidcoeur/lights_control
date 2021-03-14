@@ -16,19 +16,21 @@ using namespace std;
 #define MINUTE (60 * SECOND)
 #define HOUR   (60 * MINUTE)
 
+#define PULSE_TIME 100
+
 /* timer patterns of the lights */
 SeqPattern Staircase::startBlink(0, new SeqElement[2]  {
-  { 500, false },
+  { PULSE_TIME, false },
   { 0, false }
 });
 
 SeqPattern Staircase::endBlink(0, new SeqElement[7]  {
   /* blink 3 times every 10 seconds, then off */
-  { 500, false },
+  { PULSE_TIME, false },
   { 10 * SECOND, true },
-  { 500, false },
+  { PULSE_TIME, false },
   { 10 * SECOND, true },
-  { 500, false },
+  { PULSE_TIME, false },
   { 10 * SECOND, true },
   { 0, false }
 });
