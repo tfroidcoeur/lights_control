@@ -133,7 +133,7 @@ public:
          const char *name,
          MqttNode   *parent = NULL,
          float       dimSpeed = 0.28,
-         float       dimThreshOnMs = 900,
+         float       dimThreshOnMs = 800,
          float       dimThreshOffMs = 400);
   virtual ~Dimmer();
 
