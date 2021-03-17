@@ -16,6 +16,7 @@
 #include "Input.h"
 #include "MqttRoot.h"
 #include "MqttDirectory.h"
+#include "MQTTCommand.h"
 #include "MotionSpot.h"
 #include "OutPin.h"
 #include "Runner.h"
@@ -84,17 +85,17 @@ private:
   Dimmer *dimmerCB1;
   Dimmer *dimmerCB2;
 
-  // mqtt root
+  // mqtt
   MqttRoot mqtt;
-
-  // MqttDirectories
   MqttDirectory *huis;
+  MQTTCommand cmdCC1Off;
+  MQTTCommand cmdCA1Off;
 };
-Controller::Controller() : buttonCA3(500, 2000), buttonCA4(500, 2000), buttonCA6(
-    500,
-    2000), buttonCA7(
-    500,
-    2000), buttonCA8(500, 2000), buttonDM2(500, 2000), mqtt("Controllino1") {
+Controller::Controller() : buttonCA3(500, 2000), buttonCA4(500, 2000),
+  buttonCA6(500, 2000), buttonCA7(500, 2000), buttonCA8(500, 2000),
+  buttonDM2(500, 2000), mqtt("Controllino1"),
+  cmdCC1Off("home/CC1/control", "OFF", &mqtt),
+  cmdCA1Off("home/CA1/control", "OFF", &mqtt) {
   // create pins
 
   COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);
@@ -297,6 +298,11 @@ void Controller::setupBureau() {
 }
 
 void Controller::setupGlobal() {
+  global_off_actions.append(new FunAction<MQTTCommand>(&cmdCC1Off,
+                                                       &MQTTCommand::doit));
+  global_off_actions.append(new FunAction<MQTTCommand>(&cmdCA1Off,
+                                                       &MQTTCommand::doit));
+
   global_off_actions.append(new FunAction<Dimmer>(dimmerCB1, &Dimmer::off));
   global_off_actions.append(new FunAction<Dimmer>(dimmerCB2, &Dimmer::off));
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorCA2,
@@ -332,7 +338,6 @@ void Controller::setupGlobal() {
                                                       &Teleruptor::save));
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2,
                                                       &Teleruptor::off));
-
   buttonAA8.getLongSignal().connect(&global_off_actions, &ActionList::doit);
 }
 
