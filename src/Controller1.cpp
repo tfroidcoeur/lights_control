@@ -75,6 +75,7 @@ private:
   SimpleButton buttonCB2;
 
   SimpleButton buttonAA8;
+  SimpleButton buttonAA8_bis;
   SimpleButton buttonCC2;
 
   // spots
@@ -90,12 +91,15 @@ private:
   MqttDirectory *huis;
   MQTTCommand cmdCC1Off;
   MQTTCommand cmdCA1Off;
+  MQTTCommand cmdGlobalOff;
 };
 Controller::Controller() : buttonCA3(500, 2000), buttonCA4(500, 2000),
   buttonCA6(500, 2000), buttonCA7(500, 2000), buttonCA8(500, 2000),
-  buttonDM2(500, 2000), mqtt("Controllino1"),
+  buttonDM2(500, 2000), buttonAA8(500, 1500), buttonAA8_bis(500, 3000),
+  mqtt("Controllino1"),
   cmdCC1Off("home/CC1/control", "OFF", &mqtt),
-  cmdCA1Off("home/CA1/control", "OFF", &mqtt) {
+  cmdCA1Off("home/CA1/control", "OFF", &mqtt),
+  cmdGlobalOff("home/Global/control", "OFF", &mqtt) {
   // create pins
 
   COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);
@@ -339,6 +343,8 @@ void Controller::setupGlobal() {
   global_off_actions.append(new FunAction<Teleruptor>(teleruptorDM2,
                                                       &Teleruptor::off));
   buttonAA8.getLongSignal().connect(&global_off_actions, &ActionList::doit);
+  buttonAA8_bis.attach(inpinInt[1]->getChangeSignal());
+  buttonAA8_bis.getLongSignal().connect(&cmdGlobalOff, &MQTTCommand::doit);
 }
 
 void Controller::connectMotionSpot(MotionSpot        & spot,
@@ -431,6 +437,7 @@ void Controller::setup() {
   r.addActor(&buttonCB1);
   r.addActor(&buttonCB2);
   r.addActor(&buttonAA8);
+  r.addActor(&buttonAA8_bis);
   r.addActor(&buttonCC2);
 
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
