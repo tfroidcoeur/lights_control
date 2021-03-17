@@ -38,19 +38,12 @@ private:
   void connectMotionSpot(MotionSpot        & spot,
                          sigslot::signal0<> *butshort,
                          sigslot::signal0<> *butlong);
-  void setupLivingGlobal();
-  void setupBureau();
-  void setupGlobal();
   vector<DebouncedInput *>inpinA;
   vector<OutPin *>relay;
   vector<OutPin *>outpinD;
   vector<DebouncedInput *>inpinInt;
 
   Runner r;
-
-  ActionList bureau_off_actions;
-  ActionList living_off_actions;
-  ActionList global_off_actions;
 
   // Staircase
   Staircase *staircaseAA7;
@@ -70,7 +63,6 @@ private:
   SimpleButton buttonEC2;
   SimpleButton buttonAA5;
   SimpleButton buttonAA7;
-  SimpleButton buttonBH2;
   SimpleButton buttonCA1;
 
 
@@ -91,8 +83,7 @@ private:
 
 Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   buttonEC2(500, 2000), buttonAA5(500, 2000), buttonAA7(500, 2000),
-  buttonBH2(500, 2000), buttonCA1(500, 4000),
-  mqtt("Controllino2") {
+  buttonCA1(500, 4000), mqtt("Controllino2") {
   // create pins
 
   COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);
@@ -262,42 +253,6 @@ Controller::~Controller() {
   delete dimmerAA6;
 }
 
-void Controller::setupGlobal() {
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEA,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEA,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Dimmer>(dimmerAA1, &Dimmer::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEB,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorEB,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA2,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA2,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Dimmer>(dimmerAA3, &Dimmer::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA5,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorAA5,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Dimmer>(dimmerAA6, &Dimmer::off));
-  global_off_actions.append(new FunAction<Staircase>(staircaseAA7,
-                                                     &Staircase::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC1,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorCC1,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorBH2,
-                                                      &Teleruptor::save));
-  global_off_actions.append(new FunAction<Teleruptor>(teleruptorBH2,
-                                                      &Teleruptor::off));
-  global_off_actions.append(new FunAction<Staircase>(staircaseAA7,
-                                                     &Staircase::off));
-
-  buttonBH2.getLongSignal().connect(&global_off_actions, &ActionList::doit);
-}
-
 void Controller::connectMotionSpot(MotionSpot        & spot,
                                    sigslot::signal0<> *butshort,
                                    sigslot::signal0<> *butlong) {
@@ -320,8 +275,6 @@ void Controller::setup() {
   COUT_DEBUG(cout << "Setup spots" << endl);
   setupMotionSpots();
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
-  COUT_DEBUG(cout << "Setup global" << endl);
-  setupGlobal();
 
   COUT_DEBUG(cout << "Add actors" << endl);
   r.addActor(&mqtt);
@@ -368,7 +321,6 @@ void Controller::setup() {
   r.addActor(&buttonEAEB);
   r.addActor(&buttonAA7);
   r.addActor(&buttonEC2);
-  r.addActor(&buttonBH2);
 
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "Run all actor setups" << endl);
