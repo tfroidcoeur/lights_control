@@ -19,10 +19,42 @@
  * duration: duration in ms
  * value: value to set on the pin
  */
-struct SeqElement {
+class SeqElement {
+public:
+
+  SeqElement() {
+    duration = 0;
+  }
+
+  SeqElement(const SeqElement& orig) {
+    duration = orig.duration;
+  }
+
+  SeqElement(uint32_t duration, bool value) {
+    this->duration = duration << 1 | value;
+  }
+
+  uint32_t getDuration() {
+    return duration >> 1;
+  }
+
+  void setDuration(uint32_t d) {
+    duration = (d << 1) | getValue();
+  }
+
+  bool getValue() {
+    return duration & 0x1;
+  }
+
+  void setValue(bool v) {
+    duration = (duration & ~0x1) | v;
+  }
+
+private:
+
   uint32_t duration;
-  bool     value;
 };
+
 
 /**
  * a seq pattern is a series of seq elements plus some info
@@ -31,8 +63,8 @@ class SeqPattern {
 public:
 
   int repeatcount;
-  struct SeqElement *elements;
-  SeqPattern(int repeatcount = 0, struct SeqElement *elements = NULL) :
+  SeqElement *elements;
+  SeqPattern(int repeatcount = 0, SeqElement *elements = NULL) :
     repeatcount(repeatcount), elements(elements) {}
 
   virtual ~SeqPattern() {
@@ -81,7 +113,7 @@ private:
   int repeatcount;
   SeqPattern **pat_next;
   void endPattern(int value);
-  void printStep(struct SeqElement& step);
+  void printStep(SeqElement& step);
   void _start(SeqPattern *pattern);
 };
 

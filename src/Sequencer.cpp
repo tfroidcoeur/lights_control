@@ -68,9 +68,9 @@ void Sequencer::endPattern(int value) {
   activate();
 }
 
-void Sequencer::printStep(struct SeqElement& step) {
+void Sequencer::printStep(SeqElement& step) {
   COUT_DEBUG(
-    cout << activeStep << "[" << step.duration << " ; " << step.value << "]" <<
+    cout << activeStep << "[" << step.getDuration() << " ; " << step.getValue() << "]" <<
       endl);
 }
 
@@ -80,11 +80,11 @@ void Sequencer::activate() {
   COUT_DEBUG(cout << "next step ");
   printStep(el);
 
-  if (!el.value && (el.duration == 0)) {
-    endPattern(el.value);
+  if (!el.getValue() && (el.getDuration() == 0)) {
+    endPattern(el.getValue());
   } else {
-    COUT_DEBUG(cout << "write: " << el.value << endl);
-    out->write(el.value);
+    COUT_DEBUG(cout << "write: " << el.getValue() << endl);
+    out->write(el.getValue());
   }
 }
 
@@ -93,14 +93,14 @@ void Sequencer::handle() {
 
   SeqElement& step = pattern->elements[activeStep];
 
-  if ((unsigned long)millis() - this->startTime > step.duration) {
+  if ((unsigned long)millis() - this->startTime > step.getDuration()) {
     COUT_DEBUG(
       cout << " " << millis() << " \t -  " << this->startTime << " \t= " <<
       ((unsigned long)millis() - this->startTime) << endl);
     SeqElement& elold = pattern->elements[activeStep];
     COUT_DEBUG(cout << "executed step ");
     printStep(elold);
-    startTime += elold.duration;
+    startTime += elold.getDuration();
     activeStep++;
     activate();
   }
@@ -141,12 +141,16 @@ SeqPattern * Sequencer::createPattern(std::string pat) {
   while (std::getline(is, seqstr, ' ') && seqstr.length() != 0) {
     char dummy;
     SeqElement el;
+    uint32_t   duration;
+    bool value;
 
     //		cout << "process \"" << seqstr << "\"" <<endl;
     std::istringstream is2(seqstr);
-    is2 >> el.duration;
+    is2 >> duration;
     is2 >> dummy; // read '*'
-    is2 >> el.value;
+    is2 >> value;
+    el.setDuration(duration);
+    el.setValue(value);
     elements.push_back(el);
   }
   SeqElement el = { 0, false };

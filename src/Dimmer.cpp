@@ -71,7 +71,7 @@ SeqPattern *Dimmer::dimDirSequence = new SeqPattern(
 
 /* stop any controls */
 SeqPattern *Dimmer::stopSequence =
-  new SeqPattern(1, new SeqElement[4] { { 500, false }, { 0, false } });
+  new SeqPattern(1, new SeqElement[2] { { 500, false }, { 0, false } });
 
 /* sync dimmer == reliably turn it on + dim to 100% */
 SeqPattern *Dimmer::syncSequence =
