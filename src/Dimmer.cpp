@@ -30,9 +30,9 @@ Dimmer::~Dimmer() {
   debounced.getChangeSignal().disconnect_all();
 }
 
-#define PULSE_WAIT 50
+#define PULSE_WAIT 80
 #define PULSE_SHORT 50
-#define PULSE_DIMTHRESH 900
+#define PULSE_DIMTHRESH 950
 
 /*
  * TODO
