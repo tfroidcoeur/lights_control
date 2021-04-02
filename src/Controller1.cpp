@@ -95,7 +95,7 @@ private:
 };
 Controller::Controller() : buttonCA3(500, 2000), buttonCA4(500, 2000),
   buttonCA6(500, 2000), buttonCA7(500, 2000), buttonCA8(500, 2000),
-  buttonDM2(500, 2000), buttonAA8(500, 1500), buttonAA8_bis(500, 5000),
+  buttonDM2(500, 2000), buttonAA8(500, 1500), buttonAA8_bis(4000, 4100),
   mqtt("Controllino1"),
   cmdCC1Off("home/CC1/control", "OFF", &mqtt),
   cmdCA1Off("home/CA1/control", "OFF", &mqtt),
