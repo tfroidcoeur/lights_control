@@ -118,6 +118,18 @@ MotionSpotState::MotionSpotState(const char *name, int force, int ctrl,
 
 MotionSpotState::~MotionSpotState() {}
 
+void MotionSpot::activateState(MotionSpotState& newstate) {
+  MotionSpotState *prevState = state;
+
+  state = &newstate;
+
+  if (prevState != state) activateState();
+}
+
+void MotionSpot::off() {
+  activateState(MotionSpotState::Off);
+}
+
 void MotionSpot::update(string const& path, string const& value) {
   MotionSpotState *prevState = state;
 

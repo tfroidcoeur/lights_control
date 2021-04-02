@@ -83,6 +83,8 @@ public:
   void         handle();
   void         shortpressed();
   void         longpressed();
+  void         off();
+  void         activateState(MotionSpotState& newstate);
 
   // mqtt node
   virtual void update(string const& path,

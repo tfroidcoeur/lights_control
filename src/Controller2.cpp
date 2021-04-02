@@ -265,6 +265,7 @@ void Controller::setupMotionSpots() {
   connectMotionSpot(*spotEC2, &buttonEC2.getShortSignal(), NULL);
   spotEC2->setup();
   r.addActor(spotEC2);
+  spotEC2->off();
 }
 
 void Controller::setup() {
