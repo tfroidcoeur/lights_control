@@ -195,11 +195,11 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   buttonAA7.getLongSignal().connect(staircaseAA7, &Staircase::longpressed);
 
   // Dimmers (passthrough)
-  dimmerAA1 = new Dimmer(inpinA[1]->getRawInput(), outpinD[1], "AA1", huis);
+  dimmerAA1 = new Dimmer(inpinA[1]->getRawInput(), outpinD[1], "AA1", huis, 0.12);
   huis->addNode(dimmerAA1);
-  dimmerAA3 = new Dimmer(inpinA[3]->getRawInput(), outpinD[3], "AA3", huis);
+  dimmerAA3 = new Dimmer(inpinA[3]->getRawInput(), outpinD[3], "AA3", huis, 0.12);
   huis->addNode(dimmerAA3);
-  dimmerAA6 = new Dimmer(inpinA[6]->getRawInput(), outpinD[6], "AA6", huis);
+  dimmerAA6 = new Dimmer(inpinA[6]->getRawInput(), outpinD[6], "AA6", huis, 0.12);
   huis->addNode(dimmerAA6);
 
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
