@@ -96,7 +96,7 @@ void Sequencer::handle() {
   if ((unsigned long)millis() - this->startTime > step.getDuration()) {
     COUT_DEBUG(
       cout << " " << millis() << " \t -  " << this->startTime << " \t= " <<
-      ((unsigned long)millis() - this->startTime) << endl);
+        ((unsigned long)millis() - this->startTime) << endl);
     SeqElement& elold = pattern->elements[activeStep];
     COUT_DEBUG(cout << "executed step ");
     printStep(elold);
@@ -154,6 +154,7 @@ SeqPattern * Sequencer::createPattern(std::string pat) {
     elements.push_back(el);
   }
   SeqElement el = { 0, false };
+
   elements.push_back(el);
 
   result->elements = new SeqElement[elements.size()];

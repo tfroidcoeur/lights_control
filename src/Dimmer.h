@@ -59,7 +59,7 @@ class DimmerTracker : public sigslot::has_slots<> {
 public:
 
   DimmerTracker(Dimmer& dimmer,
-                float   dimSpeed = 0.2,
+                float   dimSpeed       = 0.2,
                 float   dimThreshOnMs  = 900,
                 float   dimThreshOffMs = 400);
   virtual ~DimmerTracker() {
@@ -131,8 +131,8 @@ public:
   Dimmer(Input      *in,
          OutPin     *outpin,
          const char *name,
-         MqttNode   *parent   = NULL,
-         float       dimSpeed = 0.28,
+         MqttNode   *parent         = NULL,
+         float       dimSpeed       = 0.28,
          float       dimThreshOnMs  = 800,
          float       dimThreshOffMs = 400);
   virtual ~Dimmer();

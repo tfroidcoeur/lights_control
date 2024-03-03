@@ -11,7 +11,7 @@ class DebouncedInput : public NotifiedInput {
 public:
 
   DebouncedInput(Input   *in,
-                 bool     owninput = false,
+                 bool     owninput         = false,
                  uint32_t debouncetime     = 20,
                  uint16_t repeatTimeHighMs = 0);
   Input* getRawInput() {

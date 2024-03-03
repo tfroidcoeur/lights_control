@@ -28,6 +28,7 @@ int DebouncedInput::debounce() {
   readval = val;
 
   unsigned long elapsed = now - changetime;
+
   COUT_DEBUG(cout << "pin: " << in << " elapsed " << elapsed << endl);
 
   if (previousval != val) {

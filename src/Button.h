@@ -50,8 +50,8 @@ using namespace std;
 class ButtonMode {
 public:
 
-  ButtonMode(int delay = 0, const char *name = "<anon>",
-             sigslot::signal0<> *pressed     = NULL) :
+  ButtonMode(int delay                   = 0, const char *name = "<anon>",
+             sigslot::signal0<> *pressed = NULL) :
 #ifdef DEBUG_MODE_NAME
     name(name),
 #endif // ifdef DEBUG_MODE_NAME

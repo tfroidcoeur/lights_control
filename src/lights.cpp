@@ -127,7 +127,7 @@ void loop() {
     Serial.println(ntpclient.getFormattedTime());
     t = ntpclient.getEpochTime() - UNIX_OFFSET;
     Serial.println(ntpclient.getEpochTime());
-    Serial.println(        t);
+    Serial.println(t);
 
 
     // not really needed, unless we want to use time() to obtain time

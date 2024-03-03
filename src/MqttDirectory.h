@@ -62,6 +62,7 @@ public:
 
     // split off first part of the path
     std::size_t slashpos;
+
     slashpos = path.find('/');
 
     // no child, don't care

@@ -19,9 +19,8 @@ void pinReset() {
 void pinMode(uint8_t id, uint8_t mode) {}
 
 void digitalWrite(uint8_t id, uint8_t value) {
-  if (id >= MAX_PINS) return;  // FIXME trigger an assert
-
-  pins[id] = value;
+  if (id >= MAX_PINS) // FIXME trigger an assert
+    pins[id] = value;
 }
 
 int digitalRead(uint8_t id) {
