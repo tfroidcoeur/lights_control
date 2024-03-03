@@ -12,8 +12,27 @@ Install `avrdude`, `sudo apt-get install avrdude` on ubuntu.
 Once the setup is done, simply calling `make` in the root will build a
 `lights.hex` file that can be flashed onto a Controllino maxi.
 
+### variants
+I have two different controllinos with two different configs so the Makefile
+will build two variants:
+
+* `lights1.hex` for the original, main controllino
+* `lights2.hex` for the additional controllino (garden lights and whatnot)
+
+
 ## flashing
-make flash will flash using the first connected usb `ACM` device. It will assume it is a Controllino Maxi. You need to adapt the makefile in case you want to use a different USB port or target a different Controllino.
+make flash will flash using the first connected usb `ACM` device. It will assume
+it is a Controllino Maxi. You need to adapt the makefile in case you want to use
+a different USB port or target a different Controllino.
+
+### raspberry pi
+flashing can be done using a raspberry pi and installing avrdude.
+
+```sh
+# use lights1.hex or lights2.hex accordingly
+avrdude -v -patmega2560 -cwiring -P/dev/ttyACM0 -b115200 -D -Uflash:w:lights.hex:i
+```
+
 
 ## libraries
 this application makes use of following libraries:
