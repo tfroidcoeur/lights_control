@@ -56,12 +56,12 @@ private:
   Teleruptor *teleruptorBH2;
   Teleruptor *teleruptorEA;
   Teleruptor *teleruptorEB;
+  Teleruptor *teleruptorAA4;
 
   // buttons
   SimpleButton buttonEAEB;
   SimpleButton buttonAA2;
   SimpleButton buttonEC2;
-  SimpleButton buttonAA4;
   SimpleButton buttonAA5;
   SimpleButton buttonAA7;
   SimpleButton buttonCA1;
@@ -84,7 +84,7 @@ private:
 
 Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   buttonEC2(500, 2000), buttonAA5(500, 2000), buttonAA7(500, 2000),
-  buttonAA4(500, 4000), buttonCA1(500, 4000), mqtt("Controllino2") {
+  buttonCA1(500, 4000), mqtt("Controllino2") {
   // create pins
 
   COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);
@@ -166,7 +166,6 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   buttonAA5.attach(inpinA[5]->getChangeSignal());
   buttonAA7.attach(inpinA[7]->getChangeSignal());
   buttonCA1.attach(inpinInt[0]->getChangeSignal());
-  buttonAA4.attach(inpinInt[1]->getChangeSignal());
 
   // Teleruptors
   teleruptorEA = new Teleruptor(inpinA[0], outpinD[0], "EA", huis);
@@ -175,6 +174,8 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   huis->addNode(teleruptorEB);
   teleruptorAA2 = new Teleruptor(inpinA[2], relay[2], "AA2", huis);
   huis->addNode(teleruptorAA2);
+  teleruptorAA4 = new Teleruptor(inpinInt[1], relay[4], "AA4", huis);
+  huis->addNode(teleruptorAA4);
   teleruptorAA5 = new Teleruptor(inpinA[5], relay[5], "AA5", huis);
   huis->addNode(teleruptorAA5);
   teleruptorCC1 = new Teleruptor(inpinA[8], outpinD[8], "CC1", huis);
@@ -240,6 +241,7 @@ Controller::~Controller() {
   delete huis;
 
   delete teleruptorAA2;
+  delete teleruptorAA4;
   delete teleruptorAA5;
   delete teleruptorCC1;
   delete teleruptorBH2;
@@ -301,6 +303,7 @@ void Controller::setup() {
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "Add actors teleruptors" << endl);
   r.addActor(teleruptorAA2);
+  r.addActor(teleruptorAA4);
   r.addActor(teleruptorAA5);
   r.addActor(teleruptorBH2);
   r.addActor(teleruptorCC1);
