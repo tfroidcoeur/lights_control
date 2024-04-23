@@ -10,14 +10,15 @@ Install `avrdude`, `sudo apt-get install avrdude` on ubuntu.
 
 ## building
 Once the setup is done, simply calling `make` in the root will build a
-`lights.hex` file that can be flashed onto a Controllino maxi.
+`lights1.hex` and 'lights2.hex' (for controllino 1 and 2 respectively) file that
+can be flashed onto a Controllino maxi.
 
 ### variants
 I have two different controllinos with two different configs so the Makefile
 will build two variants:
 
 * `lights1.hex` for the original, main controllino
-* `lights2.hex` for the additional controllino (garden lights and whatnot)
+* `lights2.hex` for the additional controllino (upstairs)
 
 
 ## flashing

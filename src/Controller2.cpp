@@ -61,6 +61,7 @@ private:
   SimpleButton buttonEAEB;
   SimpleButton buttonAA2;
   SimpleButton buttonEC2;
+  SimpleButton buttonAA4;
   SimpleButton buttonAA5;
   SimpleButton buttonAA7;
   SimpleButton buttonCA1;
@@ -83,7 +84,7 @@ private:
 
 Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   buttonEC2(500, 2000), buttonAA5(500, 2000), buttonAA7(500, 2000),
-  buttonCA1(500, 4000), mqtt("Controllino2") {
+  buttonAA4(500, 4000), buttonCA1(500, 4000), mqtt("Controllino2") {
   // create pins
 
   COUT_DEBUG(cout << "size of DebouncedInput " << sizeof(DebouncedInput) << endl);
@@ -165,6 +166,7 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   buttonAA5.attach(inpinA[5]->getChangeSignal());
   buttonAA7.attach(inpinA[7]->getChangeSignal());
   buttonCA1.attach(inpinInt[0]->getChangeSignal());
+  buttonAA4.attach(inpinInt[1]->getChangeSignal());
 
   // Teleruptors
   teleruptorEA = new Teleruptor(inpinA[0], outpinD[0], "EA", huis);
