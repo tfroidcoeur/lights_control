@@ -1,0 +1,2 @@
+#!/bin/bash
+docker run -ti -v $(pwd):$(pwd) -u $(id -u):$(id -g) -w $(pwd) lights_control:latest bear make $@
