@@ -8,10 +8,14 @@ Install the `gcc-avr` compiler. On ubuntu, for example, use `sudo apt-get
 install gcc-avr` to install the AVR cross compiler tools.
 Install `avrdude`, `sudo apt-get install avrdude` on ubuntu.
 
+Or use the `setup.sh` script to build a docker and clone the submodules.
+
 ## building
 Once the setup is done, simply calling `make` in the root will build a
 `lights1.hex` and 'lights2.hex' (for controllino 1 and 2 respectively) file that
 can be flashed onto a Controllino maxi.
+
+Or use the `build.sh` script to run the build in the docker.
 
 ### variants
 I have two different controllinos with two different configs so the Makefile
