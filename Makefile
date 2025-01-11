@@ -46,10 +46,13 @@ DEFINES=-D"SIGSLOT_PURE_ISO" \
 
 INCLUDES+=-I"$(BUILD)/avr/variants/Controllino_$(CONTROLLINO_FLAVOR)/"
 
-FLAGS=-c -Os -w -ffunction-sections -fdata-sections -MMD -flto -mmcu=atmega2560
-CPPFLAGS=-std=gnu++11 -fpermissive -fno-exceptions -fno-threadsafe-statics $(FLAGS)
-CFLAGS=-std=gnu11 -fno-fat-lto-objects $(FLAGS)
-ASFLAGS=-c -x assembler-with-cpp -flto -MMD -mmcu=atmega2560
+FLAGS=-c -Os -w -ffunction-sections -fdata-sections -flto -mmcu=atmega2560
+CPPFLAGS_NODEPS=-std=gnu++11 -fpermissive -fno-exceptions -fno-threadsafe-statics $(FLAGS)
+CPPFLAGS=$(CPPFLAGS_NODEPS) -MMD
+CFLAGS_NODEPS=-std=gnu11 -fno-fat-lto-objects $(FLAGS)
+CFLAGS=$(CFLAGS_NODEPS) -MMD
+ASFLAGS_NODEPS=-c -x assembler-with-cpp -flto -mmcu=atmega2560
+ASFLAGS=$(ASFLAGS_NODEPS) -MMD
 
 TARGETS = \
 	$(BUILD)/lights1.hex \
@@ -182,6 +185,8 @@ LIBRARIES_OBJS = \
 
 	# $(BUILD)/lib/ntpclient/NTPClient.cpp.o \
 
+.PRECIOUS: $(LIBRARIES_OBJS)
+
 -include $(LIBRARIES_OBJS:.o=.d)
 
 CONTROLLINO_BOARDS=$(BUILD)/avr/variants/Controllino_mega/pins_arduino.h
@@ -230,6 +235,10 @@ $(BUILD)/core/%.cpp.o: $(CORELIB)/libraries/HID/src/%.cpp $(CONTROLLINO_BOARDS)
 $(BUILD)/core/%.c.o: $(CORELIB)/cores/arduino/%.c $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
 	$(GCC) $(CFLAGS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
+
+$(BUILD)/lib/ArduinoSTL/src/%.cpp.o: $(ARDUINOSTL)/src/%.cpp $(CONTROLLINO_BOARDS)
+	@$(call mymkdir,$(dir $@))
+	$(GPP) $(CPPFLAGS_NODEPS) $(DEFINES) $(INCLUDES) "$<" -o "$@"
 
 $(BUILD)/lib/mqtt/lwmqtt/%.o: $(MQTTLIB)/src/lwmqtt/%.c $(CONTROLLINO_BOARDS)
 	@$(call mymkdir,$(dir $@))
