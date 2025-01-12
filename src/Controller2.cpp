@@ -51,16 +51,17 @@ private:
 
   // Teleruptors
   Teleruptor *teleruptorAA2;
+  Teleruptor *teleruptorAA4;
   Teleruptor *teleruptorAA5;
   Teleruptor *teleruptorCC1;
   Teleruptor *teleruptorBH2;
   Teleruptor *teleruptorEA;
   Teleruptor *teleruptorEB;
-  Teleruptor *teleruptorAA4;
 
   // buttons
   SimpleButton buttonEAEB;
   SimpleButton buttonAA2;
+  SimpleButton buttonAA4;
   SimpleButton buttonEC2;
   SimpleButton buttonAA5;
   SimpleButton buttonAA7;
@@ -80,9 +81,11 @@ private:
 
   // MqttDirectories
   MqttDirectory *huis;
+
+  ActionList master_bedroom_off_actions;
 };
 
-Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
+Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000), buttonAA4(500, 2000),
   buttonEC2(500, 2000), buttonAA5(500, 2000), buttonAA7(500, 2000),
   buttonCA1(500, 4000), mqtt("Controllino2") {
   // create pins
@@ -162,6 +165,7 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   // Buttons
   buttonEAEB.attach(inpinA[0]->getChangeSignal());
   buttonAA2.attach(inpinA[2]->getChangeSignal());
+  buttonAA4.attach(inpinInt[1]->getChangeSignal());
   buttonEC2.attach(inpinA[4]->getChangeSignal());
   buttonAA5.attach(inpinA[5]->getChangeSignal());
   buttonAA7.attach(inpinA[7]->getChangeSignal());
@@ -174,7 +178,7 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   huis->addNode(teleruptorEB);
   teleruptorAA2 = new Teleruptor(inpinA[2], relay[2], "AA2", huis);
   huis->addNode(teleruptorAA2);
-  teleruptorAA4 = new Teleruptor(inpinInt[1], relay[4], "AA4", huis);
+  teleruptorAA4 = new Teleruptor(buttonAA4.getShortSignal(), relay[4], "AA4", huis);
   huis->addNode(teleruptorAA4);
   teleruptorAA5 = new Teleruptor(inpinA[5], relay[5], "AA5", huis);
   huis->addNode(teleruptorAA5);
@@ -204,6 +208,14 @@ Controller::Controller() : buttonEAEB(500, 2000), buttonAA2(500, 2000),
   huis->addNode(dimmerAA3);
   dimmerAA6 = new Dimmer(inpinA[6]->getRawInput(), outpinD[6], "AA6", huis, 0.12);
   huis->addNode(dimmerAA6);
+
+  master_bedroom_off_actions.append(new FunAction<Dimmer>(dimmerAA3, &Dimmer::off));
+  master_bedroom_off_actions.append(new FunAction<Teleruptor>(teleruptorAA4,
+                                                      &Teleruptor::save));
+  master_bedroom_off_actions.append(new FunAction<Teleruptor>(teleruptorAA4,
+                                                      &Teleruptor::off));
+
+  buttonAA4.getLongSignal().connect(&master_bedroom_off_actions, &ActionList::doit);
 
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "spots" << endl);
@@ -322,6 +334,7 @@ void Controller::setup() {
   COUT_DEBUG(cout << "free: " << freeMemory() << endl);
   COUT_DEBUG(cout << "Add actors buttons" << endl);
   r.addActor(&buttonAA2);
+  r.addActor(&buttonAA4);
   r.addActor(&buttonAA5);
   r.addActor(&buttonCA1);
   r.addActor(&buttonEAEB);
